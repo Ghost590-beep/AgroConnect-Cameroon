@@ -1,0 +1,147 @@
+.Programs{
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 0 2rem;
+}
+
+.programs-header{
+    display: flex;
+    gap: 5rem;
+    font-weight: bold;
+    font-size: 3rem;
+    justify-content: center;
+    color: green;
+    text-transform: uppercase;
+    font-style: italic;
+}
+
+.program-categories{
+    display: flex;
+    gap: 1rem;
+}
+
+.categories{
+    display: flex;
+    flex-direction: column;
+    background-color: gray;
+    padding: 2rem;
+    gap: 1rem;
+    color: white;
+    justify-content: space-between;
+}
+
+.cards {
+  display: flex;
+  gap: 2rem;
+}
+
+/* MAIN CARD */
+.card {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem;
+  border-radius: 15px;
+  background: linear-gradient(
+    to right,
+    rgba(255,255,255,0.9),
+    rgba(255,255,255,0.6)
+  );
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  overflow: hidden;
+  position: relative;
+  background-image: url('../../../../assets/agro.jpg');
+  background-size: cover;
+}
+
+/* TEXT SIDE */
+.card-content {
+  max-width: 90%;
+  left: -40px;
+  z-index: 1;
+}
+
+.card h2 {
+  margin-bottom: 0.5rem;
+}
+
+.card p {
+  color: #555;
+  margin-bottom: 1rem;
+}
+
+/* BUTTON */
+.card-btn {
+  background: #2d6a4f;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.card-btn.blue {
+  background: #2d6a4f;
+}
+
+/* IMAGE */
+.card-img {
+  width: 150px;
+  object-fit: contain;
+  z-index: 2;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(42, 161, 107, 0.5);
+  opacity: 2.5;
+  z-index: 0;
+}
+
+.card-content,
+.card-img {
+  position: relative;
+  z-index: 1;
+}
+
+.card {
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.card-btn {
+  transition: all 0.3s ease;
+}
+
+.card-btn:hover {
+  transform: scale(1.05);
+  background-color: #40916c; /* lighter green */
+}
+
+.card-btn.blue:hover {
+  background-color: #40916c;
+}
+
+.card-img {
+  transition: transform 0.4s ease;
+}
+
+.card:hover .card-img {
+  transform: scale(1.1) translateX(10px);
+}
+
+.card::before {
+  transition: opacity 0.3s ease;
+}
+
+.card:hover::before {
+  opacity: 0.3;
+}
