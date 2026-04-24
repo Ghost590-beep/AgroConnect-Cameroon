@@ -1,0 +1,209 @@
+.hero {
+  display: flex;
+ justify-content: space-between;
+}
+
+.left-h{
+  padding: 2rem;
+  padding-top: 1rem;
+  flex: 3;
+  display: flex;
+  gap: 2rem;
+  flex-direction: column;
+  background-color: rgb(203, 243, 224);
+}
+
+.right-h{
+  flex: 1;
+  position: relative;
+  background-color: var(--green);
+}
+
+.the-best-ad{
+    margin-top: 1rem;
+    background-color: rgb(71, 95, 59);
+    border-radius: 4rem;
+    width: fit-content;
+    padding: 20px 13px;
+    text-transform: uppercase;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.the-best-ad>span{
+  z-index: 2;
+}
+
+.the-best-ad>div{
+  position: absolute;
+  background-color: var(--green);
+  width: 5.4rem;
+  height: 80%;
+  left: 8px;
+  border-radius: 3rem;
+  z-index: 1;
+}
+
+.hero-text{
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  text-transform: uppercase;
+  font-size: 4.5rem;
+  font-weight: bold;
+  color: black;
+  text-overflow: inherit;
+}
+
+.hero-text>div:nth-of-type(3){
+  font-size: 1.2rem;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 1px;
+  width: 80%;
+}
+
+.figures{
+  display: flex;
+  gap: 8rem;
+}
+
+.figures>div{
+  display: flex;
+  flex-direction: column;
+}
+
+.figures>div>span:nth-of-type(1){
+  color: black;
+  font-size: 2.2rem;
+}
+
+.figures>div>span:nth-of-type(2){
+ color: var(--gray);
+ text-transform: uppercase;
+ font-weight: bold;
+}
+
+.figure {
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  border: 2px solid var(--green);
+  padding: 1rem 2rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.figure:hover {
+  background-color: var(--green);
+  transform: translateY(-5px);
+}
+
+.figure:hover span {
+  color: white; 
+}
+
+.hero-button{
+  display: flex;
+  gap: 1rem;
+  font-weight: normal;
+}
+
+.hero-button>:nth-child(1){
+  color: black;
+  background-color: var(--green);
+  width: 8rem;
+}
+
+.hero-button>:nth-child(2){
+  color: black;
+  background-color: transparent;
+  width: 8rem;
+  border: 2px solid var(--green);
+}
+
+.right-h>.btn{
+  position: absolute;
+  right: 16rem;
+  top: 4rem;
+  color: black;
+  background-color: aliceblue;
+}
+
+.right-h>.btn:hover{
+  background-color: rgb(32, 75, 35);
+}
+
+.heart-rate{
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  /* background-color: var(--darkGrey); */
+  width: fit-content;
+  padding: 4rem;
+  align-items: start;
+  position: absolute;
+  right: 11rem;
+  top: 6rem;
+  height: 15rem;
+  width: 10rem;
+  z-index: 2;
+}
+
+.hero-image{
+  position: absolute;
+  top: 19rem;
+  right: -6rem;
+  width: 45rem;
+  z-index: 3;
+}
+
+.hero-image-back{
+  position: absolute;
+  top: -3rem;
+  right: -3rem;
+  z-index:1;
+  width: 45rem;
+  z-index: 1;
+}
+
+.herat{
+  height: 13rem;
+  width: 13rem;
+  padding-left:-6rem ;
+}
+
+.calories{
+  display: flex;
+  gap: 2rem;
+  background-color: var(--addCard);
+  border-radius: 5px;
+  padding: 1rem;
+  width: fit-content;
+  position: absolute;
+  top: 23rem;
+  right: 36rem;
+}
+
+.calories>img{
+  width: 3rem;
+}
+
+.calories>div{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.calories>div>:nth-of-type(1){
+  color: var(--gray);
+}
+
+.calories>div>:nth-of-type(1){
+  color: white;
+  font-size: 1.5rem;
+}
+
