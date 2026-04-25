@@ -1,3 +1,19 @@
+/* --- City/Town field custom style --- */
+.auth-form .city-town-input {
+  border: 1px solid #b3b3b3;
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 18px;
+  font-size: 1rem;
+  width: 100%;
+  background: #f9f9f9;
+  transition: border 0.2s;
+}
+.auth-form .city-town-input:focus {
+  border-color: #4caf50;
+  outline: none;
+  background: #fff;
+}
 /* ================================================================
    auth.css — shared styles for Login and Register pages
    Import: ../../styles/auth.css

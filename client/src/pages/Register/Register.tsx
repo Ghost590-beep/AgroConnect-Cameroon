@@ -4,17 +4,20 @@ import "../../styles/auth.css";
 import farmerImg from "../../assets/loginImage.jpeg";
 
 // ─── Types ───────────────────────────────────────────────────
+// --- Extend FormState to include cityTown ---
 interface FormState {
   fullName: string;
   email: string;
   password: string;
   confirmPassword: string;
   phone: string;
+  cityTown: string;
 }
 
 type FormErrors = Partial<FormState>;
 
 // ─── Field config (keeps JSX DRY) ────────────────────────────
+// --- Add City/Town field config ---
 const FIELDS: {
   id: keyof FormState;
   label: string;
@@ -57,16 +60,25 @@ const FIELDS: {
     placeholder: "+237 6XX XXX XXX",
     autoComplete: "tel",
   },
+  {
+    id: "cityTown",
+    label: "City/Town",
+    type: "text",
+    placeholder: "Enter your city or town",
+    autoComplete: "address-level2",
+  },
 ];
 
 // ─── Component ───────────────────────────────────────────────
 export default function Register() {
+  // --- Add cityTown to form state ---
   const [form, setForm] = useState<FormState>({
     fullName: "",
     email: "",
     password: "",
     confirmPassword: "",
     phone: "",
+    cityTown: "",
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -79,6 +91,7 @@ export default function Register() {
   };
 
   // Client-side validation
+  // --- Add cityTown validation ---
   const validate = (): boolean => {
     const next: FormErrors = {};
     if (!form.fullName.trim()) next.fullName = "Full name is required";
@@ -87,6 +100,7 @@ export default function Register() {
     if (form.password !== form.confirmPassword)
       next.confirmPassword = "Passwords do not match";
     if (!form.phone.trim()) next.phone = "Phone number is required";
+    if (!form.cityTown.trim()) next.cityTown = "City/Town is required";
     setErrors(next);
     return Object.keys(next).length === 0;
   };
