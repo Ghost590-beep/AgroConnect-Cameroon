@@ -10,7 +10,22 @@
   display: flex;
   gap: 2rem;
   flex-direction: column;
-  background-color: rgb(203, 243, 224);
+ /* background-color: rgb(203, 243, 224);  */
+ background-image: url('../../../../assets/R.jpg');
+ background-size: cover;
+ background-position: center;
+ background-repeat: no-repeat;
+
+ position: relative;
+ z-index: 1;
+}
+
+.left-h::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(46, 125, 50, 0.65);
+  backdrop-filter: blur(3px);
 }
 
 .right-h{
@@ -53,8 +68,9 @@
   text-transform: uppercase;
   font-size: 4.5rem;
   font-weight: bold;
-  color: green;
+  color: rgb(15, 221, 15);
   text-overflow: inherit;
+  z-index: 3;
 }
 
 .hero-text>div:nth-of-type(3){
@@ -63,11 +79,13 @@
   text-transform: none;
   letter-spacing: 1px;
   width: 80%;
+  z-index: 3;
 }
 
 .figures{
   display: flex;
   gap: 8rem;
+  z-index: 3;
 }
 
 .figures>div{
@@ -95,6 +113,7 @@
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
+   background-color: var(--green);
 }
 
 .figure:hover {
@@ -110,6 +129,7 @@
   display: flex;
   gap: 1rem;
   font-weight: normal;
+  z-index: 3;
 }
 
 .hero-button>:nth-child(1){
@@ -208,3 +228,8 @@
   font-size: 1.5rem;
 }
 
+.hero-blur{
+  width: 22rem;
+  height: 30rem;
+  left:0;
+}

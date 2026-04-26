@@ -12,7 +12,7 @@ const Header: React.FC = () => {
       <ul className="header-menu">
         <li>DashBoard</li>
         <li>Marketplace</li>
-        <li>About</li>
+        <li>About</li>  
         <li>Profile</li>
         <li>Contact</li>
       </ul>

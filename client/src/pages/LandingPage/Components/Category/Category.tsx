@@ -61,6 +61,7 @@ const categories = [
 const Category: React.FC = () => {
   return (
     <section className="category-section">
+      <hr />
       <h2 className="category-title">Browse Categories</h2>
 
       <div className="category-grid">

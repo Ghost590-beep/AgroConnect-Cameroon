@@ -9,9 +9,10 @@ import Calories from "../../../../assets/calories.png"
 const Hero: React.FC = () => {
   return (
     <div className="hero">
+
+      <div className="blur hero-blur-"></div>
       <div className="left-h">
         <Header/>
-
 {/* the best add */}
         <div className="the-best-ad">
         <div></div>
@@ -24,7 +25,7 @@ const Hero: React.FC = () => {
             <span className="stroke-text">Connect </span>
 
             <span>Thrive</span>
-            </div>
+            </div> 
             <div>
               <span>Grow</span>
               </div>
@@ -63,7 +64,7 @@ const Hero: React.FC = () => {
       </div>
 
        <div className="right-h">
-        <button className="btn">Join Now</button>
+        <button className="btn">Sign Up</button>
 
 
         <div className="heart-rate">

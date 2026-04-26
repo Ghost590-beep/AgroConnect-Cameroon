@@ -23,7 +23,7 @@ const Require: React.FC = () => {
   return (
     <div className="Require">
       <div className="require-container">
-
+        <hr />
         {/* HEADER */}
         <div className="programs-header" style={{ gap: "2rem" }}>
           <span>RECOMMENDED</span>

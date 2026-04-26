@@ -1,6 +1,15 @@
 .Require {
   padding: 80px 8%;
-  background: #f6f9f6;
+  background: #bdedc0;
+}
+
+.require-container>hr{
+  position: absolute;
+    width: 60.5rem;
+    border: 2px solid;
+    color: green;
+    border-radius: 20%;
+    margin: -5px 0;
 }
 
 .require-container {
