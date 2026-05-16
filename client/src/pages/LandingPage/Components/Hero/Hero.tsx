@@ -1,12 +1,12 @@
 import React from "react";
 import "../Hero/Hero.css";
 import Header from "../Header/Header";
-import hero_image from "../../../../assets/hero_image.png"
-import hero_image_back from "../../../../assets/i.png"
-import Heart from "../../../../assets/o-removebg-preview.png"
-import Calories from "../../../../assets/calories.png"
+import {motion} from 'framer-motion'
+import type { Transition } from "framer-motion";
 
 const Hero: React.FC = () => {
+
+  const transition:Transition= {type: 'spring', duration :3};
   return (
     <div className="hero">
 
@@ -15,7 +15,16 @@ const Hero: React.FC = () => {
         <Header/>
 {/* the best add */}
         <div className="the-best-ad">
-        <div></div>
+        <motion.div
+           initial={{left:'238px'}}
+           whileInView={{ left: '8px' }}
+           transition={{
+           duration:2,
+           ease:"easeInOut",
+           repeat:Infinity,
+           repeatType:"reverse"
+        }}
+        ></motion.div>
         <span>Your digital partners in agriculture </span>
         </div>
 
@@ -30,7 +39,8 @@ const Hero: React.FC = () => {
               <span>Grow</span>
               </div>
               <div>
-                <span>The number one agriculture marketplace buy,sell and rent crops,animals,machines and more.</span>
+                <span>The number one agriculture marketplace buy,sell </span><br/>
+                <span>and rent crops,animals,machines and more.</span>
               </div>
         </div>
 
@@ -40,7 +50,7 @@ const Hero: React.FC = () => {
             <button className="figure">
             <span>+50,000 </span>
             <span>Farmers</span>
-            </button>
+            </button> 
           </div>
           <div>
             <button className="figure">
@@ -65,26 +75,6 @@ const Hero: React.FC = () => {
 
        <div className="right-h">
         <button className="btn">Sign Up</button>
-
-
-        <div className="heart-rate">
-          <img src={Heart} alt="" className="herat" />
-          {/* <span>Faster</span>
-          <span>Easier</span> */}
-        </div>
-
-        <div>
-          <img src={hero_image_back} alt="" className="hero-image-back" />
-          <img src={hero_image} alt=""  className="hero-image"/>
-        </div>
-
-        <div className="calories">
-          <img src={Calories} alt="" />
-           <div>
-            <span>Crop yield</span>
-          <span>220 tonnes per hectare</span>
-           </div>
-        </div>
 
        </div>
     </div>

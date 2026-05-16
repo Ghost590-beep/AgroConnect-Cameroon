@@ -149,3 +149,33 @@
 .card:hover::before {
   opacity: 0.3;
 }
+
+@media screen and (max-width:768px) {
+  .cards{
+  flex-direction: column;
+}
+
+.card{
+  padding: 1.5rem;
+}
+    
+.programs-header{
+  flex-direction: column;
+  gap: .5rem;
+  font-size: 2rem;
+  text-align: center;
+  align-items: center;
+}
+/* SIGN UP BUTTON FIX (tablet) */
+.right-h > .btn{
+  right: 2rem;
+  top: 2rem;
+  padding: 8px 18px;
+  font-size: 0.9rem;
+}
+
+.right-h{
+  flex: 1;
+  min-height: 60vh;
+}
+}

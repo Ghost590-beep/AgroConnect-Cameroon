@@ -62,3 +62,21 @@
 .btn-j:hover{
     background-color: #256628;
 }
+
+@media screen and (max-width:768px){
+.join{
+  flex-direction: column;
+  gap: 3rem;
+  text-align: center;
+}
+
+.left-j{
+  font-size: 2.2rem;
+}
+
+.email-container{
+  padding: 1rem 2rem;
+}
+
+
+}

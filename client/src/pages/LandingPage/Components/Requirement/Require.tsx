@@ -8,6 +8,10 @@ import rice from "../../../../assets/rice.webp";
 import potatoes from "../../../../assets/potatoes.webp";
 import fertilizer from "../../../../assets/fertilizer.webp";
 import onions from "../../../../assets/onions.webp";
+import cassava from "../../../../assets/cassava.webp";
+import wheat from "../../../../assets/wheat.webp";
+import milk from "../../../../assets/milk.webp";
+
 
 const products = [
   { name: "Fresh Tomatoes", price: "3,000 FCFA / Basket", img: tomatoes },
@@ -17,7 +21,11 @@ const products = [
   { name: "Potatoes", price: "9,000 FCFA / Bag", img: potatoes },
   { name: "Fertilizer", price: "22,000 FCFA / Bag", img: fertilizer },
   { name: "Onions", price: "8,000 FCFA / Bag", img: onions },
+  { name: "Cassava", price: "3,500 FCFA / Bag", img: cassava },
+  { name: "Wheat", price: "6,000 FCFA / Bag", img: wheat },
+  { name: "Milk", price: "2,000 FCFA / Bag", img: milk },
 ];
+
 
 const Require: React.FC = () => {
   return (

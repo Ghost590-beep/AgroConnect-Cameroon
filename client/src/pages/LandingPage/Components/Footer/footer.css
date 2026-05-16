@@ -32,3 +32,15 @@
     height: 10rem;
     width: 10rem;
 }
+
+@media screen and (max-width:768px){
+    .footer{
+  height: auto;
+  gap: 2rem;
+}
+
+.logo-f img{
+  width: 7rem;
+  height: 7rem;
+}
+}

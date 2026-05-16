@@ -5,7 +5,11 @@ import animalsImg from "../../../../assets/animals.webp";
 import machinesImg from "../../../../assets/machines.jpg";
 import servicesImg from "../../../../assets/service.png";
 import trainingImg from "../../../../assets/training.jpg";
-import medicalImg from "../../../../assets/medicine.jpg";
+import medicalImg from "../../../../assets/training.jpg";
+import waterImg from "../../../../assets/water.webp";
+import warehouseImg from "../../../../assets/warehouse.webp";
+import LeafImg from "../../../../assets/leaf.webp";
+import shopImg from "../../../../assets/shop.webp";
 
 import {
   FaSeedling,
@@ -14,6 +18,10 @@ import {
   FaTools,
   FaChalkboardTeacher,
   FaMedkit,
+  FaWater,
+  FaWarehouse,
+  FaLeaf,
+  FaShoppingBasket,
 } from "react-icons/fa";
 
 const categories = [
@@ -56,6 +64,30 @@ const categories = [
     icon: <FaMedkit />,
     image: medicalImg,
   },
+  {
+  title: "Irrigation",
+  desc: "Water systems & crop hydration",
+  icon: <FaWater />,
+  image: waterImg,
+},
+{
+  title: "Storage",
+  desc: "Warehouses, silos & logistics",
+  icon: <FaWarehouse />,
+  image: warehouseImg,
+},
+{
+  title: "Sustainability",
+  desc: "Eco‑friendly farming practices",
+  icon: <FaLeaf />,
+  image: LeafImg,
+},
+{
+ title: "Marketplace",
+  desc: "Buy & sell farm products",
+  icon: <FaShoppingBasket />,
+  image: shopImg,
+},
 ];
 
 const Category: React.FC = () => {

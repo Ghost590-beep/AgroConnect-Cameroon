@@ -24,3 +24,15 @@
     cursor: pointer;
 }
 
+@media screen and (max-width:768px){
+.Logo{
+  width: 7rem;
+  height: 7rem;
+}
+
+.header-menu{
+  gap: 1rem;
+  font-size: .9rem;
+}
+}
+

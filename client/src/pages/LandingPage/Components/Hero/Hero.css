@@ -1,37 +1,47 @@
 .hero {
   display: flex;
- justify-content: space-between;
+  justify-content: space-between;
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  background-image: url('../../../../assets/Copilot_20260516_124808_waifu2x_art_noise2_scale_waifu2x_art_noise2_scale.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  overflow: hidden;
 }
 
-.left-h{
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.001); /* dark overlay for readability */
+  z-index: 0;
+}
+
+.left-h {
   padding: 2rem;
   padding-top: 1rem;
   flex: 3;
   display: flex;
   gap: 2rem;
   flex-direction: column;
- /* background-color: rgb(203, 243, 224);  */
- background-image: url('../../../../assets/R.jpg');
- background-size: cover;
- background-position: center;
- background-repeat: no-repeat;
-
- position: relative;
- z-index: 1;
+  position: relative;
+  z-index: 2; /* sits above overlay */
 }
 
 .left-h::before{
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(46, 125, 50, 0.65);
-  backdrop-filter: blur(3px);
+  /* background: rgba(46, 125, 50, 0.65); */
+  /* backdrop-filter: blur(3px); */
 }
 
 .right-h{
   flex: 1;
   position: relative;
-  background-color: var(--green);
+  z-index: 2;
 }
 
 .the-best-ad{
@@ -66,15 +76,15 @@
   flex-direction: column;
   gap: 1.5rem;
   text-transform: uppercase;
-  font-size: 4.5rem;
+  font-size: 3.0rem;
   font-weight: bold;
-  color: rgb(15, 221, 15);
+  color: rgb(252, 237, 237);
   text-overflow: inherit;
   z-index: 3;
 }
 
 .hero-text>div:nth-of-type(3){
-  font-size: 1.2rem;
+  font-size: 1.0rem;
   font-weight: 400;
   text-transform: none;
   letter-spacing: 1px;
@@ -84,7 +94,7 @@
 
 .figures{
   display: flex;
-  gap: 8rem;
+  gap: 32rem;
   z-index: 3;
 }
 
@@ -108,16 +118,16 @@
   display: flex;
   flex-direction: column;
   background: transparent;
-  border: 2px solid var(--green);
+  border: 2px;
   padding: 1rem 2rem;
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
-   background-color: var(--green);
+   background-color: #FFC107;
 }
 
 .figure:hover {
-  background-color: var(--green);
+  background-color: #876605;
   transform: translateY(-5px);
 }
 
@@ -132,17 +142,22 @@
   z-index: 3;
 }
 
+.hero-button:hover{
+ color: #ffc10773;
+}
+
 .hero-button>:nth-child(1){
   color: black;
-  background-color: var(--green);
+  background-color: #FFC107;
   width: 8rem;
+   border-radius: 45px;
 }
 
 .hero-button>:nth-child(2){
   color: black;
-  background-color: transparent;
+  border-radius: 45px;
+  background-color: #FFC107;
   width: 8rem;
-  border: 2px solid var(--green);
 }
 
 .right-h>.btn{
@@ -233,3 +248,94 @@
   height: 30rem;
   left:0;
 }
+
+ @media screen and (max-width:768px) {
+ .hero{
+  flex-direction: column;
+}
+
+.left-h{
+  flex: none;
+  padding: 1.5rem;
+  gap: 1.2rem;
+}
+
+.right-h{
+  height: 500px;
+}
+
+/* HERO TEXT */
+.hero-text{
+  font-size: 2.5rem;
+}
+
+.hero-text>div:nth-of-type(3){
+  width: 100%;
+  font-size: 1rem;
+}
+
+.figures{
+  gap: 1.5rem;
+  justify-content: space-between;
+}
+
+.figure{
+  padding: .8rem 1.2rem;
+}
+
+/* HERO BUTTONS */
+.hero-button{
+  gap: .7rem;
+}
+
+/* HERO IMAGES */
+.hero-image{
+  width: 28rem;
+  right: -3rem;
+  top: 12rem;
+}
+
+.hero-image-back{
+  width: 28rem;
+}
+
+.heart-rate{
+  right: 2rem;
+  top: 4rem;
+  padding: 2rem;
+}
+
+.calories{
+  right: 10rem;
+  top: 18rem;
+  padding: .6rem;
+}
+
+.hero-image-back{
+  width: 28rem;
+  top: 3rem;
+  right: 50%;
+  transform: translateX(50%);
+}
+
+.hero-image{
+  width: 26rem;
+  top: 10rem;
+  right: 50%;
+  transform: translateX(50%);
+}
+
+.heart-rate{
+  padding: 1rem;
+  right: 1rem;
+  top: 6rem;
+  width: 7rem;
+  height: 7rem;
+}
+
+.herat{
+  width: 6rem;
+  height: 6rem;
+}
+
+} 
