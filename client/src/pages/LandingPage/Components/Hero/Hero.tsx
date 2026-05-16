@@ -74,7 +74,6 @@ const Hero: React.FC = () => {
       </div>
 
        <div className="right-h">
-        <button className="btn">Sign Up</button>
 
        </div>
     </div>
