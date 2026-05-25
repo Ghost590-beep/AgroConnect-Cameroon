@@ -9,10 +9,10 @@ const Hero: React.FC = () => {
   const transition:Transition= {type: 'spring', duration :3};
   return (
     <div className="hero">
-
+      
       <div className="blur hero-blur-"></div>
       <div className="left-h">
-        <Header/>
+         <Header/>
 {/* the best add */}
         <div className="the-best-ad">
         <motion.div

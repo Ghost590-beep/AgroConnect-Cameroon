@@ -1,3 +1,4 @@
+/* Header */
 .header {
   display: flex;
   justify-content: space-between;
@@ -7,19 +8,14 @@
   position: relative;
 }
 
-.header-menu > li::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -4px; /* adjust spacing under text */
-  width: 0%;
-  height: 2px;
-  background-color: yellow; /* or your theme color */
-  transition: width 0.3s ease;
-}
-
-.header-menu > li:hover::after {
+.heros-container {
+  position: relative;
   width: 100%;
+  height: 300px;
+  background-image: url("../../../../assets/agro.jpg");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 .Logo {
@@ -37,13 +33,27 @@
 
 .header-menu > li {
   transition: color 0.3s ease;
-  cursor: pointer;
   position: relative;
+  cursor: pointer;
+}
+
+.header-menu > li::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 0%;
+  height: 2px;
+  background-color: #FFC107; /* harvest yellow */
+  transition: width 0.3s ease;
 }
 
 .header-menu > li:hover {
-  color: #FFC107; /* harvest yellow */
- 
+  color: #FFC107;
+}
+
+.header-menu > li:hover::after {
+  width: 100%;
 }
 
 .header-right {
@@ -64,15 +74,6 @@
   color: #FFC107;
 }
 
-/* .notification-dot {
-  position: absolute;
-  top: -0.3rem;
-  right: -0.3rem;
-  width: 0.6rem;
-  height: 0.6rem;
-  background-color: red;
-  border-radius: 50%;
-} */
 
 .btn {
   padding: 0.5rem 1.2rem;
@@ -122,11 +123,79 @@
   width: 200px;
 }
 
+/* Profile Header */
+.profile-header {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 1rem;
+  }
+
+.profile-bg {
+  position: absolute;
+  inset: 0px;
+  backdrop-filter: blur(3px);
+  z-index: 1; 
+}
+
+.profile-content {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  color: #fff;
+  z-index: 2;
+}
+
+.profile-photo {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  object-fit: cover;
+}
+
+.profile-details {
+  flex: 1;
+  margin-left: 1.5rem;
+}
+
+.profile-details h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.verified {
+  font-size: 0.9rem;
+  color: #ffd700; /* gold/yellow */
+  margin-left: 0.5rem;
+}
+
+.edit-btn {
+  background: #ffd700;
+  color: #000;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.edit-btn:hover {
+  background: #6b5c09;
+}
+
+/* Animations */
 @keyframes slideIn {
   from { opacity: 0; transform: translateX(50px); }
   to { opacity: 1; transform: translateX(0); }
 }
 
+/* Responsive */
 @media screen and (max-width: 768px) {
   .header {
     flex-direction: column;
@@ -140,5 +209,15 @@
 
   .header-right {
     gap: 1rem;
+  }
+
+  .profile-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .edit-btn {
+    align-self: flex-start;
   }
 }
