@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import "../../styles/auth.css";
 import farmerImg from "../../assets/loginImage.jpeg";
+import axios from "axios";
 
 // ─── Types ───────────────────────────────────────────────────
 interface FormState {
@@ -91,12 +92,31 @@ export default function Register() {
     return Object.keys(next).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validate()) return;
-    // TODO: call POST /api/auth/register when backend is ready
-    console.log("Register payload →", form);
-  };
+ const handleSubmit = async (
+  e: React.FormEvent
+) => {
+  e.preventDefault();
+
+  if (!validate()) return;
+
+  try {
+    const response = await axios.post(
+      "http://localhost:5000/api/auth/register",
+      form
+    );
+
+    alert("Registration successful");
+
+    console.log(response.data);
+  } catch (error: any) {
+    console.log(error);
+
+    alert(
+      error.response?.data?.message ||
+        "Registration failed"
+    );
+  }
+}; 
 
   const handleGoogle = () => {
     // TODO: wire up Google OAuth when backend is ready

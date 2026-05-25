@@ -53,7 +53,6 @@ const Hero: React.FC = () => {
         <div className="profile-content">
           <img
             src={profil_image}
-            alt="John Mbarga"
             className="profile-photo"
           />
 
