@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../Header/Header.css";
 import Logo from "../../../../assets/logo (3).png";
 import { FaSearch, FaTimes } from "react-icons/fa";
 
 const Header: React.FC = () => {
+  const navigate = useNavigate();
   const [searchOpen, setSearchOpen] = useState(false);
 
   return (
@@ -13,11 +15,11 @@ const Header: React.FC = () => {
 
       {/* Navigation */}
       <ul className="header-menu">
-        <li>Dashbaord</li>
-        <li>MarketPlace</li>
-        <li>About</li>
-        <li>Profile</li>
-        <li>Contact</li>
+        <li  onClick={() => navigate("/landing")}>Dashbaord</li>
+        <li onClick={() => navigate("/market")}>MarketPlace</li>
+        <li onClick={() => navigate("/about")}>About</li>
+        <li onClick={() => navigate("/profile")}>Profile</li>
+        <li onClick={() => navigate("/contact")}>Contact</li>
       </ul>
 
       {/* Right side */}
