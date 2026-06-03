@@ -4,7 +4,9 @@ import Register from "./pages/Register/Register";
 import Landing from "./pages/LandingPage/Landing";
 import Profile from "./pages/ProfilePage/Profile";
 import Market from "./pages/MarketPage/Market";
-import UploadProduct from "./Uploadproduct";
+import UploadProduct from "../src/UploadProduct";
+import Checkout from "../src/Checkout";
+
 
 /*
   App.tsx — root router
@@ -28,6 +30,7 @@ export default function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/market" element={<Market />} />
         <Route path="/upload-product" element={<UploadProduct />} />
+        <Route path="/checkout" element={<Checkout />} />
       </Routes>
     </BrowserRouter>
   );
