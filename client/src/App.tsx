@@ -1,24 +1,21 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Login from "./pages/Login/Login";
-import Register from "./pages/Register/Register";
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-/*
-  App.tsx — root router
-  Routes:
-    /           → redirect to /login
-    /login      → Login page
-    /register   → Register page
+// Since they are all in the 'Dashboard' folder together:
+import Dashboard from './pages/Dashboard/Dashboard';
+import AddProduct from './pages/Dashboard/AddProduct';
+import OfferServices from './pages/Dashboard/OfferServices';
 
-  TODO: add /dashboard, /marketplace, /profile as they are built
-*/
-export default function App() {
+function App() {
   return (
-    <BrowserRouter>
+    <Router>
       <Routes>
-        <Route path="/" element={<Navigate to="/login" replace />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/add-product" element={<AddProduct />} />
+        <Route path="/offer-service" element={<OfferServices />} />
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
 }
+
+export default App;
