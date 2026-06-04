@@ -40,22 +40,60 @@ const subcategoryMap = {
   "Market Access": 20,
 };
 
+
+const categoryReverseMap = {
+  1: "Crops & Seeds",
+  2: "Animals",
+  3: "Machines & Tools",
+  4: "Services",
+  5: "Medications",
+  6: "Training",
+};
+
+const subcategoryReverseMap = {
+  1: "Vegetables",
+  2: "Fruits",
+  3: "Grains",
+  4: "Seeds",
+  5: "Dairy Products",
+  6: "Livestock",
+  7: "Tractors",
+  8: "Hand Tools",
+  9: "Irrigation Equipment",
+  10: "Harvesting Equipment",
+  11: "Farm Labour",
+  12: "Transportation",
+  13: "Consultancy",
+  14: "Equipment Rental",
+  15: "Animal Medicine",
+  16: "Crop Protection",
+  17: "Supplements",
+  18: "Farming Techniques",
+  19: "Sustainable Agriculture",
+  20: "Market Access",
+};
 /* ─────────────────────────────
    CREATE PRODUCT
 ───────────────────────────── */
 export const createProduct = (req, res) => {
+console.log("BODY:", req.body);
+console.log("FILE:", req.file);
   try {
     const {
-      name,
-      category,
-      subcategory,
-      price,
-      location,
-      description,
-      image,
-      unit,
-      stock_quantity,
-    } = req.body;
+  name,
+  category,
+  subcategory,
+  price,
+  location,
+  description,
+  unit,
+  stock_quantity,
+  min_order
+} = req.body;
+
+const image = req.file
+  ? `/uploads/products/${req.file.filename}`
+  : null;
 
     const category_id = categoryMap[category];
     const subcategory_id = subcategoryMap[subcategory];
@@ -79,25 +117,27 @@ export const createProduct = (req, res) => {
         stock_quantity,
         unit,
         location,
-        image
+        image,
+        min_order
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
     `;
 
     db.query(
       sql,
-      [
-        req.user.id,
-        category_id,
-        subcategory_id,
-        name,
-        description,
-        price,
-        stock_quantity || 0,
-        unit || null,
-        location,
-        image,
-      ],
+     [
+       req.user.id,
+       category_id,
+       subcategory_id,
+       name,
+       description,
+       price,
+       stock_quantity || 0,
+       unit || null,
+       location,
+       image,
+       req.body.min_order || 0
+    ],
       (err, result) => {
         if (err) {
           console.log(err);
@@ -123,7 +163,7 @@ export const createProduct = (req, res) => {
 ───────────────────────────── */
 export const getProducts = (req, res) => {
   const sql = `
-    SELECT 
+    SELECT
       products.*,
       users.full_name AS farmer
     FROM products
@@ -136,6 +176,12 @@ export const getProducts = (req, res) => {
       return res.status(500).json({ message: "Database error" });
     }
 
-    res.json(result);
+    const products = result.map((product) => ({
+      ...product,
+      category: categoryReverseMap[product.category_id] || null,
+      subcategory: subcategoryReverseMap[product.subcategory_id] || null,
+    }));
+
+    res.json(products);
   });
 };
