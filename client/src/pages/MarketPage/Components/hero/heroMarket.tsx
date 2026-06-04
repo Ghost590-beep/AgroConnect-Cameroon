@@ -39,27 +39,14 @@ interface CartItem {
   quantity: number;
 }
 
-interface SubCategories {
-  name: string;
-  icon: React.ReactNode;
-}
-
-interface Categories {
-  name: string;
-  icon: React.ReactNode;
-  subcategories: SubCategories[];
-}
+interface SubCategories { name: string; icon: React.ReactNode; }
+interface Categories { name: string; icon: React.ReactNode; subcategories: SubCategories[]; }
 
 /* ─── CONSTANTS ─── */
 const CATEGORIES: Categories[] = [
+  { name: "All Categories", icon: <FaLeaf />, subcategories: [] },
   {
-    name: "All Categories",
-    icon: <FaLeaf />,
-    subcategories: [],
-  },
-  {
-    name: "Crops & Seeds",
-    icon: <FaLeaf />,
+    name: "Crops & Seeds", icon: <FaLeaf />,
     subcategories: [
       { name: "Vegetables", icon: <FaLeaf /> },
       { name: "Fruits", icon: <FaAppleAlt /> },
@@ -68,16 +55,9 @@ const CATEGORIES: Categories[] = [
       { name: "Dairy Products", icon: <FaCheese /> },
     ],
   },
+  { name: "Animals", icon: <FaCrow />, subcategories: [{ name: "Livestock", icon: <FaCrow /> }] },
   {
-    name: "Animals",
-    icon: <FaCrow />,
-    subcategories: [
-      { name: "Livestock", icon: <FaCrow /> },
-    ],
-  },
-  {
-    name: "Machines & Tools",
-    icon: <FaTractor />,
+    name: "Machines & Tools", icon: <FaTractor />,
     subcategories: [
       { name: "Tractors", icon: <FaTractor /> },
       { name: "Hand Tools", icon: <FaTools /> },
@@ -86,8 +66,7 @@ const CATEGORIES: Categories[] = [
     ],
   },
   {
-    name: "Services",
-    icon: <FaHandshake />,
+    name: "Services", icon: <FaHandshake />,
     subcategories: [
       { name: "Farm Labour", icon: <FaUserTie /> },
       { name: "Transportation", icon: <FaTruck /> },
@@ -96,8 +75,7 @@ const CATEGORIES: Categories[] = [
     ],
   },
   {
-    name: "Medications",
-    icon: <FaCapsules />,
+    name: "Medications", icon: <FaCapsules />,
     subcategories: [
       { name: "Animal Medicine", icon: <FaCapsules /> },
       { name: "Crop Protection", icon: <FaBug /> },
@@ -105,8 +83,7 @@ const CATEGORIES: Categories[] = [
     ],
   },
   {
-    name: "Training",
-    icon: <FaChalkboardTeacher />,
+    name: "Training", icon: <FaChalkboardTeacher />,
     subcategories: [
       { name: "Farming Techniques", icon: <FaChalkboardTeacher /> },
       { name: "Sustainable Agriculture", icon: <FaLeaf /> },
@@ -118,24 +95,15 @@ const CATEGORIES: Categories[] = [
 const LOCATIONS = ["All Locations", "Yaounde", "Bamenda", "Bafoussam", "Douala", "Nigeria", "Other"];
 
 const FEATURES = [
-  { title: "Safe & Secure", text: "Your transactions are protected", icon: <FaShieldAlt /> },
+  { title: "Safe & Secure", text: "Protected transactions", icon: <FaShieldAlt /> },
   { title: "Quality Products", text: "From trusted local farmers", icon: <FaLeaf /> },
   { title: "Fast Delivery", text: "Quick and reliable delivery", icon: <FaTruck /> },
   { title: "24/7 Support", text: "We are here to help", icon: <FaHeadset /> },
 ];
 
 const CATEGORY_EMOJI: Record<string, string> = {
-  "Crops & Seeds": "🌿",
-  Animals: "🐄",
-  "Machines & Tools": "🚜",
-  Services: "🤝",
-  Medications: "💊",
-  Training: "📚",
-};
-
-const BG_MAP: Record<string, string> = {
-  Vegetables: "#f0faf0", Fruits: "#fffde7", Grains: "#fff8e1",
-  Livestock: "#fbe9e7", Seeds: "#f1f8e9", Fertilizers: "#e8f5e9", "Dairy Products": "#e3f2fd",
+  "Crops & Seeds": "🌿", Animals: "🐄", "Machines & Tools": "🚜",
+  Services: "🤝", Medications: "💊", Training: "📚",
 };
 
 const DELIVERY_FEE = 50;
@@ -152,6 +120,10 @@ const HeroMarket: React.FC = () => {
   const [sortBy, setSortBy] = useState("newest");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  /* filter type checkboxes */
+  const [typeFilters, setTypeFilters] = useState({ forSale: true, forRent: true, services: false });
+  const [condFilters, setCondFilters] = useState({ newCond: true, usedCond: true });
+
   const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<CartItem[]>(() => {
     const saved = localStorage.getItem("agro_cart");
@@ -159,9 +131,6 @@ const HeroMarket: React.FC = () => {
   });
   const [cartOpen, setCartOpen] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
-  const [checkoutForm, setCheckoutForm] = useState({
-    name: "", phone: "", location: "", payment: "Cash on delivery",
-  });
 
   /* FETCH */
   useEffect(() => {
@@ -169,17 +138,13 @@ const HeroMarket: React.FC = () => {
       try {
         const res = await axios.get("http://localhost:5000/api/products");
         setProducts(res.data);
-      } catch {
-        /* use empty state if backend offline */
-      }
+      } catch { /* use empty state if backend offline */ }
     };
     fetchProducts();
   }, []);
 
   /* PERSIST CART */
-  useEffect(() => {
-    localStorage.setItem("agro_cart", JSON.stringify(cart));
-  }, [cart]);
+  useEffect(() => { localStorage.setItem("agro_cart", JSON.stringify(cart)); }, [cart]);
 
   /* CART ACTIONS */
   const addToCart = (product: Product) => {
@@ -208,14 +173,9 @@ const HeroMarket: React.FC = () => {
 
   /* PLACE ORDER */
   const placeOrder = () => {
-    if (!checkoutForm.name || !checkoutForm.phone || !checkoutForm.location) {
-      alert("Please fill all required fields.");
-      return;
-    }
     setOrderPlaced(true);
     clearCart();
     setTimeout(() => { setOrderPlaced(false); setCartOpen(false); }, 3000);
-    setCheckoutForm({ name: "", phone: "", location: "", payment: "Cash on delivery" });
   };
 
   /* FILTER + SORT */
@@ -238,15 +198,34 @@ const HeroMarket: React.FC = () => {
       return b.id - a.id;
     });
 
-  /* Active category object (for subcategory list) */
   const activeCategoryObj = CATEGORIES.find((c) => c.name === activeCategory);
 
   return (
     <div className="hm-page">
 
+      {/* ── TOPBAR ── */}
+      <div className="hm-topbar">
+        <span className="hm-topbar-brand">AgroConnect</span>
+        <div className="hm-topbar-search">
+          <FaSearch size={13} />
+          <input
+            type="text"
+            placeholder="Search crops, animals, machines..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <div className="hm-topbar-right">
+          <button className="hm-cart-pill" onClick={() => setCartOpen(true)}>
+            <FaShoppingCart size={13} />
+            Cart {cartCount > 0 && `(${cartCount})`}
+          </button>
+          <div className="hm-avatar-chip" onClick={() => navigate("/profile")}>JD</div>
+        </div>
+      </div>
+
       {/* ── HERO ── */}
       <div className="hm-hero">
-        <div className="hm-hero-overlay" />
         <div className="hm-hero-content">
           <h1>Marketplace</h1>
           <p>Buy and sell fresh agricultural products</p>
@@ -255,22 +234,6 @@ const HeroMarket: React.FC = () => {
             <FaChevronRight size={10} />
             <span className="hm-active">Marketplace</span>
           </nav>
-          <div className="hm-hero-search">
-            <FaSearch className="hm-search-ico" />
-            <input
-              type="text"
-              placeholder="Search for products, farmers or locations..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <select value={activeCategory} onChange={(e) => { setActiveCategory(e.target.value); setActiveSubcategory(""); }}>
-              {CATEGORIES.map((c) => <option key={c.name}>{c.name}</option>)}
-            </select>
-            <select value={activeLocation} onChange={(e) => setActiveLocation(e.target.value)}>
-              {LOCATIONS.map((l) => <option key={l}>{l}</option>)}
-            </select>
-            <button className="hm-search-btn"><FaSearch /></button>
-          </div>
         </div>
       </div>
 
@@ -293,92 +256,117 @@ const HeroMarket: React.FC = () => {
 
         {/* ── SIDEBAR ── */}
         <aside className={`hm-sidebar ${sidebarOpen ? "hm-sidebar-open" : ""}`}>
+
+          {/* TYPE */}
           <div className="hm-sidebar-section">
-            <h4>Categories</h4>
-            <ul className="hm-sidebar-list">
-              {CATEGORIES.map((c) => (
-                <li
-                  key={c.name}
-                  className={`hm-sidebar-item ${activeCategory === c.name ? "hm-sidebar-active" : ""}`}
-                  onClick={() => { setActiveCategory(c.name); setActiveSubcategory(""); }}
-                >
-                  <span>{c.icon}</span>
-                  <span>{c.name}</span>
-                  <span className="hm-count">
-                    ({c.name === "All Categories"
-                      ? products.length
-                      : products.filter((p) => p.category === c.name).length})
-                  </span>
-                </li>
-              ))}
+            <h4>Type</h4>
+            <ul className="hm-filter-check-list">
+              <li>
+                <label className="hm-filter-check">
+                  <input type="checkbox" checked={typeFilters.forSale}
+                    onChange={() => setTypeFilters(p => ({ ...p, forSale: !p.forSale }))} />
+                  For Sale
+                </label>
+              </li>
+              <li>
+                <label className="hm-filter-check">
+                  <input type="checkbox" checked={typeFilters.forRent}
+                    onChange={() => setTypeFilters(p => ({ ...p, forRent: !p.forRent }))} />
+                  For Rent
+                </label>
+              </li>
+              <li>
+                <label className="hm-filter-check">
+                  <input type="checkbox" checked={typeFilters.services}
+                    onChange={() => setTypeFilters(p => ({ ...p, services: !p.services }))} />
+                  Services
+                </label>
+              </li>
             </ul>
           </div>
 
-          {/* ── SUBCATEGORIES (shown when a category with subs is active) ── */}
+          {/* PRICE */}
+          <div className="hm-sidebar-section">
+            <h4>Price range (XAF)</h4>
+            <div className="hm-price-row">
+              <input type="number" placeholder="Min" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} />
+              <span>–</span>
+              <input type="number" placeholder="Max" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} />
+            </div>
+          </div>
+
+          {/* LOCATION */}
+          <div className="hm-sidebar-section">
+            <h4>Location</h4>
+            <input
+              className="hm-loc-input"
+              type="text"
+              placeholder="e.g. Yaoundé"
+              value={activeLocation === "All Locations" ? "" : activeLocation}
+              onChange={(e) => setActiveLocation(e.target.value || "All Locations")}
+            />
+          </div>
+
+          {/* CONDITION */}
+          <div className="hm-sidebar-section">
+            <h4>Condition</h4>
+            <ul className="hm-filter-check-list">
+              <li>
+                <label className="hm-filter-check">
+                  <input type="checkbox" checked={condFilters.newCond}
+                    onChange={() => setCondFilters(p => ({ ...p, newCond: !p.newCond }))} />
+                  New
+                </label>
+              </li>
+              <li>
+                <label className="hm-filter-check">
+                  <input type="checkbox" checked={condFilters.usedCond}
+                    onChange={() => setCondFilters(p => ({ ...p, usedCond: !p.usedCond }))} />
+                  Used
+                </label>
+              </li>
+            </ul>
+          </div>
+
+          {/* SUBCATEGORIES */}
           {activeCategoryObj && activeCategoryObj.subcategories.length > 0 && (
             <div className="hm-sidebar-section">
-              <h4>Subcategories</h4>
+              <h4>Subcategory</h4>
               <ul className="hm-sidebar-list">
                 <li
                   className={`hm-sidebar-item ${activeSubcategory === "" ? "hm-sidebar-active" : ""}`}
                   onClick={() => setActiveSubcategory("")}
-                >
-                  <span>All</span>
-                </li>
+                >All</li>
                 {activeCategoryObj.subcategories.map((sub) => (
                   <li
                     key={sub.name}
                     className={`hm-sidebar-item ${activeSubcategory === sub.name ? "hm-sidebar-active" : ""}`}
                     onClick={() => setActiveSubcategory(sub.name)}
                   >
-                    {sub.icon}
-                    <span>{sub.name}</span>
+                    {sub.icon} <span>{sub.name}</span>
                   </li>
                 ))}
               </ul>
             </div>
           )}
 
-          <div className="hm-sidebar-section">
-            <h4>Price range</h4>
-            <div className="hm-price-row">
-              <input type="number" placeholder="Min" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} />
-              <span>to</span>
-              <input type="number" placeholder="Max" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} />
-            </div>
-            <button className="hm-apply-btn" onClick={() => {}}>Apply filter</button>
-          </div>
-
-          <div className="hm-sidebar-section">
-            <h4>Location</h4>
-            <ul className="hm-loc-list">
-              {LOCATIONS.map((l) => (
-                <li
-                  key={l}
-                  className={`hm-loc-item ${activeLocation === l ? "hm-loc-active" : ""}`}
-                  onClick={() => setActiveLocation(l)}
-                >{l}</li>
-              ))}
-            </ul>
-          </div>
+          <button className="hm-apply-btn">Apply Filters</button>
         </aside>
 
         {/* ── PRODUCTS AREA ── */}
         <div className="hm-products-area">
           <div className="hm-products-header">
             <h3>
-              {activeCategory === "All Categories" ? "All products" : activeCategory}
-              {activeSubcategory && <> &rsaquo; {activeSubcategory}</>}
-              <span className="hm-count"> ({filtered.length})</span>
+              Showing <span style={{ color: "var(--accent)" }}>{filtered.length}</span> results
             </h3>
             <div className="hm-header-right">
               <button className="hm-filter-btn" onClick={() => setSidebarOpen(!sidebarOpen)}>
                 <FaFilter size={12} /> Filters
               </button>
               <div className="hm-sort-wrap">
-                <FaSortAmountDown size={12} />
+                <FaSortAmountDown size={12} color="var(--text-muted)" />
                 <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-                  <option value="newest">Newest first</option>
+                  <option value="newest">Sort: Newest</option>
                   <option value="price-asc">Price: Low to high</option>
                   <option value="price-desc">Price: High to low</option>
                 </select>
@@ -396,36 +384,34 @@ const HeroMarket: React.FC = () => {
               {filtered.map((product) => (
                 <div className="hm-product-card" key={product.id}>
                   {product.image ? (
-                    <img src={product.image} alt={product.name} className="hm-product-img" />
+                    <div className="hm-product-img-wrap">
+                      <img
+                        src={`http://localhost:5000${product.image}`}
+                        alt={product.name}
+                        className="hm-product-img"
+                      />
+                    </div>
                   ) : (
-                    <div className="hm-product-emoji" style={{ background: BG_MAP[product.subcategory] || "#f5f5f0" }}>
-                      {CATEGORY_EMOJI[product.category] || "🌿"}
+                    <div className="hm-img-placeholder">
+                      <span className="hm-img-placeholder-text">[img]</span>
                     </div>
                   )}
                   <div className="hm-product-body">
                     <h3>{product.name}</h3>
-                    <p className="hm-farmer"><FaLeaf size={10} color="#2E7D32" /> {product.farmer}</p>
-                    <p className="hm-location"><FaMapMarkerAlt size={10} color="#999" /> {product.location}</p>
-                    <div className="hm-category-tag">
-                      {CATEGORY_EMOJI[product.category]}
-                      <span>{product.category}</span>
-                    </div>
-                    <div className="hm-subcategory-tag">
-                      {product.subcategory}
-                    </div>
+                    <p className="hm-location"><FaMapMarkerAlt size={10} /> {product.location}</p>
                     <div className="hm-price-row-card">
-                      <span className="hm-price">FCFA {product.price}</span>
+                      <span className="hm-price">XAF {product.price.toLocaleString()}</span>
                       <span className="hm-unit">/ {product.unit}</span>
                     </div>
-                    <div className="hm-stock">
-                      Available: {product.stock_quantity} {product.unit}
+                    <div className="hm-badge-row">
+                      <span className="hm-sale-badge">For Sale</span>
                     </div>
                     <div className="hm-card-btns">
                       <button className="hm-details-btn" onClick={() => navigate(`/product/${product.id}`)}>
                         View details
                       </button>
                       <button className="hm-cart-btn" onClick={() => addToCart(product)}>
-                        <FaShoppingCart size={12} /> Add
+                        <FaShoppingCart size={12} />
                       </button>
                     </div>
                   </div>
@@ -490,27 +476,22 @@ const HeroMarket: React.FC = () => {
           </div>
           <div className="hm-footer-col">
             <h4>Contact info</h4>
-            <div className="hm-contact-row"><FaMapMarkerAlt size={11} /> Nairobi, Kenya</div>
-            <div className="hm-contact-row"><FaPhone size={11} /> +254 700 000 000</div>
-            <div className="hm-contact-row"><FaEnvelope size={11} /> info@agrofamily.com</div>
+            <div className="hm-contact-row"><FaMapMarkerAlt size={11} /> Yaoundé, Cameroon</div>
+            <div className="hm-contact-row"><FaPhone size={11} /> +237 600 000 000</div>
+            <div className="hm-contact-row"><FaEnvelope size={11} /> info@agroconnect.cm</div>
           </div>
         </div>
         <div className="hm-footer-bottom">
-          <span>© 2025 AgroFamily. All rights reserved.</span>
-          <FaLeaf color="#4CAF50" size={16} />
+          <span>© 2025 AgroConnect. All rights reserved.</span>
+          <FaLeaf color="var(--accent-dark)" size={15} />
         </div>
       </footer>
 
-      {/* ── FLOATING CART BUTTON ── */}
-       <button
-       className="hm-fab-cart"
-       onClick={() => navigate("/checkout")}
-       >
-       <FaShoppingCart size={18} />
-       {cartCount > 0 && (
-       <span className="hm-fab-badge">{cartCount}</span>
-       )}
-</button>
+      {/* ── FLOATING CART ── */}
+      <button className="hm-fab-cart" onClick={() => navigate("/checkout")}>
+        <FaShoppingCart size={18} />
+        {cartCount > 0 && <span className="hm-fab-badge">{cartCount}</span>}
+      </button>
 
       {/* ── CART DRAWER ── */}
       {cartOpen && (
@@ -523,7 +504,7 @@ const HeroMarket: React.FC = () => {
 
             {orderPlaced ? (
               <div className="hm-order-success">
-                <FaCheckCircle size={40} color="#2E7D32" />
+                <FaCheckCircle size={40} color="var(--accent)" />
                 <h4>Order placed!</h4>
                 <p>Your order has been received and is being processed.</p>
               </div>
@@ -535,36 +516,24 @@ const HeroMarket: React.FC = () => {
                       <img src={item.image} alt={item.name} />
                       <div className="hm-cart-item-info">
                         <h5>{item.name}</h5>
-                        <p>{item.emoji} {item.quantity} x ${item.price.toFixed(2)}</p>
+                        <p>{item.quantity} × {item.price.toLocaleString()} XAF</p>
                         <div className="hm-cart-item-actions">
-                          <button onClick={() => decreaseQty(item.id)}>-</button>
+                          <button onClick={() => decreaseQty(item.id)}>−</button>
                           <span>{item.quantity}</span>
                           <button onClick={() => increaseQty(item.id)}>+</button>
-                          <button onClick={() => removeItem(item.id)}><FaTrash /></button>
+                          <button onClick={() => removeItem(item.id)}><FaTrash size={11} /></button>
                         </div>
                       </div>
                     </div>
                   ))}
                 </div>
                 <div className="hm-cart-summary">
-                  <div className="hm-summary-row">
-                    <span>Subtotal</span>
-                    <span>${cartSubtotal.toFixed(2)}</span>
-                  </div>
-                  <div className="hm-summary-row">
-                    <span>Delivery</span>
-                    <span>${cart.length > 0 ? DELIVERY_FEE.toFixed(2) : "0.00"}</span>
-                  </div>
-                  <div className="hm-summary-row hm-summary-total">
-                    <span>Total</span>
-                    <span>${cartTotal.toFixed(2)}</span>
-                  </div>
-                  <button
-                    className="hm-place-order-btn"
-                    onClick={() => navigate("/checkout")}
-                    >
+                  <div className="hm-summary-row"><span>Subtotal</span><span>{cartSubtotal.toLocaleString()} XAF</span></div>
+                  <div className="hm-summary-row"><span>Delivery</span><span>{cart.length > 0 ? DELIVERY_FEE : 0} XAF</span></div>
+                  <div className="hm-summary-row hm-summary-total"><span>Total</span><span>{cartTotal.toLocaleString()} XAF</span></div>
+                  <button className="hm-place-order-btn" onClick={() => navigate("/checkout")}>
                     Proceed to Checkout
-                     </button>
+                  </button>
                 </div>
               </>
             )}

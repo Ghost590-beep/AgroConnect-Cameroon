@@ -72,22 +72,32 @@ const UploadProduct: React.FC = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      await axios.post(
-        "http://localhost:5000/api/products",
-        {
-          name: form.name,
-          category: form.category,
-          subcategory: form.subcategory,
-          description: form.description,
-          price: form.price,
-          stock_quantity: form.stock,
-          unit: form.unit,
-          min_order: form.minOrder,
-          location: "",
-          status: draft ? "draft" : visibility,
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const formData = new FormData();
+
+      formData.append("name", form.name);
+      formData.append("category", form.category);
+      formData.append("subcategory", form.subcategory);
+      formData.append("description", form.description);
+      formData.append("price", form.price);
+      formData.append("stock_quantity", form.stock);
+      formData.append("unit", form.unit);
+      formData.append("min_order", form.minOrder);
+      formData.append("location", "");
+      formData.append("status", draft ? "draft" : visibility);
+
+      if (imageFiles.length > 0) {
+      formData.append("image", imageFiles[0]);
+}
+
+console.log(imageFiles);
+console.log(imageFiles[0]);
+
+await axios.post("http://localhost:5000/api/products", formData, {
+  headers: {
+    Authorization: `Bearer ${token}`,
+  //  "Content-Type": "multipart/form-data"
+  },
+});
       alert(draft ? "Saved as draft!" : "Product published successfully!");
       navigate("/market");
     } catch (err: any) {
