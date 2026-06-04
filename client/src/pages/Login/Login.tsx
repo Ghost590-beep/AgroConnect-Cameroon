@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../../styles/auth.css";
 import farmerImg from "../../assets/loginImage.jpeg";
+import axios from "axios";
 
-// ─── Types ───────────────────────────────────────────────────
+// ─── Types ───────────────────────────────────────────────
 interface FormState {
   email: string;
   password: string;
@@ -14,42 +15,89 @@ interface FormErrors {
   password?: string;
 }
 
-// ─── Component ───────────────────────────────────────────────
+// ─── Component ───────────────────────────────────────────
 export default function Login() {
-  const [form, setForm] = useState<FormState>({ email: "", password: "" });
-  const [errors, setErrors] = useState<FormErrors>({});
+  const navigate = useNavigate();
 
-  // Clear individual field error on change
+  const [form, setForm] = useState<FormState>({
+    email: "",
+    password: "",
+  });
+
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [loading, setLoading] = useState(false);
+
+  // ─── Handle input change ───────────────────────────────
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+
     setForm((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: undefined }));
   };
 
-  // Simple client-side validation
+  // ─── Validation ────────────────────────────────────────
   const validate = (): boolean => {
     const next: FormErrors = {};
+
     if (!form.email.trim()) next.email = "Email is required";
     if (!form.password.trim()) next.password = "Password is required";
+
     setErrors(next);
+
     return Object.keys(next).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // ─── Submit login ──────────────────────────────────────
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!validate()) return;
-    // TODO: call POST /api/auth/login when backend is ready
-    console.log("Login payload →", form);
+
+    try {
+      setLoading(true);
+
+      const response = await axios.post(
+        "http://localhost:5000/api/auth/login",
+        form
+      );
+
+      // Save token
+      localStorage.setItem(
+        "token",
+        response.data.token
+      );
+
+      // Save user
+      localStorage.setItem(
+        "user",
+        JSON.stringify(response.data.user)
+      );
+
+      console.log(response.data);
+
+      alert("Login successful");
+
+      // 🚀 Redirect to dashboard or profile
+      navigate("/landing");
+    } catch (error: any) {
+      console.log(error);
+
+      alert(
+        error.response?.data?.message ||
+          "Login failed"
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <main className="auth-page">
       <div className="auth-card">
-        {/* ── Left: farmer photo panel ─────────────────────── */}
+        {/* ── Left image ─────────────────────── */}
         <div className="auth-photo">
-          <img src={farmerImg} alt="Farmer holding fresh produce" />
+          <img src={farmerImg} alt="Farmer" />
 
-          {/* Brand badge sits over the photo */}
           <div className="auth-badge">
             <span>🌿</span>
             <span className="auth-badge__text">
@@ -58,59 +106,73 @@ export default function Login() {
           </div>
         </div>
 
-        {/* ── Right: login form ────────────────────────────── */}
+        {/* ── Form ───────────────────────────── */}
         <div className="auth-form-panel">
-          <h1 className="auth-heading">Welcome Back!</h1>
+          <h1 className="auth-heading">
+            Welcome Back!
+          </h1>
 
           <form onSubmit={handleSubmit} noValidate>
             {/* Email */}
             <div className="form-field">
-              <label htmlFor="email">Email</label>
+              <label>Email</label>
               <input
-                id="email"
                 type="email"
                 name="email"
                 placeholder="Enter your email"
                 value={form.email}
                 onChange={handleChange}
-                autoComplete="email"
               />
-              {errors.email && <p className="form-error">{errors.email}</p>}
+              {errors.email && (
+                <p className="form-error">
+                  {errors.email}
+                </p>
+              )}
             </div>
 
             {/* Password */}
             <div className="form-field">
-              <label htmlFor="password">Password</label>
+              <label>Password</label>
               <input
-                id="password"
                 type="password"
                 name="password"
                 placeholder="Enter your password"
                 value={form.password}
                 onChange={handleChange}
-                autoComplete="current-password"
               />
-              <span className="form-link--right">Forgot password?</span>
+
+              <span className="form-link--right">
+                Forgot password?
+              </span>
+
               {errors.password && (
-                <p className="form-error">{errors.password}</p>
+                <p className="form-error">
+                  {errors.password}
+                </p>
               )}
             </div>
 
             {/* Submit */}
-            <button type="submit" className="btn-submit">
-              Log In
+            <button
+              type="submit"
+              className="btn-submit"
+              disabled={loading}
+            >
+              {loading ? "Logging in..." : "Log In"}
             </button>
           </form>
 
-          {/* Switch to Register */}
+          {/* Switch */}
           <p className="auth-switch">
             Don't have an account?{" "}
-            <Link to="/register" className="auth-switch__link">
+            <Link
+              to="/register"
+              className="auth-switch__link"
+            >
               Sign Up
             </Link>
           </p>
 
-          {/* Decorative leaves */}
           <span className="leaf-decor" aria-hidden="true" />
         </div>
       </div>
