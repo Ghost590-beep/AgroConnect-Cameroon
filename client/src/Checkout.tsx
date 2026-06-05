@@ -111,10 +111,13 @@ const Checkout: React.FC = () => {
               <div className="co-field co-full">
                 <label>Delivery location</label>
                 <select name="location" value={form.location} onChange={handleChange}>
-                  <option>Nairobi, Kenya</option>
-                  <option>Mombasa, Kenya</option>
-                  <option>Kisumu, Kenya</option>
-                  <option>Nakuru, Kenya</option>
+                  <option>Yaoundé, Cameroon</option>
+                  <option>Douala, Cameroon</option>
+                  <option>Bafoussam, Cameroon</option>
+                  <option>Bamenda, Cameroon</option>
+                  <option>Garoua, Cameroon</option>
+                  <option>Maroua, Cameroon</option>
+                  <option>Nkongsamba, Cameroon</option>
                 </select>
               </div>
               <div className="co-field co-full">

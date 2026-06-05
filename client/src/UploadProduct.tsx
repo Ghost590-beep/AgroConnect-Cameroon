@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useAuth } from "./context/AuthContext";
 import {
   FaClipboardList,
   FaImage,
@@ -71,7 +72,7 @@ const UploadProduct: React.FC = () => {
     }
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
+      const { token } = useAuth();
       const formData = new FormData();
 
       formData.append("name", form.name);

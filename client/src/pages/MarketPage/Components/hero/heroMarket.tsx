@@ -1,116 +1,37 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import {
-  FaSearch, FaTimes, FaLeaf, FaAppleAlt, FaSeedling,
+  API_BASE, DELIVERY_FEE, CATEGORY_EMOJI,
+  CATEGORIES, FEATURES,
+} from "../../../../utils/constants";
+import type { Product } from "../../../../types/Product";
+import type { CartItem } from "../../../../types/Cart";
+import { getInitials } from "../../../../utils/validtors";
+import { useAuth } from "../../../../context/AuthContext";
+import { getAllProducts } from "../../../../services/productService";
+import {
+  FaSearch, FaTimes, FaLeaf,
   FaTruck, FaShieldAlt, FaHeadset, FaShoppingCart,
   FaTrash, FaMapMarkerAlt, FaPhone, FaEnvelope,
   FaFacebook, FaTwitter, FaInstagram, FaWhatsapp,
   FaFilter, FaSortAmountDown, FaChevronRight,
-  FaCheckCircle, FaCrow, FaTractor, FaHandshake,
-  FaCapsules, FaTools, FaTint, FaUserTie,
-  FaBug, FaFlask, FaCheese, FaChalkboardTeacher, FaStore,
+  FaCheckCircle,FaSignOutAlt,
 } from "react-icons/fa";
 import Logo from "../../../../assets/logo (3).png";
 import "../hero/heroMarket.css";
 
-/* ─── TYPES ─── */
-interface Product {
-  id: number;
-  category: string;
-  subcategory: string;
-  unit: string;
-  stock_quantity: number;
-  name: string;
-  farmer: string;
-  location: string;
-  price: number;
-  image: string;
-  description?: string;
-  status?: string;
-}
-
-interface CartItem {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
-  emoji: string;
-  quantity: number;
-}
-
-interface SubCategories { name: string; icon: React.ReactNode; }
-interface Categories { name: string; icon: React.ReactNode; subcategories: SubCategories[]; }
-
-/* ─── CONSTANTS ─── */
-const CATEGORIES: Categories[] = [
-  { name: "All Categories", icon: <FaLeaf />, subcategories: [] },
-  {
-    name: "Crops & Seeds", icon: <FaLeaf />,
-    subcategories: [
-      { name: "Vegetables", icon: <FaLeaf /> },
-      { name: "Fruits", icon: <FaAppleAlt /> },
-      { name: "Grains", icon: <FaSeedling /> },
-      { name: "Seeds", icon: <FaSeedling /> },
-      { name: "Dairy Products", icon: <FaCheese /> },
-    ],
-  },
-  { name: "Animals", icon: <FaCrow />, subcategories: [{ name: "Livestock", icon: <FaCrow /> }] },
-  {
-    name: "Machines & Tools", icon: <FaTractor />,
-    subcategories: [
-      { name: "Tractors", icon: <FaTractor /> },
-      { name: "Hand Tools", icon: <FaTools /> },
-      { name: "Irrigation Equipment", icon: <FaTint /> },
-      { name: "Harvesting Equipment", icon: <FaTools /> },
-    ],
-  },
-  {
-    name: "Services", icon: <FaHandshake />,
-    subcategories: [
-      { name: "Farm Labour", icon: <FaUserTie /> },
-      { name: "Transportation", icon: <FaTruck /> },
-      { name: "Consultancy", icon: <FaHandshake /> },
-      { name: "Equipment Rental", icon: <FaTractor /> },
-    ],
-  },
-  {
-    name: "Medications", icon: <FaCapsules />,
-    subcategories: [
-      { name: "Animal Medicine", icon: <FaCapsules /> },
-      { name: "Crop Protection", icon: <FaBug /> },
-      { name: "Supplements", icon: <FaFlask /> },
-    ],
-  },
-  {
-    name: "Training", icon: <FaChalkboardTeacher />,
-    subcategories: [
-      { name: "Farming Techniques", icon: <FaChalkboardTeacher /> },
-      { name: "Sustainable Agriculture", icon: <FaLeaf /> },
-      { name: "Market Access", icon: <FaStore /> },
-    ],
-  },
-];
-
-const LOCATIONS = ["All Locations", "Yaounde", "Bamenda", "Bafoussam", "Douala", "Nigeria", "Other"];
-
-const FEATURES = [
-  { title: "Safe & Secure", text: "Protected transactions", icon: <FaShieldAlt /> },
-  { title: "Quality Products", text: "From trusted local farmers", icon: <FaLeaf /> },
-  { title: "Fast Delivery", text: "Quick and reliable delivery", icon: <FaTruck /> },
-  { title: "24/7 Support", text: "We are here to help", icon: <FaHeadset /> },
-];
-
-const CATEGORY_EMOJI: Record<string, string> = {
-  "Crops & Seeds": "🌿", Animals: "🐄", "Machines & Tools": "🚜",
-  Services: "🤝", Medications: "💊", Training: "📚",
-};
-
-const DELIVERY_FEE = 50;
-
 /* ─── COMPONENT ─── */
 const HeroMarket: React.FC = () => {
   const navigate = useNavigate();
+
+  /* ── Auth context — replaces all localStorage user reads ── */
+  const { user: authUser , logout} = useAuth();
+  const initials = getInitials(authUser?.full_name);
+  const avatarSrc = authUser?.profile_image
+    ? `${API_BASE}${authUser.profile_image}`
+    : null;
+
+  /* ── State ── */
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState("All Categories");
   const [activeSubcategory, setActiveSubcategory] = useState("");
@@ -120,7 +41,6 @@ const HeroMarket: React.FC = () => {
   const [sortBy, setSortBy] = useState("newest");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  /* filter type checkboxes */
   const [typeFilters, setTypeFilters] = useState({ forSale: true, forRent: true, services: false });
   const [condFilters, setCondFilters] = useState({ newCond: true, usedCond: true });
 
@@ -132,28 +52,40 @@ const HeroMarket: React.FC = () => {
   const [cartOpen, setCartOpen] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
 
-  /* FETCH */
+  /* ── Fetch products ── */
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/products");
-        setProducts(res.data);
-      } catch { /* use empty state if backend offline */ }
+        const data = await getAllProducts();
+        setProducts(data);                    // getAllProducts returns res.data directly
+      } catch {
+        /* use empty state if backend offline */
+      }
     };
     fetchProducts();
   }, []);
 
-  /* PERSIST CART */
-  useEffect(() => { localStorage.setItem("agro_cart", JSON.stringify(cart)); }, [cart]);
+  /* ── Persist cart ── */
+  useEffect(() => {
+    localStorage.setItem("agro_cart", JSON.stringify(cart));
+  }, [cart]);
 
-  /* CART ACTIONS */
+  /* ── Cart actions ── */
   const addToCart = (product: Product) => {
     setCart((prev) => {
       const existing = prev.find((i) => i.id === product.id);
-      if (existing) return prev.map((i) => i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i);
+      if (existing) {
+        return prev.map((i) =>
+          i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i
+        );
+      }
       return [...prev, {
-        id: product.id, name: product.name, price: product.price,
-        image: product.image, emoji: CATEGORY_EMOJI[product.category] || "🌿", quantity: 1,
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        emoji: CATEGORY_EMOJI[product.category] || "🌿",
+        quantity: 1,
       }];
     });
   };
@@ -162,23 +94,28 @@ const HeroMarket: React.FC = () => {
     setCart((prev) => prev.map((i) => i.id === id ? { ...i, quantity: i.quantity + 1 } : i));
 
   const decreaseQty = (id: number) =>
-    setCart((prev) => prev.map((i) => i.id === id ? { ...i, quantity: i.quantity - 1 } : i).filter((i) => i.quantity > 0));
+    setCart((prev) =>
+      prev.map((i) => i.id === id ? { ...i, quantity: i.quantity - 1 } : i)
+        .filter((i) => i.quantity > 0)
+    );
 
-  const removeItem = (id: number) => setCart((prev) => prev.filter((i) => i.id !== id));
+  const removeItem = (id: number) =>
+    setCart((prev) => prev.filter((i) => i.id !== id));
+
   const clearCart = () => setCart([]);
 
   const cartCount = cart.reduce((a, b) => a + b.quantity, 0);
   const cartSubtotal = cart.reduce((a, b) => a + b.price * b.quantity, 0);
   const cartTotal = cartSubtotal + (cart.length > 0 ? DELIVERY_FEE : 0);
 
-  /* PLACE ORDER */
+  /* ── Place order ── */
   const placeOrder = () => {
     setOrderPlaced(true);
     clearCart();
     setTimeout(() => { setOrderPlaced(false); setCartOpen(false); }, 3000);
   };
 
-  /* FILTER + SORT */
+  /* ── Filter + sort ── */
   const filtered = products
     .filter((p) => {
       const matchCat = activeCategory === "All Categories" || p.category === activeCategory;
@@ -206,6 +143,7 @@ const HeroMarket: React.FC = () => {
       {/* ── TOPBAR ── */}
       <div className="hm-topbar">
         <span className="hm-topbar-brand">AgroConnect</span>
+
         <div className="hm-topbar-search">
           <FaSearch size={13} />
           <input
@@ -215,13 +153,35 @@ const HeroMarket: React.FC = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <div className="hm-topbar-right">
-          <button className="hm-cart-pill" onClick={() => setCartOpen(true)}>
-            <FaShoppingCart size={13} />
-            Cart {cartCount > 0 && `(${cartCount})`}
-          </button>
-          <div className="hm-avatar-chip" onClick={() => navigate("/profile")}>JD</div>
-        </div>
+
+       <div className="hm-topbar-right">
+        <button className="hm-cart-pill" onClick={() => setCartOpen(true)}>
+         <FaShoppingCart size={13} />
+         Cart {cartCount > 0 && `(${cartCount})`}
+         </button>
+
+  {/* Avatar dropdown */}
+       <div className="hm-avatar-menu">
+        <div
+        className="hm-avatar-chip"
+        onClick={() => navigate("/profile")}
+        title="Go to profile"
+       >
+       {avatarSrc ? (
+        <img src={avatarSrc} alt="Profile" className="hm-avatar-chip-img" />
+       ) : (
+        <span>{initials}</span>
+       )}
+       </div>
+    <button
+      className="hm-logout-btn"
+      onClick={() => { logout(); navigate("/login"); }}
+      title="Logout"
+    >
+      <FaSignOutAlt size={13} /> Logout
+    </button>
+  </div>
+ </div>
       </div>
 
       {/* ── HERO ── */}
@@ -257,45 +217,49 @@ const HeroMarket: React.FC = () => {
         {/* ── SIDEBAR ── */}
         <aside className={`hm-sidebar ${sidebarOpen ? "hm-sidebar-open" : ""}`}>
 
-          {/* TYPE */}
           <div className="hm-sidebar-section">
             <h4>Type</h4>
             <ul className="hm-filter-check-list">
-              <li>
-                <label className="hm-filter-check">
-                  <input type="checkbox" checked={typeFilters.forSale}
-                    onChange={() => setTypeFilters(p => ({ ...p, forSale: !p.forSale }))} />
-                  For Sale
-                </label>
-              </li>
-              <li>
-                <label className="hm-filter-check">
-                  <input type="checkbox" checked={typeFilters.forRent}
-                    onChange={() => setTypeFilters(p => ({ ...p, forRent: !p.forRent }))} />
-                  For Rent
-                </label>
-              </li>
-              <li>
-                <label className="hm-filter-check">
-                  <input type="checkbox" checked={typeFilters.services}
-                    onChange={() => setTypeFilters(p => ({ ...p, services: !p.services }))} />
-                  Services
-                </label>
-              </li>
+              {[
+                { key: "forSale", label: "For Sale" },
+                { key: "forRent", label: "For Rent" },
+                { key: "services", label: "Services" },
+              ].map(({ key, label }) => (
+                <li key={key}>
+                  <label className="hm-filter-check">
+                    <input
+                      type="checkbox"
+                      checked={typeFilters[key as keyof typeof typeFilters]}
+                      onChange={() =>
+                        setTypeFilters((p) => ({ ...p, [key]: !p[key as keyof typeof typeFilters] }))
+                      }
+                    />
+                    {label}
+                  </label>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* PRICE */}
           <div className="hm-sidebar-section">
             <h4>Price range (XAF)</h4>
             <div className="hm-price-row">
-              <input type="number" placeholder="Min" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} />
+              <input
+                type="number"
+                placeholder="Min"
+                value={minPrice}
+                onChange={(e) => setMinPrice(e.target.value)}
+              />
               <span>–</span>
-              <input type="number" placeholder="Max" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} />
+              <input
+                type="number"
+                placeholder="Max"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(e.target.value)}
+              />
             </div>
           </div>
 
-          {/* LOCATION */}
           <div className="hm-sidebar-section">
             <h4>Location</h4>
             <input
@@ -307,28 +271,29 @@ const HeroMarket: React.FC = () => {
             />
           </div>
 
-          {/* CONDITION */}
           <div className="hm-sidebar-section">
             <h4>Condition</h4>
             <ul className="hm-filter-check-list">
-              <li>
-                <label className="hm-filter-check">
-                  <input type="checkbox" checked={condFilters.newCond}
-                    onChange={() => setCondFilters(p => ({ ...p, newCond: !p.newCond }))} />
-                  New
-                </label>
-              </li>
-              <li>
-                <label className="hm-filter-check">
-                  <input type="checkbox" checked={condFilters.usedCond}
-                    onChange={() => setCondFilters(p => ({ ...p, usedCond: !p.usedCond }))} />
-                  Used
-                </label>
-              </li>
+              {[
+                { key: "newCond", label: "New" },
+                { key: "usedCond", label: "Used" },
+              ].map(({ key, label }) => (
+                <li key={key}>
+                  <label className="hm-filter-check">
+                    <input
+                      type="checkbox"
+                      checked={condFilters[key as keyof typeof condFilters]}
+                      onChange={() =>
+                        setCondFilters((p) => ({ ...p, [key]: !p[key as keyof typeof condFilters] }))
+                      }
+                    />
+                    {label}
+                  </label>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* SUBCATEGORIES */}
           {activeCategoryObj && activeCategoryObj.subcategories.length > 0 && (
             <div className="hm-sidebar-section">
               <h4>Subcategory</h4>
@@ -336,7 +301,9 @@ const HeroMarket: React.FC = () => {
                 <li
                   className={`hm-sidebar-item ${activeSubcategory === "" ? "hm-sidebar-active" : ""}`}
                   onClick={() => setActiveSubcategory("")}
-                >All</li>
+                >
+                  All
+                </li>
                 {activeCategoryObj.subcategories.map((sub) => (
                   <li
                     key={sub.name}
@@ -357,10 +324,15 @@ const HeroMarket: React.FC = () => {
         <div className="hm-products-area">
           <div className="hm-products-header">
             <h3>
-              Showing <span style={{ color: "var(--accent)" }}>{filtered.length}</span> results
+              Showing{" "}
+              <span style={{ color: "var(--accent)" }}>{filtered.length}</span>{" "}
+              results
             </h3>
             <div className="hm-header-right">
-              <button className="hm-filter-btn" onClick={() => setSidebarOpen(!sidebarOpen)}>
+              <button
+                className="hm-filter-btn"
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+              >
                 <FaFilter size={12} /> Filters
               </button>
               <div className="hm-sort-wrap">
@@ -386,7 +358,7 @@ const HeroMarket: React.FC = () => {
                   {product.image ? (
                     <div className="hm-product-img-wrap">
                       <img
-                        src={`http://localhost:5000${product.image}`}
+                        src={`${API_BASE}${product.image}`}
                         alt={product.name}
                         className="hm-product-img"
                       />
@@ -398,19 +370,29 @@ const HeroMarket: React.FC = () => {
                   )}
                   <div className="hm-product-body">
                     <h3>{product.name}</h3>
-                    <p className="hm-location"><FaMapMarkerAlt size={10} /> {product.location}</p>
+                    <p className="hm-location">
+                      <FaMapMarkerAlt size={10} /> {product.location}
+                    </p>
                     <div className="hm-price-row-card">
-                      <span className="hm-price">XAF {product.price.toLocaleString()}</span>
+                      <span className="hm-price">
+                        XAF {product.price.toLocaleString()}
+                      </span>
                       <span className="hm-unit">/ {product.unit}</span>
                     </div>
                     <div className="hm-badge-row">
                       <span className="hm-sale-badge">For Sale</span>
                     </div>
                     <div className="hm-card-btns">
-                      <button className="hm-details-btn" onClick={() => navigate(`/product/${product.id}`)}>
+                      <button
+                        className="hm-details-btn"
+                        onClick={() => navigate(`/product/${product.id}`)}
+                      >
                         View details
                       </button>
-                      <button className="hm-cart-btn" onClick={() => addToCart(product)}>
+                      <button
+                        className="hm-cart-btn"
+                        onClick={() => addToCart(product)}
+                      >
                         <FaShoppingCart size={12} />
                       </button>
                     </div>
@@ -420,10 +402,14 @@ const HeroMarket: React.FC = () => {
             </div>
           )}
 
-          {/* PAGINATION */}
           <div className="hm-pagination">
             {[1, 2, 3].map((p) => (
-              <button key={p} className={`hm-page-btn ${p === 1 ? "hm-page-active" : ""}`}>{p}</button>
+              <button
+                key={p}
+                className={`hm-page-btn ${p === 1 ? "hm-page-active" : ""}`}
+              >
+                {p}
+              </button>
             ))}
             <span className="hm-page-next">Next &rsaquo;</span>
           </div>
@@ -476,9 +462,15 @@ const HeroMarket: React.FC = () => {
           </div>
           <div className="hm-footer-col">
             <h4>Contact info</h4>
-            <div className="hm-contact-row"><FaMapMarkerAlt size={11} /> Yaoundé, Cameroon</div>
-            <div className="hm-contact-row"><FaPhone size={11} /> +237 600 000 000</div>
-            <div className="hm-contact-row"><FaEnvelope size={11} /> info@agroconnect.cm</div>
+            <div className="hm-contact-row">
+              <FaMapMarkerAlt size={11} /> Yaoundé, Cameroon
+            </div>
+            <div className="hm-contact-row">
+              <FaPhone size={11} /> +237 600 000 000
+            </div>
+            <div className="hm-contact-row">
+              <FaEnvelope size={11} /> info@agroconnect.cm
+            </div>
           </div>
         </div>
         <div className="hm-footer-bottom">
@@ -498,8 +490,18 @@ const HeroMarket: React.FC = () => {
         <div className="hm-cart-backdrop" onClick={() => setCartOpen(false)}>
           <div className="hm-cart-drawer" onClick={(e) => e.stopPropagation()}>
             <div className="hm-cart-header">
-              <h3>Your cart {cartCount > 0 && <span className="hm-cart-count">{cartCount}</span>}</h3>
-              <button className="hm-cart-close" onClick={() => setCartOpen(false)}><FaTimes /></button>
+              <h3>
+                Your cart{" "}
+                {cartCount > 0 && (
+                  <span className="hm-cart-count">{cartCount}</span>
+                )}
+              </h3>
+              <button
+                className="hm-cart-close"
+                onClick={() => setCartOpen(false)}
+              >
+                <FaTimes />
+              </button>
             </div>
 
             {orderPlaced ? (
@@ -511,30 +513,53 @@ const HeroMarket: React.FC = () => {
             ) : (
               <>
                 <div className="hm-cart-items">
-                  {cart.map((item) => (
-                    <div className="hm-cart-item" key={item.id}>
-                      <img src={item.image} alt={item.name} />
-                      <div className="hm-cart-item-info">
-                        <h5>{item.name}</h5>
-                        <p>{item.quantity} × {item.price.toLocaleString()} XAF</p>
-                        <div className="hm-cart-item-actions">
-                          <button onClick={() => decreaseQty(item.id)}>−</button>
-                          <span>{item.quantity}</span>
-                          <button onClick={() => increaseQty(item.id)}>+</button>
-                          <button onClick={() => removeItem(item.id)}><FaTrash size={11} /></button>
+                  {cart.length === 0 ? (
+                    <div className="hm-empty-cart">
+                      <span>🛒</span>
+                      <p>Your cart is empty.</p>
+                    </div>
+                  ) : (
+                    cart.map((item) => (
+                      <div className="hm-cart-item" key={item.id}>
+                        <img src={`${API_BASE}${item.image}`} alt={item.name} />
+                        <div className="hm-cart-item-info">
+                          <h5>{item.name}</h5>
+                          <p>{item.quantity} × {item.price.toLocaleString()} XAF</p>
+                          <div className="hm-cart-item-actions">
+                            <button onClick={() => decreaseQty(item.id)}>−</button>
+                            <span>{item.quantity}</span>
+                            <button onClick={() => increaseQty(item.id)}>+</button>
+                            <button onClick={() => removeItem(item.id)}>
+                              <FaTrash size={11} />
+                            </button>
+                          </div>
                         </div>
                       </div>
+                    ))
+                  )}
+                </div>
+                {cart.length > 0 && (
+                  <div className="hm-cart-summary">
+                    <div className="hm-summary-row">
+                      <span>Subtotal</span>
+                      <span>{cartSubtotal.toLocaleString()} XAF</span>
                     </div>
-                  ))}
-                </div>
-                <div className="hm-cart-summary">
-                  <div className="hm-summary-row"><span>Subtotal</span><span>{cartSubtotal.toLocaleString()} XAF</span></div>
-                  <div className="hm-summary-row"><span>Delivery</span><span>{cart.length > 0 ? DELIVERY_FEE : 0} XAF</span></div>
-                  <div className="hm-summary-row hm-summary-total"><span>Total</span><span>{cartTotal.toLocaleString()} XAF</span></div>
-                  <button className="hm-place-order-btn" onClick={() => navigate("/checkout")}>
-                    Proceed to Checkout
-                  </button>
-                </div>
+                    <div className="hm-summary-row">
+                      <span>Delivery</span>
+                      <span>{DELIVERY_FEE} XAF</span>
+                    </div>
+                    <div className="hm-summary-row hm-summary-total">
+                      <span>Total</span>
+                      <span>{cartTotal.toLocaleString()} XAF</span>
+                    </div>
+                    <button
+                      className="hm-place-order-btn"
+                      onClick={() => navigate("/checkout")}
+                    >
+                      Proceed to Checkout
+                    </button>
+                  </div>
+                )}
               </>
             )}
           </div>

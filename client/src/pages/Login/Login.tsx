@@ -2,9 +2,10 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../../styles/auth.css";
 import farmerImg from "../../assets/loginImage.jpeg";
-import axios from "axios";
+import { useAuth } from "../../context/AuthContext";
+import { loginUser } from "../../services/authService";
 
-// ─── Types ───────────────────────────────────────────────
+/* ─── TYPES ─── */
 interface FormState {
   email: string;
   password: string;
@@ -15,8 +16,9 @@ interface FormErrors {
   password?: string;
 }
 
-// ─── Component ───────────────────────────────────────────
+/* ─── COMPONENT ─── */
 export default function Login() {
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const [form, setForm] = useState<FormState>({
@@ -27,64 +29,43 @@ export default function Login() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [loading, setLoading] = useState(false);
 
-  // ─── Handle input change ───────────────────────────────
+  /* ── Handle input change ── */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-
     setForm((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: undefined }));
   };
 
-  // ─── Validation ────────────────────────────────────────
+  /* ── Validation ── */
   const validate = (): boolean => {
     const next: FormErrors = {};
-
     if (!form.email.trim()) next.email = "Email is required";
     if (!form.password.trim()) next.password = "Password is required";
-
     setErrors(next);
-
     return Object.keys(next).length === 0;
   };
 
-  // ─── Submit login ──────────────────────────────────────
+  /* ── Submit ── */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!validate()) return;
 
     try {
       setLoading(true);
 
-      const response = await axios.post(
-        "http://localhost:5000/api/auth/login",
-        form
-      );
+      /* loginUser calls the API and returns { token, user } */
+      const res = await loginUser({
+        email: form.email,
+        password: form.password,
+      });
 
-      // Save token
-      localStorage.setItem(
-        "token",
-        response.data.token
-      );
+      /* login() saves token + user into AuthContext AND localStorage */
+      login(res.token, res.user);
 
-      // Save user
-      localStorage.setItem(
-        "user",
-        JSON.stringify(response.data.user)
-      );
-
-      console.log(response.data);
-
-      alert("Login successful");
-
-      // 🚀 Redirect to dashboard or profile
       navigate("/landing");
     } catch (error: any) {
-      console.log(error);
-
       alert(
-        error.response?.data?.message ||
-          "Login failed"
+        error.response?.data?.message || "Login failed"
       );
     } finally {
       setLoading(false);
@@ -94,10 +75,10 @@ export default function Login() {
   return (
     <main className="auth-page">
       <div className="auth-card">
-        {/* ── Left image ─────────────────────── */}
+
+        {/* ── Left image ── */}
         <div className="auth-photo">
           <img src={farmerImg} alt="Farmer" />
-
           <div className="auth-badge">
             <span>🌿</span>
             <span className="auth-badge__text">
@@ -106,13 +87,12 @@ export default function Login() {
           </div>
         </div>
 
-        {/* ── Form ───────────────────────────── */}
+        {/* ── Form ── */}
         <div className="auth-form-panel">
-          <h1 className="auth-heading">
-            Welcome Back!
-          </h1>
+          <h1 className="auth-heading">Welcome Back!</h1>
 
           <form onSubmit={handleSubmit} noValidate>
+
             {/* Email */}
             <div className="form-field">
               <label>Email</label>
@@ -124,9 +104,7 @@ export default function Login() {
                 onChange={handleChange}
               />
               {errors.email && (
-                <p className="form-error">
-                  {errors.email}
-                </p>
+                <p className="form-error">{errors.email}</p>
               )}
             </div>
 
@@ -140,15 +118,9 @@ export default function Login() {
                 value={form.password}
                 onChange={handleChange}
               />
-
-              <span className="form-link--right">
-                Forgot password?
-              </span>
-
+              <span className="form-link--right">Forgot password?</span>
               {errors.password && (
-                <p className="form-error">
-                  {errors.password}
-                </p>
+                <p className="form-error">{errors.password}</p>
               )}
             </div>
 
@@ -165,10 +137,7 @@ export default function Login() {
           {/* Switch */}
           <p className="auth-switch">
             Don't have an account?{" "}
-            <Link
-              to="/register"
-              className="auth-switch__link"
-            >
+            <Link to="/register" className="auth-switch__link">
               Sign Up
             </Link>
           </p>

@@ -1,39 +1,34 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { API_BASE } from "../../../../utils/constants";
+import type { User } from "../../../../types/User";
+import type { Product } from "../../../../types/Product";
+import { formatMemberSince } from "../../../../utils/formatDate";
+import { useAuth } from "../../../../context/AuthContext";
+
 import {
   FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt,
   FaCalendarAlt, FaEdit, FaSave, FaTimes,
   FaLeaf, FaBoxOpen, FaStar, FaMoneyBillWave,
   FaShoppingBag, FaCog, FaInfoCircle,
   FaCamera, FaLock, FaBell, FaShieldAlt,
-  FaTrash, FaEye, FaEyeSlash, FaToggleOn, FaToggleOff,
+  FaTrash, FaSignOutAlt, FaEye, FaEyeSlash,
+  FaToggleOn, FaToggleOff,
 } from "react-icons/fa";
+
+import {
+  updateProfile,
+  uploadAvatar,
+  changePassword,
+  saveNotifications,
+  deleteAccount,
+} from "../../../../services/userService";
+
+import { useProfile } from "../../../../hooks/Userprofile";
+
 import "../Hero/Heros.css";
 
 /* ─── TYPES ─── */
-interface User {
-  id: number;
-  full_name: string;
-  email: string;
-  phone: string;
-  location: string;
-  profile_image?: string;
-  created_at?: string;
-}
-
-interface Product {
-  id: number;
-  name: string;
-  category: string;
-  subcategory?: string;
-  price: number;
-  unit: string;
-  stock_quantity: number;
-  image?: string;
-  status: string;
-}
-
 interface Order {
   id: number;
   product_name: string;
@@ -44,34 +39,33 @@ interface Order {
   created_at: string;
 }
 
-interface Stats {
-  products_listed: number;
-  orders_completed: number;
-  rating: number;
-  total_earnings: number;
-}
-
 const TABS = ["overview", "products", "orders", "settings"] as const;
 type Tab = typeof TABS[number];
 
-const API = "http://localhost:5000/api";
-
+/* ─── COMPONENT ─── */
 const Hero: React.FC = () => {
   const navigate = useNavigate();
   const avatarInputRef = useRef<HTMLInputElement>(null);
 
-  /* ── STATE ── */
-  const [user, setUser] = useState<User | null>(null);
-  const [stats, setStats] = useState<Stats>({ products_listed: 0, orders_completed: 0, rating: 0, total_earnings: 0 });
-  const [products, setProducts] = useState<Product[]>([]);
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [avatarLoading, setAvatarLoading] = useState(false);
-  const [avatarPreview, setAvatarPreview] = useState<string>("");
+  /* ── AUTH ── */
+  const { token, updateUser, logout } = useAuth();
 
+  /* ── PROFILE HOOK ── */
+  const {
+    user,
+    setUser,
+    stats,
+    products,
+    orders,
+    loading,
+    avatar,
+    updateAvatar,
+  } = useProfile();
+
+  /* ── UI STATE ── */
+  const [avatarLoading, setAvatarLoading] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>("overview");
-
   const [form, setForm] = useState({ full_name: "", phone: "", location: "" });
 
   /* SETTINGS STATE */
@@ -83,62 +77,29 @@ const Hero: React.FC = () => {
   });
   const [deleteConfirm, setDeleteConfirm] = useState("");
 
-  const token = localStorage.getItem("token");
-  const authHeaders = { headers: { Authorization: `Bearer ${token}` } };
-
-  /* ── FETCH ALL DATA ── */
-  useEffect(() => {
-    const fetchAll = async () => {
-      try {
-        setLoading(true);
-        const [userRes, statsRes, productsRes, ordersRes] = await Promise.allSettled([
-          axios.get(`${API}/user/profile`, authHeaders),
-          axios.get(`${API}/user/stats`, authHeaders),
-          axios.get(`${API}/user/products`, authHeaders),
-          axios.get(`${API}/user/orders`, authHeaders),
-        ]);
-
-        if (userRes.status === "fulfilled") {
-          setUser(userRes.value.data);
-          if (userRes.value.data.profile_image) {
-            setAvatarPreview(userRes.value.data.profile_image);
-          }
-        }
-        if (statsRes.status === "fulfilled") setStats(statsRes.value.data);
-        if (productsRes.status === "fulfilled") setProducts(productsRes.value.data);
-        if (ordersRes.status === "fulfilled") setOrders(ordersRes.value.data);
-      } catch (err) {
-        console.error("Fetch error:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchAll();
-  }, []);
-
   /* ── AVATAR UPLOAD ── */
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file || !token) return;
 
-    /* local preview immediately */
     const reader = new FileReader();
-    reader.onload = () => setAvatarPreview(reader.result as string);
+    reader.onload = () => updateAvatar(reader.result as string);
     reader.readAsDataURL(file);
 
-    /* upload to server */
     try {
       setAvatarLoading(true);
-      const formData = new FormData();
-      formData.append("profile_image", file);
-      const res = await axios.put(`${API}/user/profile/avatar`, formData, {
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
+      const res = await uploadAvatar(token, file);
+      const updatedImage: string = res.profile_image;
+
+      setUser((prev) => {
+        if (!prev) return prev;
+        const updated = { ...prev, profile_image: updatedImage };
+        setTimeout(() => updateUser(updated), 0);
+        return updated;
       });
-      setUser((prev) => prev ? { ...prev, profile_image: res.data.profile_image } : prev);
-    } catch (err) {
+      updateAvatar(`${API_BASE}${updatedImage}`);
+    } catch {
       alert("Failed to upload profile picture. Please try again.");
-      /* revert preview */
-      setAvatarPreview(user?.profile_image || "");
     } finally {
       setAvatarLoading(false);
     }
@@ -152,13 +113,16 @@ const Hero: React.FC = () => {
   };
 
   const handleSave = async () => {
+    if (!token || !user) return;
     if (!form.full_name || !form.phone) {
       alert("Name and phone are required.");
       return;
     }
     try {
-      const res = await axios.put(`${API}/user/profile`, form, authHeaders);
-      setUser((prev) => prev ? { ...prev, ...res.data } : prev);
+      const res = await updateProfile(token, form);
+      const updated: User = { ...user, ...res };
+      setUser(updated);
+      updateUser(updated);
       setEditMode(false);
     } catch {
       alert("Failed to update profile.");
@@ -167,6 +131,7 @@ const Hero: React.FC = () => {
 
   /* ── CHANGE PASSWORD ── */
   const handleChangePassword = async () => {
+    if (!token) return;
     if (!pwForm.current || !pwForm.newPw || !pwForm.confirm) {
       alert("Please fill all password fields.");
       return;
@@ -181,14 +146,14 @@ const Hero: React.FC = () => {
     }
     try {
       setPwLoading(true);
-      await axios.put(`${API}/user/change-password`,
-        { current_password: pwForm.current, new_password: pwForm.newPw },
-        authHeaders
-      );
+      await changePassword(token, {
+        current_password: pwForm.current,
+        new_password: pwForm.newPw,
+      });
       alert("Password changed successfully!");
       setPwForm({ current: "", newPw: "", confirm: "" });
     } catch (err: any) {
-      alert(err.response?.data?.message || "Failed to change password.");
+      alert(err?.response?.data?.message || "Failed to change password.");
     } finally {
       setPwLoading(false);
     }
@@ -196,8 +161,9 @@ const Hero: React.FC = () => {
 
   /* ── SAVE NOTIFICATIONS ── */
   const handleSaveNotifications = async () => {
+    if (!token) return;
     try {
-      await axios.put(`${API}/user/notifications`, notifications, authHeaders);
+      await saveNotifications(token, notifications);
       alert("Notification preferences saved!");
     } catch {
       alert("Failed to save preferences.");
@@ -206,14 +172,15 @@ const Hero: React.FC = () => {
 
   /* ── DELETE ACCOUNT ── */
   const handleDeleteAccount = async () => {
-    if (deleteConfirm !== user?.email) {
+    if (!token || !user) return;
+    if (deleteConfirm !== user.email) {
       alert("Please type your email exactly to confirm deletion.");
       return;
     }
     if (!window.confirm("This will permanently delete your account and all data. Are you absolutely sure?")) return;
     try {
-      await axios.delete(`${API}/user/account`, authHeaders);
-      localStorage.clear();
+      await deleteAccount(token);
+      logout();
       navigate("/");
     } catch {
       alert("Failed to delete account.");
@@ -228,10 +195,9 @@ const Hero: React.FC = () => {
     { icon: <FaMoneyBillWave />, label: "Total earnings", value: `${stats.total_earnings.toLocaleString()} FCFA`, color: "#F3E5F5", iconColor: "#6A1B9A" },
   ];
 
-  const memberSince = user?.created_at
-    ? new Date(user.created_at).toLocaleDateString("en-US", { month: "long", year: "numeric" })
-    : "—";
+  const memberSince = formatMemberSince(user?.created_at);
 
+  /* ── LOADING ── */
   if (loading) {
     return (
       <div className="pr-loading">
@@ -241,6 +207,7 @@ const Hero: React.FC = () => {
     );
   }
 
+  /* ── UI ── */
   return (
     <div className="pr-page">
 
@@ -264,9 +231,13 @@ const Hero: React.FC = () => {
           <div className="pr-profile-top">
 
             {/* AVATAR */}
-            <div className="pr-avatar-wrap" onClick={() => avatarInputRef.current?.click()} title="Click to change photo">
-              {avatarPreview ? (
-                <img src={avatarPreview} alt="Profile" className="pr-avatar" />
+            <div
+              className="pr-avatar-wrap"
+              onClick={() => avatarInputRef.current?.click()}
+              title="Click to change photo"
+            >
+              {avatar ? (
+                <img src={avatar} alt="Profile" className="pr-avatar" />
               ) : (
                 <div className="pr-avatar-placeholder">
                   <FaUser size={32} color="#aaa" />
@@ -313,19 +284,35 @@ const Hero: React.FC = () => {
                 <div className="pr-edit-form">
                   <div className="pr-edit-field">
                     <label>Full name *</label>
-                    <input value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} placeholder="Full name" />
+                    <input
+                      value={form.full_name}
+                      onChange={(e) => setForm({ ...form, full_name: e.target.value })}
+                      placeholder="Full name"
+                    />
                   </div>
                   <div className="pr-edit-field">
                     <label>Location</label>
-                    <input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder="City, Country" />
+                    <input
+                      value={form.location}
+                      onChange={(e) => setForm({ ...form, location: e.target.value })}
+                      placeholder="City, Country"
+                    />
                   </div>
                   <div className="pr-edit-field">
                     <label>Phone *</label>
-                    <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+237 600 000 000" />
+                    <input
+                      value={form.phone}
+                      onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                      placeholder="+237 600 000 000"
+                    />
                   </div>
                   <div className="pr-edit-btns">
-                    <button className="pr-save-btn" onClick={handleSave}><FaSave size={12} /> Save changes</button>
-                    <button className="pr-discard-btn" onClick={() => setEditMode(false)}><FaTimes size={12} /> Cancel</button>
+                    <button className="pr-save-btn" onClick={handleSave}>
+                      <FaSave size={12} /> Save changes
+                    </button>
+                    <button className="pr-discard-btn" onClick={() => setEditMode(false)}>
+                      <FaTimes size={12} /> Cancel
+                    </button>
                   </div>
                 </div>
               )}
@@ -438,14 +425,16 @@ const Hero: React.FC = () => {
                 <div className="pr-empty-state">
                   <FaLeaf size={32} color="#ccc" />
                   <p>You haven't listed any products yet.</p>
-                  <button className="pr-add-btn" onClick={() => navigate("/upload-product")}>Upload your first product</button>
+                  <button className="pr-add-btn" onClick={() => navigate("/upload-product")}>
+                    Upload your first product
+                  </button>
                 </div>
               ) : (
                 <div className="pr-listings-grid">
                   {products.map((item) => (
                     <div className="pr-listing-card" key={item.id}>
                       {item.image ? (
-                        <img src={item.image} alt={item.name} className="pr-listing-img" />
+                        <img src={`${API_BASE}${item.image}`} alt={item.name} className="pr-listing-img" />
                       ) : (
                         <div className="pr-listing-emoji" style={{ background: "#f0faf0" }}>🌿</div>
                       )}
@@ -454,7 +443,11 @@ const Hero: React.FC = () => {
                         <span className="pr-listing-cat">{item.subcategory || item.category}</span>
                         <span className="pr-listing-price">FCFA {item.price.toLocaleString()} / {item.unit}</span>
                         <span className="pr-listing-stock">Stock: {item.stock_quantity} {item.unit}</span>
-                        <span className={`pr-status-badge ${item.status === "active" || item.status === "public" ? "pr-active-badge" : "pr-draft-badge"}`}>
+                        <span className={`pr-status-badge ${
+                          item.status === "active" || item.status === "public"
+                            ? "pr-active-badge"
+                            : "pr-draft-badge"
+                        }`}>
                           {item.status === "active" || item.status === "public" ? "Active" : "Draft"}
                         </span>
                       </div>
@@ -520,7 +513,11 @@ const Hero: React.FC = () => {
                   {(["current", "newPw", "confirm"] as const).map((key) => (
                     <div className="pr-settings-field" key={key}>
                       <label>
-                        {key === "current" ? "Current password" : key === "newPw" ? "New password" : "Confirm new password"}
+                        {key === "current"
+                          ? "Current password"
+                          : key === "newPw"
+                          ? "New password"
+                          : "Confirm new password"}
                       </label>
                       <div className="pr-pw-wrap">
                         <input
@@ -539,7 +536,11 @@ const Hero: React.FC = () => {
                       </div>
                     </div>
                   ))}
-                  <button className="pr-settings-save-btn" onClick={handleChangePassword} disabled={pwLoading}>
+                  <button
+                    className="pr-settings-save-btn"
+                    onClick={handleChangePassword}
+                    disabled={pwLoading}
+                  >
                     {pwLoading ? "Saving..." : "Update password"}
                   </button>
                 </div>
@@ -612,6 +613,22 @@ const Hero: React.FC = () => {
                   disabled={deleteConfirm !== user?.email}
                 >
                   <FaTrash size={12} /> Permanently delete my account
+                </button>
+              </div>
+
+              {/* SIGN OUT */}
+              <div className="pr-settings-card">
+                <div className="pr-settings-card-title">
+                  <FaSignOutAlt size={14} color="#2E7D32" /> Sign out
+                </div>
+                <p className="pr-settings-desc">
+                  You'll be returned to the login page. Your data stays safe.
+                </p>
+                <button
+                  className="pr-settings-save-btn"
+                  onClick={() => { logout(); navigate("/login"); }}
+                >
+                  Sign out of AgroConnect
                 </button>
               </div>
 
