@@ -1,0 +1,156 @@
+.co-right {
+  position: sticky;
+  top: 1rem;
+}
+
+.co-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.co-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 0.5px solid #f0f0ec;
+}
+
+.co-item:last-child { border-bottom: none; }
+
+.co-item-img {
+  width: 46px;
+  height: 46px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.co-item-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.co-item-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.co-item-qty {
+  font-size: 11.5px;
+  color: #999;
+}
+
+.co-item-price {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a1a1a;
+  white-space: nowrap;
+}
+
+/* TOTALS */
+.co-totals {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 0.5px solid #ebebea;
+}
+
+.co-total-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 7px;
+}
+
+.co-grand {
+  font-size: 15.5px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 0.5px solid #e0e0dc;
+  margin-bottom: 0;
+}
+
+.co-grand-val { color: #2E7D32; }
+
+/* SUPPORT BANNER */
+.co-support-banner {
+  background: #f0faf0;
+  border: 0.5px solid #b6d9b0;
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.co-support-icon {
+  width: 32px;
+  height: 32px;
+  background: #2E7D32;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.co-support-banner h4 {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #1a5c1e;
+  margin-bottom: 3px;
+}
+
+.co-support-banner p {
+  font-size: 11.5px;
+  color: #3a7d3e;
+  line-height: 1.5;
+}
+
+/* PLACE ORDER BUTTON */
+.co-place-btn {
+  width: 100%;
+  background: #2E7D32;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 14.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin-top: 14px;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.co-place-btn:hover {
+  background: #1b5e20;
+  transform: translateY(-1px);
+}
+
+.co-place-btn:active { transform: translateY(0); }
+
+.co-pay-note {
+  text-align: center;
+  font-size: 12px;
+  color: #999;
+  margin-top: 8px;
+}
+
+@media (max-width: 900px) {
+  .co-right { position: static; }
+}

@@ -1,6 +1,11 @@
 import db from "../config/db.js";
 
 /* ─────────────────────────────
+   BASE URL
+───────────────────────────── */
+const BASE_URL = "http://localhost:5000";
+
+/* ─────────────────────────────
    CATEGORY + SUBCATEGORY MAPS
 ───────────────────────────── */
 const categoryMap = {
@@ -18,28 +23,22 @@ const subcategoryMap = {
   Grains: 3,
   Seeds: 4,
   "Dairy Products": 5,
-
   Livestock: 6,
-
   Tractors: 7,
   "Hand Tools": 8,
   "Irrigation Equipment": 9,
   "Harvesting Equipment": 10,
-
   "Farm Labour": 11,
   Transportation: 12,
   Consultancy: 13,
   "Equipment Rental": 14,
-
   "Animal Medicine": 15,
   "Crop Protection": 16,
   Supplements: 17,
-
   "Farming Techniques": 18,
   "Sustainable Agriculture": 19,
   "Market Access": 20,
 };
-
 
 const categoryReverseMap = {
   1: "Crops & Seeds",
@@ -72,28 +71,36 @@ const subcategoryReverseMap = {
   19: "Sustainable Agriculture",
   20: "Market Access",
 };
+
 /* ─────────────────────────────
    CREATE PRODUCT
 ───────────────────────────── */
 export const createProduct = (req, res) => {
-console.log("BODY:", req.body);
-console.log("FILE:", req.file);
+  console.log("BODY:", req.body);
+  console.log("FILE:", req.file);
+
   try {
     const {
-  name,
-  category,
-  subcategory,
-  price,
-  location,
-  description,
-  unit,
-  stock_quantity,
-  min_order
-} = req.body;
+      name,
+      category,
+      subcategory,
+      price,
+      location,
+      description,
+      unit,
+      stock_quantity,
+      min_order,
+      status,
+    } = req.body;
 
-const image = req.file
-  ? `/uploads/products/${req.file.filename}`
-  : null;
+    const dbStatus =
+      status === "public"
+        ? "active"
+        : (status || "draft").toLowerCase();
+
+    const image = req.file
+      ? `/uploads/products/${req.file.filename}`
+      : null;
 
     const category_id = categoryMap[category];
     const subcategory_id = subcategoryMap[subcategory];
@@ -108,41 +115,34 @@ const image = req.file
 
     const sql = `
       INSERT INTO products (
-        user_id,
+        user_id, category_id, subcategory_id, name, description,
+        price, stock_quantity, unit, location, image, min_order, status
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    db.query(
+      sql,
+      [
+        req.user.id,
         category_id,
         subcategory_id,
         name,
         description,
         price,
-        stock_quantity,
-        unit,
-        location,
+        stock_quantity || 0,
+        unit || null,
+        location || null,
         image,
-        min_order
-      )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
-    `;
-
-    db.query(
-      sql,
-     [
-       req.user.id,
-       category_id,
-       subcategory_id,
-       name,
-       description,
-       price,
-       stock_quantity || 0,
-       unit || null,
-       location,
-       image,
-       req.body.min_order || 0
-    ],
+        min_order || 0,
+        dbStatus,
+      ],
       (err, result) => {
         if (err) {
-          console.log(err);
+          console.error("CREATE PRODUCT ERROR:", err);
           return res.status(500).json({
             message: "Failed to create product",
+            error: err.sqlMessage,
           });
         }
 
@@ -153,7 +153,7 @@ const image = req.file
       }
     );
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -180,8 +180,35 @@ export const getProducts = (req, res) => {
       ...product,
       category: categoryReverseMap[product.category_id] || null,
       subcategory: subcategoryReverseMap[product.subcategory_id] || null,
+      image: product.image ? `${BASE_URL}${product.image}` : null, // ✅ full URL
     }));
 
     res.json(products);
+  });
+};
+
+export const getProductById = (req, res) => {
+  const sql = `
+    SELECT
+      products.*,
+      users.full_name AS farmer,
+      users.phone
+    FROM products
+    JOIN users ON products.user_id = users.id
+    WHERE products.id = ?
+  `;
+
+  db.query(sql, [req.params.id], (err, result) => {
+    if (err) return res.status(500).json({ message: "Database error" });
+    if (result.length === 0) return res.status(404).json({ message: "Product not found" });
+
+    const product = {
+      ...result[0],
+      category: categoryReverseMap[result[0].category_id] || null,
+      subcategory: subcategoryReverseMap[result[0].subcategory_id] || null,
+      image: result[0].image ? `${BASE_URL}${result[0].image}` : null,
+    };
+
+    res.json(product);
   });
 };

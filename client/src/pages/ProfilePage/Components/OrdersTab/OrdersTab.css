@@ -1,0 +1,48 @@
+/* ═══════════ ORDERS TAB ═══════════ */
+.pr-orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 13px;
+}
+
+.pr-orders-table th {
+  background: var(--bg-card);
+  color: var(--text-muted);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 11.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.pr-orders-table td {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-secondary);
+}
+
+.pr-orders-table tr:last-child td { border-bottom: none; }
+
+.pr-orders-table tr:hover td { background: var(--bg-card); }
+
+.pr-order-status {
+  display: inline-block;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.pr-status-delivered  { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(74,222,123,0.2); }
+.pr-status-processing { background: rgba(251,191,36,0.1); color: var(--gold); border: 1px solid rgba(251,191,36,0.2); }
+.pr-status-pending    { background: var(--blue-bg); color: var(--blue); border: 1px solid rgba(96,165,250,0.2); }
+.pr-status-cancelled  { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+
+/* ═══════════ RESPONSIVE ═══════════ */
+@media (max-width: 560px) {
+  .pr-orders-table { font-size: 12px; }
+  .pr-orders-table th, .pr-orders-table td { padding: 8px; }
+}

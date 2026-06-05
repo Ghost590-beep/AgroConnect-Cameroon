@@ -2,14 +2,14 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 
-import Landing from "./pages/LandingPage/Landing";
+import Landing from "./pages/LandingPage/Landing (2)";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import Market from "./pages/MarketPage/Market";
 import Profile from "./pages/ProfilePage/Profile";
-import Checkout from "./Checkout";
-import UploadProduct from "./UploadProduct";
-import ProductDetail from "./pages/ProductDetail/Productdetail";
+import Checkout from "./pages/Checkout/checkout (2)";
+import UploadProduct from "./pages/UploadProduct/UploadProduct";
+import ProductDetail from "./pages/ProductDetail/ProductDetail (2)";
 
 function App() {
   return (

@@ -1,0 +1,101 @@
+/* ═══════════ OVERVIEW ═══════════ */
+.pr-overview-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+}
+
+.pr-content-box {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.4rem;
+}
+
+.pr-content-box h3 {
+  font-family: var(--font-head);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.pr-content-box p { font-size: 13px; color: var(--text-secondary); line-height: 1.7; }
+
+.pr-overview-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 1.2rem;
+}
+
+.pr-ov-stat {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  text-align: center;
+}
+
+.pr-ov-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+.pr-ov-val {
+  font-family: var(--font-head);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.pr-ov-label { font-size: 11px; color: var(--text-muted); }
+
+/* EARNINGS BAR CHART */
+.pr-earnings-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 100px;
+  padding: 8px 0 0;
+}
+
+.pr-bar-wrap { display: flex; flex-direction: column; align-items: center; gap: 5px; flex: 1; }
+
+.pr-bar {
+  width: 100%;
+  background: linear-gradient(180deg, var(--accent) 0%, var(--accent-dark) 100%);
+  border-radius: 3px 3px 0 0;
+  min-height: 6px;
+  opacity: 0.85;
+  transition: opacity 0.2s;
+}
+
+.pr-bar-wrap:hover .pr-bar { opacity: 1; }
+.pr-bar-wrap span { font-size: 11px; color: var(--text-muted); }
+
+.pr-earnings-total {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-align: right;
+}
+
+.pr-earnings-total strong { color: var(--accent); font-family: var(--font-head); }
+
+/* ═══════════ RESPONSIVE ═══════════ */
+@media (max-width: 900px) {
+  .pr-overview-grid { grid-template-columns: 1fr; }
+}

@@ -1,0 +1,345 @@
+/* ═══════════════════════════════════════════
+   AGROCONNECT PROFILE — DARK THEME
+   Font: Syne (headings) + DM Sans (body)
+═══════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg-base:       #0f1510;
+  --bg-surface:    #161d17;
+  --bg-card:       #1a2318;
+  --bg-card-hover: #1f2a1e;
+  --border:        #2a3829;
+  --border-light:  #223020;
+  --accent:        #4ade7b;
+  --accent-dark:   #2a9e4f;
+  --accent-dim:    rgba(74,222,123,0.10);
+  --accent-pill:   #1e3d22;
+  --text-primary:  #e8ede8;
+  --text-secondary:#8fa88f;
+  --text-muted:    #5a6e5a;
+  --red:           #f87171;
+  --red-bg:        rgba(248,113,113,0.08);
+  --red-border:    rgba(248,113,113,0.25);
+  --gold:          #fbbf24;
+  --blue:          #60a5fa;
+  --blue-bg:       rgba(96,165,250,0.1);
+  --radius-sm:     6px;
+  --radius-md:     10px;
+  --radius-lg:     14px;
+  --shadow-card:   0 2px 12px rgba(0,0,0,0.4);
+  --font-head:     'Syne', sans-serif;
+  --font-body:     'DM Sans', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+.pr-page {
+  min-height: 100vh;
+  background: var(--bg-base);
+  font-family: var(--font-body);
+  color: var(--text-primary);
+}
+
+/* ═══════════ LOADING ═══════════ */
+.pr-loading {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: var(--text-muted);
+  font-size: 14px;
+  background: var(--bg-base);
+}
+
+.pr-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent-dark);
+  border-radius: 50%;
+  animation: pr-spin 0.7s linear infinite;
+}
+
+@keyframes pr-spin { to { transform: rotate(360deg); } }
+
+/* ═══════════ HERO BANNER ═══════════ */
+.pr-hero {
+  position: relative;
+  width: 100%;
+  height: 160px;
+  background-image: url("../../../../assets/agro.jpg");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.pr-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(10,20,10,0.88) 0%, rgba(15,21,16,0.75) 100%);
+}
+
+.pr-hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: var(--text-primary);
+}
+
+.pr-hero-content h1 {
+  font-family: var(--font-head);
+  font-size: 26px;
+  font-weight: 800;
+  margin-bottom: 5px;
+  letter-spacing: -0.3px;
+}
+
+.pr-breadcrumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.pr-breadcrumb span { cursor: pointer; transition: color 0.2s; }
+.pr-breadcrumb span:hover { color: var(--text-primary); }
+.pr-active { color: var(--accent) !important; cursor: default !important; }
+
+/* ═══════════ CONTAINER ═══════════ */
+.pr-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+/* ═══════════ MAIN CARD ═══════════ */
+.pr-main-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.8rem;
+  margin-bottom: 1.4rem;
+}
+
+/* ═══════════ PROFILE TOP ═══════════ */
+.pr-profile-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.4rem;
+  margin-bottom: 1.8rem;
+}
+
+/* ═══════════ AVATAR ═══════════ */
+.pr-avatar-wrap {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.pr-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--accent-dark);
+  display: block;
+}
+
+.pr-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pr-avatar-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: #fff;
+  font-size: 11px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.pr-avatar-wrap:hover .pr-avatar-overlay { opacity: 1; }
+.pr-avatar-overlay.pr-avatar-loading { opacity: 1; }
+
+.pr-avatar-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: pr-spin 0.7s linear infinite;
+}
+
+/* ═══════════ IDENTITY ═══════════ */
+.pr-identity { flex: 1; min-width: 0; }
+
+.pr-name-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.pr-name-row h2 {
+  font-family: var(--font-head);
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+}
+
+.pr-verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(74,222,123,0.2);
+}
+
+.pr-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.pr-meta span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.pr-bio { font-size: 12.5px; color: var(--text-muted); line-height: 1.6; }
+
+/* ═══════════ EDIT FORM ═══════════ */
+.pr-edit-form { display: flex; flex-direction: column; gap: 10px; }
+
+.pr-edit-field { display: flex; flex-direction: column; gap: 4px; }
+
+.pr-edit-field label {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.pr-edit-form input {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--text-primary);
+  outline: none;
+  width: 300px;
+  max-width: 100%;
+  transition: border-color 0.2s;
+}
+
+.pr-edit-form input:focus { border-color: var(--accent-dark); }
+.pr-edit-form input::placeholder { color: var(--text-muted); }
+
+.pr-edit-btns { display: flex; gap: 8px; margin-top: 4px; }
+
+.pr-save-btn {
+  background: var(--accent-dark);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 8px 16px;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: background 0.2s;
+}
+
+.pr-save-btn:hover { background: #22843d; }
+
+.pr-discard-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: border-color 0.2s;
+}
+
+.pr-discard-btn:hover { border-color: var(--text-muted); }
+
+/* ═══════════ EDIT PROFILE BUTTON ═══════════ */
+.pr-edit-btn {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent-dark);
+  border-radius: var(--radius-sm);
+  padding: 9px 20px;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+  transition: all 0.2s;
+  margin-left: auto;
+  height: fit-content;
+}
+
+.pr-edit-btn:hover { background: var(--accent-dim); }
+
+/* ═══════════ RESPONSIVE ═══════════ */
+@media (max-width: 900px) {
+  .pr-profile-top { flex-wrap: wrap; }
+  .pr-edit-btn { margin-left: 0; }
+}
+
+@media (max-width: 560px) {
+  .pr-container { padding: 1rem; }
+}

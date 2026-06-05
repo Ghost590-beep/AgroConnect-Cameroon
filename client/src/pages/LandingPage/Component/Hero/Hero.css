@@ -1,0 +1,95 @@
+.ln-hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+.ln-hero-bg {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(135deg, rgba(27,94,32,0.92) 0%, rgba(46,125,50,0.85) 60%, rgba(76,175,80,0.7) 100%),
+    url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1600&q=80') center/cover no-repeat;
+}
+
+.ln-hero-content {
+  position: relative; z-index: 2;
+  max-width: 720px; padding: 24px;
+  animation: ln-fadeUp 0.8s ease both;
+}
+
+@keyframes ln-fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ln-hero-badge {
+  display: inline-block;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #fff; font-size: 12px; font-weight: 600;
+  padding: 6px 14px; border-radius: 20px;
+  margin-bottom: 24px;
+}
+
+.ln-hero-title {
+  font-size: clamp(40px, 7vw, 72px);
+  font-weight: 900; color: #fff;
+  line-height: 1.1; margin: 0 0 20px;
+  letter-spacing: -1px;
+}
+
+.ln-hero-accent { color: #a5d6a7; }
+
+.ln-hero-sub {
+  font-size: 16px;
+  color: rgba(255,255,255,0.85);
+  max-width: 560px; margin: 0 auto 32px;
+  line-height: 1.6;
+}
+
+.ln-hero-btns {
+  display: flex; gap: 14px;
+  justify-content: center; flex-wrap: wrap;
+}
+
+.ln-hero-btn-solid {
+  display: flex; align-items: center; gap: 8px;
+  padding: 13px 28px;
+  background: #2E7D32; border: 2px solid #2E7D32;
+  border-radius: 10px; color: #fff;
+  font-size: 15px; font-weight: 600;
+  cursor: pointer; transition: background 0.2s;
+}
+
+.ln-hero-btn-solid:hover { background: #1b5e20; }
+
+.ln-hero-btn-outline {
+  padding: 13px 28px;
+  border: 2px solid #fff;
+  border-radius: 10px; background: transparent;
+  color: #fff; font-size: 15px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+}
+
+.ln-hero-btn-outline:hover { background: #fff; color: #2E7D32; }
+
+.ln-scroll-hint {
+  display: block; color: rgba(255,255,255,0.5);
+  margin-top: 48px; text-decoration: none;
+  animation: ln-bounce 2s infinite;
+}
+
+@keyframes ln-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
+@media (max-width: 768px) {
+  .ln-hero-title { font-size: 36px; }
+  .ln-hero-btns { flex-direction: column; align-items: center; }
+}

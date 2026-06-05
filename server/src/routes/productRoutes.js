@@ -6,6 +6,7 @@ import fs from "fs";
 import {
   createProduct,
   getProducts,
+  getProductById,
 } from "../controllers/productController.js";
 
 import { verifyToken } from "../middleware/authMiddleware.js";
@@ -64,7 +65,7 @@ const upload = multer({
 ───────────────────────────── */
 
 router.get("/", getProducts);
-
+router.get("/:id", getProductById); 
 /* ─────────────────────────────
    CREATE PRODUCT
 ───────────────────────────── */

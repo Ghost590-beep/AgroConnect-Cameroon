@@ -1,0 +1,147 @@
+.ln-accent       { color: #2E7D32; }
+.ln-accent-light { color: #81c784; }
+
+.ln-section-header { text-align: center; margin-bottom: 48px; }
+.ln-section-header h2 { font-size: 32px; font-weight: 800; color: #1a1a1a; margin: 0 0 10px; }
+.ln-section-header p  { font-size: 15px; color: #888; }
+
+/* testimonials */
+.ln-testimonials { padding: 80px 5%; background: #f9fafb; }
+
+.ln-testi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px; max-width: 1100px; margin: 0 auto;
+}
+
+.ln-testi-card {
+  background: #fff; border-radius: 16px; padding: 28px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+  transition: transform 0.2s;
+}
+
+.ln-testi-card:hover { transform: translateY(-4px); }
+.ln-testi-stars { display: flex; gap: 3px; margin-bottom: 14px; }
+
+.ln-testi-text {
+  font-size: 14px; color: #555;
+  line-height: 1.7; margin: 0 0 20px;
+  font-style: italic;
+}
+
+.ln-testi-author { display: flex; align-items: center; gap: 12px; }
+
+.ln-testi-avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: #2E7D32; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 14px;
+}
+
+.ln-testi-name { display: block; font-size: 13px; font-weight: 700; color: #1a1a1a; }
+.ln-testi-role { display: block; font-size: 12px; color: #888; }
+
+/* join cta */
+.ln-join {
+  background: linear-gradient(135deg, #1b5e20 0%, #2E7D32 100%);
+  padding: 80px 5%; text-align: center;
+}
+
+.ln-join-inner { max-width: 600px; margin: 0 auto; }
+
+.ln-join h2 { font-size: 32px; font-weight: 800; color: #fff; margin: 0 0 12px; }
+.ln-join p  { font-size: 15px; color: rgba(255,255,255,0.75); margin: 0 0 32px; }
+
+.ln-join-form {
+  display: flex; border-radius: 10px;
+  overflow: hidden; margin-bottom: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+.ln-join-form input {
+  flex: 1; padding: 14px 18px;
+  border: none; outline: none;
+  font-size: 14px;
+}
+
+.ln-join-form button {
+  padding: 14px 24px;
+  background: #ff8f00; color: #fff;
+  border: none; font-size: 14px; font-weight: 700;
+  cursor: pointer; transition: background 0.2s;
+}
+
+.ln-join-form button:hover { background: #e65100; }
+
+.ln-join-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+.ln-join-solid {
+  padding: 11px 22px;
+  background: #fff; color: #2E7D32;
+  border: 2px solid #fff; border-radius: 8px;
+  font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+}
+
+.ln-join-solid:hover { background: transparent; color: #fff; }
+
+.ln-join-outline {
+  padding: 11px 22px;
+  background: transparent; color: #fff;
+  border: 2px solid rgba(255,255,255,0.6); border-radius: 8px;
+  font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+}
+
+.ln-join-outline:hover { border-color: #fff; }
+
+/* footer */
+.ln-footer { background: #111; padding: 60px 5% 0; }
+
+.ln-footer-inner {
+  max-width: 1200px; margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 40px; padding-bottom: 40px;
+  border-bottom: 1px solid #222;
+}
+
+.ln-footer-brand p { font-size: 13px; color: #888; line-height: 1.7; margin: 14px 0 20px; }
+
+.ln-brand-row {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 18px; font-weight: 800; color: #fff;
+}
+
+.ln-socials { display: flex; gap: 14px; font-size: 16px; color: #555; }
+.ln-socials > * { cursor: pointer; transition: color 0.2s; }
+.ln-socials > *:hover { color: #4caf50; }
+
+.ln-footer-col h4 {
+  font-size: 13px; font-weight: 700; color: #fff;
+  margin: 0 0 16px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+.ln-footer-col ul {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: 10px;
+}
+
+.ln-footer-col ul li { font-size: 13px; color: #666; cursor: pointer; transition: color 0.2s; }
+.ln-footer-col ul li:hover { color: #4caf50; }
+
+.ln-contact-row {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: #666; margin-bottom: 10px;
+}
+
+.ln-footer-bottom {
+  max-width: 1200px; margin: 0 auto;
+  padding: 20px 0;
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 12px; color: #555;
+}
+
+@media (max-width: 768px) {
+  .ln-footer-inner { grid-template-columns: 1fr; gap: 24px; }
+}

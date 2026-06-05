@@ -1,0 +1,87 @@
+.up-quality-card {
+  background: #f0faf0;
+  border: 0.5px solid #b6d9b0;
+  border-radius: 12px;
+  padding: 1.1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.up-q-icon {
+  width: 32px;
+  height: 32px;
+  background: #2E7D32;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.up-quality-card h4 {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #1a5c1e;
+  margin-bottom: 3px;
+}
+
+.up-quality-card p {
+  font-size: 11.5px;
+  color: #3a7d3e;
+  line-height: 1.5;
+}
+
+.up-vis-label {
+  font-size: 12.5px;
+  color: #555;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.up-vis-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+  cursor: pointer;
+}
+
+.up-vis-option:last-child { margin-bottom: 0; }
+
+.up-vis-option h4 {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 2px;
+}
+
+.up-vis-option p {
+  font-size: 11.5px;
+  color: #888;
+}
+
+.up-radio {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.up-radio-on {
+  border-color: #2E7D32;
+  background: #2E7D32;
+}
+
+.up-radio-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff;
+}

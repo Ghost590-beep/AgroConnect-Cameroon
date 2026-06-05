@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { useAuth } from "./context/AuthContext";
+import { uploadProduct } from "../src/services/productService";
 import {
   FaClipboardList,
   FaImage,
@@ -11,7 +11,7 @@ import {
   FaCheck,
   FaCloudUploadAlt,
 } from "react-icons/fa";
-import "../../client/src/styles/UploadProduct.css";
+import "../src/styles/UploadProduct.css";
 
 const CATEGORIES = ["Crops & Seeds", "Animals", "Machines & Tools", "Services", "Medications", "Training"];
 
@@ -27,8 +27,12 @@ const SUBCATEGORIES: Record<string, string[]> = {
 const UNITS = ["kg", "g", "bunch", "piece", "litre", "bag", "crate"];
 
 const UploadProduct: React.FC = () => {
+  /* ── hooks at top level ── */
+  const { token } = useAuth();
   const navigate = useNavigate();
   const fileRef = useRef<HTMLInputElement>(null);
+
+  /* ── state ── */
   const [loading, setLoading] = useState(false);
   const [visibility, setVisibility] = useState<"public" | "private">("public");
   const [imageFiles, setImageFiles] = useState<File[]>([]);
@@ -43,9 +47,9 @@ const UploadProduct: React.FC = () => {
     price: "",
     minOrder: "",
     stock: "",
-    image: "",
   });
 
+  /* ── handlers ── */
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
@@ -70,11 +74,16 @@ const UploadProduct: React.FC = () => {
       alert("Please fill all required fields.");
       return;
     }
+
+    if (!token) {
+      alert("You must be logged in to upload a product.");
+      return;
+    }
+
     try {
       setLoading(true);
-      const { token } = useAuth();
-      const formData = new FormData();
 
+      const formData = new FormData();
       formData.append("name", form.name);
       formData.append("category", form.category);
       formData.append("subcategory", form.subcategory);
@@ -87,20 +96,14 @@ const UploadProduct: React.FC = () => {
       formData.append("status", draft ? "draft" : visibility);
 
       if (imageFiles.length > 0) {
-      formData.append("image", imageFiles[0]);
-}
+        formData.append("image", imageFiles[0]);
+      }
 
-console.log(imageFiles);
-console.log(imageFiles[0]);
+      // ✅ uses productService instead of raw axios
+      await uploadProduct(token, formData);
 
-await axios.post("http://localhost:5000/api/products", formData, {
-  headers: {
-    Authorization: `Bearer ${token}`,
-  //  "Content-Type": "multipart/form-data"
-  },
-});
       alert(draft ? "Saved as draft!" : "Product published successfully!");
-      navigate("/market");
+      navigate("/profile");
     } catch (err: any) {
       alert(err.response?.data?.message || "Failed to upload product");
     } finally {
@@ -150,10 +153,16 @@ await axios.post("http://localhost:5000/api/products", formData, {
                   </select>
                 </div>
               </div>
+
               <div className="up-form-row">
                 <div className="up-field">
                   <label>Subcategory</label>
-                  <select name="subcategory" value={form.subcategory} onChange={handleChange} disabled={!subcats.length}>
+                  <select
+                    name="subcategory"
+                    value={form.subcategory}
+                    onChange={handleChange}
+                    disabled={!subcats.length}
+                  >
                     <option value="">Select subcategory</option>
                     {subcats.map((s) => <option key={s}>{s}</option>)}
                   </select>
@@ -166,6 +175,7 @@ await axios.post("http://localhost:5000/api/products", formData, {
                   </select>
                 </div>
               </div>
+
               <div className="up-field up-full">
                 <label>Description <span className="up-req">*</span></label>
                 <textarea
@@ -178,25 +188,44 @@ await axios.post("http://localhost:5000/api/products", formData, {
                 />
                 <span className="up-char-count">{form.description.length}/500</span>
               </div>
+
               <div className="up-form-row up-three">
                 <div className="up-field">
                   <label>Price <span className="up-req">*</span></label>
                   <div className="up-price-wrap">
                     <span className="up-prefix">FCFA</span>
-                    <input name="price" type="number" value={form.price} onChange={handleChange} placeholder="e.g. 120" />
+                    <input
+                      name="price"
+                      type="number"
+                      value={form.price}
+                      onChange={handleChange}
+                      placeholder="e.g. 120"
+                    />
                   </div>
                 </div>
                 <div className="up-field">
-                  <label>Min. order quantity <span className="up-req">*</span></label>
+                  <label>Min. order quantity</label>
                   <div className="up-unit-wrap">
-                    <input name="minOrder" type="number" value={form.minOrder} onChange={handleChange} placeholder="e.g. 10" />
+                    <input
+                      name="minOrder"
+                      type="number"
+                      value={form.minOrder}
+                      onChange={handleChange}
+                      placeholder="e.g. 10"
+                    />
                     <span className="up-suffix">{form.unit}</span>
                   </div>
                 </div>
                 <div className="up-field">
                   <label>Stock available <span className="up-req">*</span></label>
                   <div className="up-unit-wrap">
-                    <input name="stock" type="number" value={form.stock} onChange={handleChange} placeholder="e.g. 100" />
+                    <input
+                      name="stock"
+                      type="number"
+                      value={form.stock}
+                      onChange={handleChange}
+                      placeholder="e.g. 100"
+                    />
                     <span className="up-suffix">{form.unit}</span>
                   </div>
                 </div>
@@ -209,7 +238,9 @@ await axios.post("http://localhost:5000/api/products", formData, {
                 <FaImage className="up-card-icon" />
                 Product images
               </div>
-              <p className="up-img-hint">Upload clear images of your product. You can add up to 5 images.</p>
+              <p className="up-img-hint">
+                Upload clear images of your product. You can add up to 5 images.
+              </p>
               <div className="up-img-row">
                 <div
                   className={`up-drop-zone ${dragOver ? "up-drop-over" : ""}`}
@@ -223,13 +254,25 @@ await axios.post("http://localhost:5000/api/products", formData, {
                   </div>
                   <p className="up-drop-text">Drag &amp; drop your images here</p>
                   <p className="up-drop-or">or</p>
-                  <button className="up-choose-btn" type="button" onClick={(e) => { e.stopPropagation(); fileRef.current?.click(); }}>
+                  <button
+                    className="up-choose-btn"
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); fileRef.current?.click(); }}
+                  >
                     Choose files
                   </button>
                   <p className="up-file-meta">JPG, PNG or WebP (Max. 5MB each)</p>
                   <p className="up-file-count">{imageFiles.length} of 5 images uploaded</p>
-                  <input ref={fileRef} type="file" multiple accept="image/*" style={{ display: "none" }} onChange={handleFileChange} />
+                  <input
+                    ref={fileRef}
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    onChange={handleFileChange}
+                  />
                 </div>
+
                 <div className="up-tips-box">
                   <h4>Tips for great photos</h4>
                   {[
@@ -246,6 +289,7 @@ await axios.post("http://localhost:5000/api/products", formData, {
                   ))}
                 </div>
               </div>
+
               {imageFiles.length > 0 && (
                 <div className="up-thumbs">
                   {imageFiles.map((f, i) => (
@@ -259,12 +303,22 @@ await axios.post("http://localhost:5000/api/products", formData, {
 
             {/* ACTION BAR */}
             <div className="up-action-bar">
-              <button className="up-cancel-btn" onClick={() => navigate("/market")}>Cancel</button>
+              <button className="up-cancel-btn" onClick={() => navigate("/market")}>
+                Cancel
+              </button>
               <div className="up-btn-group">
-                <button className="up-draft-btn" onClick={() => handleSubmit(true)} disabled={loading}>
+                <button
+                  className="up-draft-btn"
+                  onClick={() => handleSubmit(true)}
+                  disabled={loading}
+                >
                   Save as draft
                 </button>
-                <button className="up-publish-btn" onClick={() => handleSubmit(false)} disabled={loading}>
+                <button
+                  className="up-publish-btn"
+                  onClick={() => handleSubmit(false)}
+                  disabled={loading}
+                >
                   <FaRocket size={13} />
                   {loading ? "Publishing..." : "Publish product"}
                 </button>
@@ -292,10 +346,22 @@ await axios.post("http://localhost:5000/api/products", formData, {
                 )}
               </div>
               <div className="up-preview-fields">
-                <div className="up-pf"><span className="up-pf-label">Product name</span><span className="up-pf-val">{form.name || "—"}</span></div>
-                <div className="up-pf"><span className="up-pf-label">Category</span><span className="up-pf-val">{form.category || "—"}</span></div>
-                <div className="up-pf"><span className="up-pf-label">Price</span><span className="up-pf-val">{form.price ? `FCFA ${form.price}` : "—"}</span></div>
-                <div className="up-pf"><span className="up-pf-label">Available stock</span><span className="up-pf-val">{form.stock ? `${form.stock} ${form.unit}` : "—"}</span></div>
+                <div className="up-pf">
+                  <span className="up-pf-label">Product name</span>
+                  <span className="up-pf-val">{form.name || "—"}</span>
+                </div>
+                <div className="up-pf">
+                  <span className="up-pf-label">Category</span>
+                  <span className="up-pf-val">{form.category || "—"}</span>
+                </div>
+                <div className="up-pf">
+                  <span className="up-pf-label">Price</span>
+                  <span className="up-pf-val">{form.price ? `FCFA ${form.price}` : "—"}</span>
+                </div>
+                <div className="up-pf">
+                  <span className="up-pf-label">Available stock</span>
+                  <span className="up-pf-val">{form.stock ? `${form.stock} ${form.unit}` : "—"}</span>
+                </div>
               </div>
             </div>
 
@@ -322,7 +388,11 @@ await axios.post("http://localhost:5000/api/products", formData, {
                   </div>
                   <div>
                     <h4>{v.charAt(0).toUpperCase() + v.slice(1)}</h4>
-                    <p>{v === "public" ? "Visible to all buyers" : "Only visible to specific buyers"}</p>
+                    <p>
+                      {v === "public"
+                        ? "Visible to all buyers"
+                        : "Only visible to specific buyers"}
+                    </p>
                   </div>
                 </div>
               ))}
