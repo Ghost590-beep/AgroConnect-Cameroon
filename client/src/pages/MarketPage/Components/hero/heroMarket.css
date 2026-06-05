@@ -35,6 +35,33 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+
+.hm-avatar-menu {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hm-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border: 1px solid var(--accent);
+  border-radius: 20px;
+  background: transparent;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.hm-logout-btn:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
 .hm-page {
   min-height: 100vh;
   background: var(--bg-base);

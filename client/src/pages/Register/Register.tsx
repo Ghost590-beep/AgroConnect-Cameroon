@@ -2,9 +2,10 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../../styles/auth.css";
 import farmerImg from "../../assets/loginImage.jpeg";
-import axios from "axios";
+import { useAuth } from "../../context/AuthContext";
+import { registerUser } from "../../services/authService";
 
-// ─── Types ───────────────────────────────────────────────────
+/* ─── TYPES ─── */
 interface FormState {
   fullName: string;
   email: string;
@@ -16,7 +17,7 @@ interface FormState {
 
 type FormErrors = Partial<FormState>;
 
-// ─── Field config ────────────────────────────────────────────
+/* ─── FIELD CONFIG ─── */
 const FIELDS: {
   id: keyof FormState;
   label: string;
@@ -68,8 +69,9 @@ const FIELDS: {
   },
 ];
 
-// ─── Component ───────────────────────────────────────────────
+/* ─── COMPONENT ─── */
 export default function Register() {
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const [form, setForm] = useState<FormState>({
@@ -82,75 +84,61 @@ export default function Register() {
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
+  const [loading, setLoading] = useState(false);
 
-  // ─── Handle input change ───────────────────────────────
+  /* ── Handle input change ── */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-
     setForm((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: undefined }));
   };
 
-  // ─── Validation ────────────────────────────────────────
+  /* ── Validation ── */
   const validate = (): boolean => {
     const next: FormErrors = {};
 
     if (!form.fullName.trim()) next.fullName = "Full name is required";
     if (!form.email.trim()) next.email = "Email is required";
     if (!form.password.trim()) next.password = "Password is required";
-
+    if (form.password.length < 6) next.password = "Password must be at least 6 characters";
     if (form.password !== form.confirmPassword)
       next.confirmPassword = "Passwords do not match";
-
     if (!form.phone.trim()) next.phone = "Phone number is required";
 
     setErrors(next);
-
     return Object.keys(next).length === 0;
   };
 
-  // ─── Submit ─────────────────────────────────────────────
+  /* ── Submit ── */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!validate()) return;
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/auth/register",
-        form
-      );
+      setLoading(true);
 
-      alert("Registration successful");
+      /* registerUser calls the API and returns { token, user } */
+      const res = await registerUser({
+        full_name: form.fullName,
+        email: form.email,
+        password: form.password,
+        phone: form.phone,
+      });
 
-      console.log(response.data);
+      /* login() saves token + user into AuthContext AND localStorage */
+      login(res.token, res.user);
 
-      // OPTIONAL IMPROVEMENT:
-      // If backend returns token + user (recommended future upgrade)
-      if (response.data.token) {
-        localStorage.setItem("token", response.data.token);
-      }
-
-      if (response.data.user) {
-        localStorage.setItem(
-          "user",
-          JSON.stringify(response.data.user)
-        );
-      }
-
-      // Redirect to login or dashboard
-      navigate("/login");
+      navigate("/landing");
     } catch (error: any) {
-      console.log(error);
-
       alert(
-        error.response?.data?.message ||
-          "Registration failed"
+        error.response?.data?.message || "Registration failed"
       );
+    } finally {
+      setLoading(false);
     }
   };
 
-  // ─── Google auth placeholder ───────────────────────────
+  /* ── Google auth placeholder ── */
   const handleGoogle = () => {
     console.log("Google sign-up clicked");
   };
@@ -158,10 +146,10 @@ export default function Register() {
   return (
     <main className="auth-page">
       <div className="auth-card auth-card--tall">
-        {/* ── Left image ─────────────────────── */}
+
+        {/* ── Left image ── */}
         <div className="auth-photo">
           <img src={farmerImg} alt="Farmer" />
-
           <div className="auth-badge">
             <span>🌿</span>
             <span className="auth-badge__text">
@@ -170,37 +158,35 @@ export default function Register() {
           </div>
         </div>
 
-        {/* ── Form ───────────────────────────── */}
+        {/* ── Form ── */}
         <div className="auth-form-panel">
-          <h1 className="auth-heading">
-            Create Your Account
-          </h1>
+          <h1 className="auth-heading">Create Your Account</h1>
 
           <form onSubmit={handleSubmit} noValidate>
-            {FIELDS.map(
-              ({ id, label, type, placeholder, autoComplete }) => (
-                <div className="form-field" key={id}>
-                  <label htmlFor={id}>{label}</label>
+            {FIELDS.map(({ id, label, type, placeholder, autoComplete }) => (
+              <div className="form-field" key={id}>
+                <label htmlFor={id}>{label}</label>
+                <input
+                  id={id}
+                  type={type}
+                  name={id}
+                  placeholder={placeholder}
+                  value={form[id]}
+                  onChange={handleChange}
+                  autoComplete={autoComplete}
+                />
+                {errors[id] && (
+                  <p className="form-error">{errors[id]}</p>
+                )}
+              </div>
+            ))}
 
-                  <input
-                    id={id}
-                    type={type}
-                    name={id}
-                    placeholder={placeholder}
-                    value={form[id]}
-                    onChange={handleChange}
-                    autoComplete={autoComplete}
-                  />
-
-                  {errors[id] && (
-                    <p className="form-error">{errors[id]}</p>
-                  )}
-                </div>
-              )
-            )}
-
-            <button type="submit" className="btn-submit">
-              Sign Up
+            <button
+              type="submit"
+              className="btn-submit"
+              disabled={loading}
+            >
+              {loading ? "Creating account..." : "Sign Up"}
             </button>
 
             <div className="form-divider">
