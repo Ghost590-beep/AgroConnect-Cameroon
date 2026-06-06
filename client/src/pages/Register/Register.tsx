@@ -12,6 +12,7 @@ interface FormState {
   password: string;
   confirmPassword: string;
   phone: string;
+  region: string;
 }
 
 type FormErrors = Partial<FormState>;
@@ -59,6 +60,13 @@ const FIELDS: {
     placeholder: "+237 6XX XXX XXX",
     autoComplete: "tel",
   },
+  {
+    id: "region",
+    label: "Region/City",
+    type: "text",
+    placeholder: "Enter your region or city",
+    autoComplete: "address-level2",
+  },
 ];
 
 /* ─── COMPONENT ─── */
@@ -72,6 +80,7 @@ export default function Register() {
     password: "",
     confirmPassword: "",
     phone: "",
+    region: "",
   });
 
   const [errors, setErrors] = useState<FormErrors>({});

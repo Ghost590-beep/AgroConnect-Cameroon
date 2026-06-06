@@ -12,7 +12,6 @@ import ProductGrid from "../../pages/MarketPage/Components/ProductGrid/ProductGr
 import CartDrawer from "../../pages/MarketPage/Components/CartDrawer/CartDrawer";
 import MarketFeatures from "../../pages/MarketPage/Components/MarketFeatures/MarketFeatures";
 import MarketFooter from "../../pages/MarketPage/Components/MarketFooter/MarketFooter";
-import type { Category } from "../../utils/constants";
 import { FaShoppingCart } from "react-icons/fa";
 import "../../styles/Market.css"
 

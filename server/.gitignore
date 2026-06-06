@@ -1,4 +1,47 @@
 node_modules/
-.env
 uploads/
 dist/
+
+# Dependencies
+node_modules/
+vendor/
+__pycache__/
+venv/
+.env/
+target/
+*.pyc
+
+# IDE
+.vscode/
+.idea/
+*.iml
+.DS_Store
+
+# Environment
+.env
+.env.local
+
+# Logs and databases
+*.log
+*.sqlite
+*.db
+
+# Build outputs
+dist/
+build/
+out/
+*.jar
+*.war
+
+# API testing (WireMock specific)
+__files/
+mappings/
+wiremock.log
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# OS files
+Thumbs.db
+.DS_Store
