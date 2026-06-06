@@ -26,12 +26,16 @@ export interface AuthResponse {
   };
 }
 
-export const loginUser = async (payload: LoginPayload): Promise<AuthResponse> => {
+export const loginUser = async (
+  payload: LoginPayload,
+): Promise<AuthResponse> => {
   const res = await axios.post(`${API}/auth/login`, payload);
   return res.data;
 };
 
-export const registerUser = async (payload: RegisterPayload): Promise<AuthResponse> => {
+export const registerUser = async (
+  payload: RegisterPayload,
+): Promise<AuthResponse> => {
   const res = await axios.post(`${API}/auth/register`, payload);
   return res.data;
 };

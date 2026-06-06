@@ -15,71 +15,71 @@
 ### 🧩 Phase 1 — Planning & Design
 
 - [~] Write README.md
-- [ ] Write PROGRESS.md
-- [ ] Create GitHub Project board
-- [ ] Create milestones
+- [x] Write PROGRESS.md
+- [x] Create GitHub Project board
+- [x] Create milestones
 - [x] Sketch wireframes
 - [x] Review wireframes
-- [ ] Learn Figma basics
-- [ ] Design all pages in Figma
+- [x] Learn Figma basics
+- [~] Design all pages in Figma
 
 ---
 
 ### 💻 Phase 2 — Frontend (React)
 
-- [ ] Setup React project
+- [x] Setup React project
 - [ ] Setup Tailwind CSS
-- [ ] Setup routing
-- [ ] Build Navbar
-- [ ] Build Footer
-- [ ] Build Landing page
-- [ ] Build Auth page
-- [ ] Build Dashboard
-- [ ] Build Marketplace
-- [ ] Build Profile page
+- [x] Setup routing
+- [x] Build Navbar
+- [x] Build Footer
+- [x] Build Landing page
+- [x] Build Auth page
+- [x] Build Dashboard
+- [x] Build Marketplace
+- [x] Build Profile page
 
 ---
 
 ### 🗄️ Phase 3 — Database (MySQL)
 
-- [ ] Create users table
-- [ ] Create products table
-- [ ] Create orders table
-- [ ] Create services table
-- [ ] Write schema.sql
-- [ ] Add sample data
+- [x] Create users table
+- [x] Create products table
+- [x] Create orders table
+- [x] Create services table
+- [x] Write schema.sql
+- [x] Add sample data
 
 ---
 
 ### ⚙️ Phase 4 — Backend (Node.js + Express)
 
-- [ ] Setup Express server
-- [ ] Connect to database
-- [ ] Build authentication (login/register)
-- [ ] Add auth middleware
-- [ ] Build product APIs
-- [ ] Build order APIs
-- [ ] Add file upload (images)
+- [x] Setup Express server
+- [x] Connect to database
+- [x] Build authentication (login/register)
+- [x] Add auth middleware
+- [x] Build product APIs
+- [x] Build order APIs
+- [x] Add file upload (images)
 
 ---
 
 ### 🔗 Phase 5 — Integration
 
-- [ ] Setup Axios
-- [ ] Connect frontend to backend
-- [ ] Implement authentication flow
-- [ ] Protect routes
-- [ ] Fetch real data from API
+- [~] Setup Axios
+- [~] Connect frontend to backend
+- [~] Implement authentication flow
+- [~]Protect routes
+- [~] Fetch real data from API
 
 ---
 
 ### 🚀 Phase 6 — Testing & Deployment
 
-- [ ] Test all features
-- [ ] Setup CI/CD
-- [ ] Deploy frontend
-- [ ] Deploy backend
-- [ ] Deploy database
+- [~] Test all features
+- [~] Setup CI/CD
+- [~] Deploy frontend
+- [~] Deploy backend
+- [~] Deploy database
 
 ---
 
