@@ -32,9 +32,11 @@ const Navbar: React.FC = () => {
 
         <ul className={`ln-nav-links ${menuOpen ? "ln-nav-open" : ""}`}>
           <li onClick={() => navigate("/landing")}>Home</li>
+          <li onClick={() => navigate("/dashboard")}>Dashboard</li>
           <li onClick={() => navigate("/market")}>Marketplace</li>
+          <li onClick={() => navigate("/profile")}>Profile</li>
           <li><a href="#categories">Categories</a></li>
-          <li><a href="#about">About</a></li>
+          <li onClick={() => navigate("/about")}>About</li>
           <li><a href="#contact">Contact</a></li>
         </ul>
 

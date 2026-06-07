@@ -11,7 +11,7 @@ import {
   FaCapsules, FaTools, FaTint, FaUserTie,
   FaBug, FaFlask, FaCheese, FaChalkboardTeacher, FaStore,
 } from "react-icons/fa";
-export const API_BASE = "http://localhost:5000";
+export const API_BASE = import.meta.env.VITE_API_BASE ?? "";
 export const API = `${API_BASE}/api`;
 export const DELIVERY_FEE = 50;
 

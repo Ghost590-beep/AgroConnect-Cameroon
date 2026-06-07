@@ -7,8 +7,8 @@ import { useAuth } from "../context/AuthContext";
  * Logged-in users are redirected to /market.
  */
 const PublicRoute: React.FC = () => {
-  const { token } = useAuth();
-  return token ? <Navigate to="/market" replace /> : <Outlet />;
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? <Navigate to="/market" replace /> : <Outlet />;
 };
 
 export default PublicRoute;

@@ -42,7 +42,9 @@ const Market: React.FC = () => {
       try {
         const data = await getAllProducts();
         setProducts(data);
-      } catch {}
+      } catch (error: any) {
+        console.error("Failed to load products", error.response?.status, error.response?.data || error.message);
+      }
     };
     fetchProducts();
   }, []);

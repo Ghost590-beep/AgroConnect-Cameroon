@@ -1,17 +1,18 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { uploadProduct } from "../../../src/services/productService";
-import ProductInfoForm from "../UploadProduct/Components/ProductInfoForm/ProductInfoForm";
-import ImageUploader from "../UploadProduct/Components/ImageUploader/ImageUpload";
-import ActionBar from "../UploadProduct/Components/ActionBar/ActionBar";
-import ProductPreview from "../UploadProduct/Components/ProductPreview/ProductPreview";
-import PublishOptions from "../UploadProduct/Components/PublishOptions/PublishOptions";
+import { uploadProduct } from "../../services/productService";
+import ProductInfoForm from "./Components/ProductInfoForm/ProductInfoForm";
+import ImageUploader from "./Components/ImageUploader/ImageUpload";
+import ActionBar from "./Components/ActionBar/ActionBar";
+import ProductPreview from "./Components/ProductPreview/ProductPreview";
+import PublishOptions from "./Components/PublishOptions/PublishOptions";
 import "../../styles/UploadProduct.css";
 
 const UploadProduct: React.FC = () => {
   const { token } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation<{ category?: string }>();
 
   const [loading, setLoading] = useState(false);
   const [visibility, setVisibility] = useState<"public" | "private">("public");
@@ -53,10 +54,22 @@ const UploadProduct: React.FC = () => {
     setImageFiles((prev) => [...prev, ...files].slice(0, 5));
   };
 
+  useEffect(() => {
+    if (location.state?.category) {
+      setForm((prev) => ({ ...prev, category: location.state.category }));
+    }
+  }, [location.state]);
+
   const handleSubmit = async (draft = false) => {
-    if (!draft && (!form.name || !form.category || !form.price)) {
-      alert("Please fill all required fields.");
-      return;
+    if (!draft) {
+      if (!form.name || !form.category || !form.price || !form.unit || !form.stock) {
+        alert("Please fill all required fields.");
+        return;
+      }
+      if (form.description.length < 5) {
+        alert("Description must be at least 5 characters.");
+        return;
+      }
     }
     if (!token) {
       alert("You must be logged in to upload a product.");
@@ -74,7 +87,7 @@ const UploadProduct: React.FC = () => {
       formData.append("unit", form.unit);
       formData.append("min_order", form.minOrder);
       formData.append("location", "");
-      formData.append("status", draft ? "draft" : visibility);
+      formData.append("status", draft ? "draft" : visibility === "public" ? "active" : "draft");
       if (imageFiles.length > 0) {
         formData.append("image", imageFiles[0]);
       }

@@ -50,7 +50,15 @@ const ProductGrid: React.FC<Props> = ({
           <div className="hm-product-card" key={product.id}>
             {product.image ? (
               <div className="hm-product-img-wrap">
-                <img src={product.image} alt={product.name} className="hm-product-img" />
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="hm-product-img"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='240'%3E%3Crect width='320' height='240' fill='%23e0e0e0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23888' font-size='18'%3ENo image%3C/text%3E%3C/svg%3E";
+                  }}
+                />
               </div>
             ) : (
               <div className="hm-img-placeholder">

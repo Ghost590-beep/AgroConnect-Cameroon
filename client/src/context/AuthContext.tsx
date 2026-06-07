@@ -57,7 +57,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = () => {
     setToken(null);
     setUser(null);
-    localStorage.clear();
+    // remove auth keys only to avoid clearing unrelated app state
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
   };
 
   /* Called after profile update or avatar upload */

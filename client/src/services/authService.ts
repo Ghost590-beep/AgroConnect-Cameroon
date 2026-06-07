@@ -1,4 +1,4 @@
-import axios from "axios";
+import axiosInstance from "./axiosConfig";
 import { API } from "../utils/constants";
 
 export interface LoginPayload {
@@ -29,15 +29,15 @@ export interface AuthResponse {
 export const loginUser = async (
   payload: LoginPayload,
 ): Promise<AuthResponse> => {
-  const res = await axios.post(`${API}/auth/login`, payload);
-  return res.data;
+  const res = await axiosInstance.post(`${API}/auth/login`, payload);
+  return res.data.data;
 };
 
 export const registerUser = async (
   payload: RegisterPayload,
 ): Promise<AuthResponse> => {
-  const res = await axios.post(`${API}/auth/register`, payload);
-  return res.data;
+  const res = await axiosInstance.post(`${API}/auth/register`, payload);
+  return res.data.data;
 };
 
 export const logoutUser = (): void => {
