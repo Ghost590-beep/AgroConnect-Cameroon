@@ -93,6 +93,7 @@
   border-radius: 8px;
   background: transparent;
   color: #2E7D32;
+  background-color:  #0c1f0d;
   font-size: 13px; font-weight: 600;
   cursor: pointer; transition: all 0.2s;
 }
@@ -101,7 +102,7 @@
 
 .ln-btn-solid {
   padding: 8px 18px;
-  background: #2E7D32;
+  background: #0c1f0d;
   border: 2px solid #2E7D32;
   border-radius: 8px;
   color: #fff;
