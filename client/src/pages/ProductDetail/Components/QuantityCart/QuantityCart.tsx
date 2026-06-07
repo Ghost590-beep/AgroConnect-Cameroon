@@ -6,6 +6,8 @@ interface QuantityCartProps {
   quantity: number;
   added: boolean;
   outOfStock: boolean;
+  disabled?: boolean;
+  disabledReason?: string;
   onDecrease: () => void;
   onIncrease: () => void;
   onAddToCart: () => void;
@@ -16,6 +18,8 @@ const QuantityCart: React.FC<QuantityCartProps> = ({
   quantity,
   added,
   outOfStock,
+  disabled,
+  disabledReason,
   onDecrease,
   onIncrease,
   onAddToCart,
@@ -24,21 +28,20 @@ const QuantityCart: React.FC<QuantityCartProps> = ({
   return (
     <div className="pd-actions">
       <div className="pd-qty-wrap">
-        <button
-          className="pd-qty-btn"
-          onClick={onDecrease}
-        >−</button>
+        <button className="pd-qty-btn" onClick={onDecrease}>
+          −
+        </button>
         <span className="pd-qty">{quantity}</span>
-        <button
-          className="pd-qty-btn"
-          onClick={onIncrease}
-        >+</button>
+        <button className="pd-qty-btn" onClick={onIncrease}>
+          +
+        </button>
       </div>
 
       <button
         className={`pd-cart-btn ${added ? "pd-cart-added" : ""}`}
         onClick={onAddToCart}
-        disabled={outOfStock}
+        disabled={outOfStock || disabled}
+        title={disabled ? disabledReason : undefined}
       >
         <FaShoppingCart size={14} />
         {added ? "Added to cart!" : "Add to cart"}
@@ -47,7 +50,8 @@ const QuantityCart: React.FC<QuantityCartProps> = ({
       <button
         className="pd-checkout-btn"
         onClick={onBuyNow}
-        disabled={outOfStock}
+        disabled={outOfStock || disabled}
+        title={disabled ? disabledReason : undefined}
       >
         Buy now
       </button>

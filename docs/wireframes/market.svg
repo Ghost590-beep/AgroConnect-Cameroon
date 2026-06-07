@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600">
+  <rect width="100%" height="100%" fill="#fff8f0"/>
+  <text x="50%" y="20%" font-size="24" text-anchor="middle" fill="#333">Market Page Wireframe</text>
+  <rect x="40" y="80" width="200" height="300" fill="#fff" stroke="#ddd"/>
+  <rect x="260" y="80" width="200" height="300" fill="#fff" stroke="#ddd"/>
+  <rect x="480" y="80" width="200" height="300" fill="#fff" stroke="#ddd"/>
+</svg>

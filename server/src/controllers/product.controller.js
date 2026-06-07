@@ -18,7 +18,9 @@ class ProductController {
       const productPayload = {
         ...req.body,
         user_id: req.user?.id,
-        image: req.file ? `/uploads/products/${req.file.filename}` : req.body.image,
+        image: req.file
+          ? `/uploads/products/${req.file.filename}`
+          : req.body.image,
       };
       const product = await ProductService.addProduct(productPayload);
       return response.success(
@@ -76,7 +78,7 @@ class ProductController {
   // =========================
   async deleteProduct(req, res, next) {
     try {
-      await ProductService.deleteProduct(req.params.id);
+      await ProductService.deleteProduct(req.params.id, req.user?.id);
       return response.success(res, null, "Product deleted successfully");
     } catch (error) {
       next(error);

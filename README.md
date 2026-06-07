@@ -166,3 +166,35 @@ The project is divided into 5 milestones:
 # 📄 ====== License =====
 
 MIT — built for agriculture in Cameroon 🇨🇲
+
+---
+
+## Codebase annotations — purpose, OOP concepts, and SOLID mapping
+
+This section provides concise comments about the structure and design principles used across the repository.
+
+- `server/` (backend)
+  - `controllers/`: HTTP handlers that validate input and delegate to `services`.
+  - `services/`: business rules, orchestration, and cross-cutting logic.
+  - `repositories/`: SQL queries and DB mapping. Single place for persistence code.
+
+- `client/` (frontend)
+  - `pages/`: route-level components that compose UI from `components/`.
+  - `components/`: reusable UI building blocks.
+  - `services/`: API wrappers used by the UI to talk to the backend.
+
+OOP concepts found in code:
+
+- Abstraction: clear separation of HTTP, business logic, and persistence.
+- Encapsulation: each module exposes a small focused API (e.g., repositories expose `findById`, `create`).
+- Composition: services compose repositories and utilities rather than using inheritance.
+
+SOLID principles (where they apply):
+
+- SRP: Each file has one reason to change (routes, controllers, services, repositories).
+- OCP: New features are added via new service methods or new routes, minimizing edits to existing code.
+- LSP: Components that implement similar contracts can be swapped out for tests/mocks.
+- ISP: Modules expose narrow APIs tailored to their consumer (controllers vs repositories).
+- DIP: High-level modules depend on service interfaces; lower-level details (DB) can be replaced in tests.
+
+If you want a commit that adds a top-of-file comment block to every JS/TS file describing its purpose and mapping to SOLID principles, I can generate and apply that automatically.

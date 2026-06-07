@@ -51,10 +51,11 @@ class ProductService {
     if (raw.subcategoryId) return parseInt(raw.subcategoryId, 10);
     if (raw.subcategory) {
       try {
-        const subcategory = await CategoryService.getSubcategoryByCategoryAndName(
-          categoryId,
-          raw.subcategory,
-        );
+        const subcategory =
+          await CategoryService.getSubcategoryByCategoryAndName(
+            categoryId,
+            raw.subcategory,
+          );
         return subcategory.id;
       } catch (error) {
         // If a valid subcategory name is provided but it doesn't exist yet,
@@ -68,9 +69,8 @@ class ProductService {
       }
     }
 
-    const subcategories = await CategoryService.getSubcategoriesByCategory(
-      categoryId,
-    );
+    const subcategories =
+      await CategoryService.getSubcategoriesByCategory(categoryId);
     if (subcategories.length > 0) {
       return subcategories[0].id;
     }
@@ -130,7 +130,17 @@ class ProductService {
   // =========================
   // Delete product (with cleanup)
   // =========================
-  async deleteProduct(productId) {
+  async deleteProduct(productId, userId) {
+    const product = await ProductRepository.findById(productId);
+    if (!product) {
+      throw new Error("Product not found");
+    }
+    if (product.user_id !== userId) {
+      const error = new Error("Unauthorized to delete this product");
+      error.status = 403;
+      throw error;
+    }
+
     await ProductImageRepository.deleteByProductId(productId);
     await ReviewRepository.delete(productId); // optional cleanup if cascade not enabled
     return await ProductRepository.delete(productId);

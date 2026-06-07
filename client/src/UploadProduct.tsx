@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
-import { uploadProduct } from "../src/services/productService";
+import { uploadProduct } from "./services/productService";
 import {
   FaClipboardList,
   FaImage,
@@ -11,15 +11,38 @@ import {
   FaCheck,
   FaCloudUploadAlt,
 } from "react-icons/fa";
-import "../src/styles/UploadProduct.css";
+import "./styles/UploadProduct.css";
 
-const CATEGORIES = ["Crops & Seeds", "Animals", "Machines & Tools", "Services", "Medications", "Training"];
+const CATEGORIES = [
+  "Crops & Seeds",
+  "Animals",
+  "Machines & Tools",
+  "Services",
+  "Medications",
+  "Training",
+];
 
 const SUBCATEGORIES: Record<string, string[]> = {
-  "Crops & Seeds": ["Vegetables", "Fruits", "Grains", "Seeds", "Dairy Products"],
+  "Crops & Seeds": [
+    "Vegetables",
+    "Fruits",
+    "Grains",
+    "Seeds",
+    "Dairy Products",
+  ],
   Animals: ["Livestock"],
-  "Machines & Tools": ["Tractors", "Hand Tools", "Irrigation Equipment", "Harvesting Equipment"],
-  Services: ["Farm Labour", "Transportation", "Consultancy", "Equipment Rental"],
+  "Machines & Tools": [
+    "Tractors",
+    "Hand Tools",
+    "Irrigation Equipment",
+    "Harvesting Equipment",
+  ],
+  Services: [
+    "Farm Labour",
+    "Transportation",
+    "Consultancy",
+    "Equipment Rental",
+  ],
   Medications: ["Animal Medicine", "Crop Protection", "Supplements"],
   Training: ["Farming Techniques", "Sustainable Agriculture", "Market Access"],
 };
@@ -51,7 +74,9 @@ const UploadProduct: React.FC = () => {
 
   /* ── handlers ── */
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
@@ -59,7 +84,9 @@ const UploadProduct: React.FC = () => {
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setDragOver(false);
-    const files = Array.from(e.dataTransfer.files).filter((f) => f.type.startsWith("image/"));
+    const files = Array.from(e.dataTransfer.files).filter((f) =>
+      f.type.startsWith("image/"),
+    );
     setImageFiles((prev) => [...prev, ...files].slice(0, 5));
   };
 
@@ -99,13 +126,29 @@ const UploadProduct: React.FC = () => {
         formData.append("image", imageFiles[0]);
       }
 
+      // Debug: log formData contents
+      for (const [key, value] of Array.from(formData.entries())) {
+        if (value instanceof File) {
+          console.log("formData", key, value.name, value.type, value.size);
+        } else {
+          console.log("formData", key, value);
+        }
+      }
+
       // ✅ uses productService instead of raw axios
       await uploadProduct(token, formData);
 
       alert(draft ? "Saved as draft!" : "Product published successfully!");
       navigate("/profile");
     } catch (err: any) {
-      alert(err.response?.data?.message || "Failed to upload product");
+      console.error("Upload product error:", err);
+      const msg =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Failed to upload product";
+      alert(
+        `Upload failed: ${msg} (status: ${err?.response?.status ?? "N/A"})`,
+      );
     } finally {
       setLoading(false);
     }
@@ -128,7 +171,6 @@ const UploadProduct: React.FC = () => {
         <div className="up-layout">
           {/* ── LEFT ── */}
           <div className="up-left">
-
             {/* PRODUCT INFO */}
             <div className="up-card">
               <div className="up-card-title">
@@ -137,7 +179,9 @@ const UploadProduct: React.FC = () => {
               </div>
               <div className="up-form-row">
                 <div className="up-field">
-                  <label>Product name <span className="up-req">*</span></label>
+                  <label>
+                    Product name <span className="up-req">*</span>
+                  </label>
                   <input
                     name="name"
                     value={form.name}
@@ -146,10 +190,18 @@ const UploadProduct: React.FC = () => {
                   />
                 </div>
                 <div className="up-field">
-                  <label>Category <span className="up-req">*</span></label>
-                  <select name="category" value={form.category} onChange={handleChange}>
+                  <label>
+                    Category <span className="up-req">*</span>
+                  </label>
+                  <select
+                    name="category"
+                    value={form.category}
+                    onChange={handleChange}
+                  >
                     <option value="">Select category</option>
-                    {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
+                    {CATEGORIES.map((c) => (
+                      <option key={c}>{c}</option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -164,20 +216,28 @@ const UploadProduct: React.FC = () => {
                     disabled={!subcats.length}
                   >
                     <option value="">Select subcategory</option>
-                    {subcats.map((s) => <option key={s}>{s}</option>)}
+                    {subcats.map((s) => (
+                      <option key={s}>{s}</option>
+                    ))}
                   </select>
                 </div>
                 <div className="up-field">
-                  <label>Unit of measure <span className="up-req">*</span></label>
+                  <label>
+                    Unit of measure <span className="up-req">*</span>
+                  </label>
                   <select name="unit" value={form.unit} onChange={handleChange}>
                     <option value="">Select unit</option>
-                    {UNITS.map((u) => <option key={u}>{u}</option>)}
+                    {UNITS.map((u) => (
+                      <option key={u}>{u}</option>
+                    ))}
                   </select>
                 </div>
               </div>
 
               <div className="up-field up-full">
-                <label>Description <span className="up-req">*</span></label>
+                <label>
+                  Description <span className="up-req">*</span>
+                </label>
                 <textarea
                   name="description"
                   value={form.description}
@@ -186,12 +246,16 @@ const UploadProduct: React.FC = () => {
                   maxLength={500}
                   placeholder="Describe your product, quality, and any other important details..."
                 />
-                <span className="up-char-count">{form.description.length}/500</span>
+                <span className="up-char-count">
+                  {form.description.length}/500
+                </span>
               </div>
 
               <div className="up-form-row up-three">
                 <div className="up-field">
-                  <label>Price <span className="up-req">*</span></label>
+                  <label>
+                    Price <span className="up-req">*</span>
+                  </label>
                   <div className="up-price-wrap">
                     <span className="up-prefix">FCFA</span>
                     <input
@@ -217,7 +281,9 @@ const UploadProduct: React.FC = () => {
                   </div>
                 </div>
                 <div className="up-field">
-                  <label>Stock available <span className="up-req">*</span></label>
+                  <label>
+                    Stock available <span className="up-req">*</span>
+                  </label>
                   <div className="up-unit-wrap">
                     <input
                       name="stock"
@@ -245,24 +311,36 @@ const UploadProduct: React.FC = () => {
                 <div
                   className={`up-drop-zone ${dragOver ? "up-drop-over" : ""}`}
                   onDrop={handleDrop}
-                  onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setDragOver(true);
+                  }}
                   onDragLeave={() => setDragOver(false)}
                   onClick={() => fileRef.current?.click()}
                 >
                   <div className="up-drop-icon">
                     <FaCloudUploadAlt size={24} color="#2E7D32" />
                   </div>
-                  <p className="up-drop-text">Drag &amp; drop your images here</p>
+                  <p className="up-drop-text">
+                    Drag &amp; drop your images here
+                  </p>
                   <p className="up-drop-or">or</p>
                   <button
                     className="up-choose-btn"
                     type="button"
-                    onClick={(e) => { e.stopPropagation(); fileRef.current?.click(); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      fileRef.current?.click();
+                    }}
                   >
                     Choose files
                   </button>
-                  <p className="up-file-meta">JPG, PNG or WebP (Max. 5MB each)</p>
-                  <p className="up-file-count">{imageFiles.length} of 5 images uploaded</p>
+                  <p className="up-file-meta">
+                    JPG, PNG or WebP (Max. 5MB each)
+                  </p>
+                  <p className="up-file-count">
+                    {imageFiles.length} of 5 images uploaded
+                  </p>
                   <input
                     ref={fileRef}
                     type="file"
@@ -303,7 +381,10 @@ const UploadProduct: React.FC = () => {
 
             {/* ACTION BAR */}
             <div className="up-action-bar">
-              <button className="up-cancel-btn" onClick={() => navigate("/market")}>
+              <button
+                className="up-cancel-btn"
+                onClick={() => navigate("/market")}
+              >
                 Cancel
               </button>
               <div className="up-btn-group">
@@ -328,7 +409,6 @@ const UploadProduct: React.FC = () => {
 
           {/* ── RIGHT ── */}
           <div className="up-right">
-
             {/* PREVIEW */}
             <div className="up-card">
               <div className="up-card-title">
@@ -356,21 +436,29 @@ const UploadProduct: React.FC = () => {
                 </div>
                 <div className="up-pf">
                   <span className="up-pf-label">Price</span>
-                  <span className="up-pf-val">{form.price ? `FCFA ${form.price}` : "—"}</span>
+                  <span className="up-pf-val">
+                    {form.price ? `FCFA ${form.price}` : "—"}
+                  </span>
                 </div>
                 <div className="up-pf">
                   <span className="up-pf-label">Available stock</span>
-                  <span className="up-pf-val">{form.stock ? `${form.stock} ${form.unit}` : "—"}</span>
+                  <span className="up-pf-val">
+                    {form.stock ? `${form.stock} ${form.unit}` : "—"}
+                  </span>
                 </div>
               </div>
             </div>
 
             {/* QUALITY */}
             <div className="up-quality-card">
-              <div className="up-q-icon"><FaShieldAlt size={15} color="#fff" /></div>
+              <div className="up-q-icon">
+                <FaShieldAlt size={15} color="#fff" />
+              </div>
               <div>
                 <h4>Quality assurance</h4>
-                <p>All products are reviewed to ensure quality and transparency.</p>
+                <p>
+                  All products are reviewed to ensure quality and transparency.
+                </p>
               </div>
             </div>
 
@@ -380,10 +468,18 @@ const UploadProduct: React.FC = () => {
                 <FaRocket className="up-card-icon" />
                 Publishing options
               </div>
-              <p className="up-vis-label">Visibility <span className="up-req">*</span></p>
+              <p className="up-vis-label">
+                Visibility <span className="up-req">*</span>
+              </p>
               {(["public", "private"] as const).map((v) => (
-                <div key={v} className="up-vis-option" onClick={() => setVisibility(v)}>
-                  <div className={`up-radio ${visibility === v ? "up-radio-on" : ""}`}>
+                <div
+                  key={v}
+                  className="up-vis-option"
+                  onClick={() => setVisibility(v)}
+                >
+                  <div
+                    className={`up-radio ${visibility === v ? "up-radio-on" : ""}`}
+                  >
                     {visibility === v && <span className="up-radio-dot" />}
                   </div>
                   <div>
@@ -397,7 +493,6 @@ const UploadProduct: React.FC = () => {
                 </div>
               ))}
             </div>
-
           </div>
         </div>
       </div>

@@ -79,7 +79,7 @@ paths:
       summary: Get all products
       responses:
         "200":
-          description: Product list returned
+          description: Product list returned (only public/non-draft products)
     post:
       tags:
         - Products
@@ -127,3 +127,28 @@ paths:
           description: Product returned
         "404":
           description: Product not found
+
+  /users/profile/avatar:
+    post:
+      tags:
+        - Users
+      summary: Upload user avatar
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Avatar uploaded and user profile updated
+        "400":
+          description: No file provided or validation error
+        "401":
+          description: Authentication required

@@ -25,7 +25,10 @@ class OrderController {
       }
 
       const { orderData, items } = req.body;
-      const order = await OrderService.placeOrder(orderData, items);
+      const order = await OrderService.placeOrder(
+        { ...orderData, user_id: req.user?.id },
+        items,
+      );
       return response.success(res, order, "Order placed successfully", 201);
     } catch (error) {
       next(error);
