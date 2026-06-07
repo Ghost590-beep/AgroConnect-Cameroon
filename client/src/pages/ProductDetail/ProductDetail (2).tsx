@@ -13,7 +13,7 @@ import "../../styles/ProductDetail.css";
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { token } = useAuth();
+  const { user: authUser } = useAuth();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -38,6 +38,11 @@ const ProductDetail: React.FC = () => {
   /* ── Add to cart ── */
   const addToCart = () => {
     if (!product) return;
+    if (authUser && product.user_id === authUser.id) {
+      alert("You cannot add your own product to the cart.");
+      return;
+    }
+
     const saved = localStorage.getItem("agro_cart");
     const cart = saved ? JSON.parse(saved) : [];
     const existing = cart.find((i: any) => i.id === product.id);
@@ -81,7 +86,6 @@ const ProductDetail: React.FC = () => {
 
   return (
     <div className="pd-page">
-
       {/* ── TOPBAR ── */}
       <div className="pd-topbar">
         <span className="pd-brand">AgroConnect</span>
@@ -95,7 +99,6 @@ const ProductDetail: React.FC = () => {
       </div>
 
       <div className="pd-container">
-
         {/* ── BACK ── */}
         <button className="pd-back-btn" onClick={() => navigate("/market")}>
           <FaArrowLeft size={12} /> Back to marketplace
@@ -103,7 +106,6 @@ const ProductDetail: React.FC = () => {
 
         {/* ── MAIN ── */}
         <div className="pd-main">
-
           <ProductImage image={product.image} name={product.name} />
 
           <div className="pd-info-col">
@@ -112,14 +114,31 @@ const ProductDetail: React.FC = () => {
               quantity={quantity}
               added={added}
               outOfStock={product.stock_quantity === 0}
+              disabled={authUser?.id === product.user_id}
+              disabledReason={
+                authUser?.id === product.user_id
+                  ? "You cannot purchase your own product."
+                  : undefined
+              }
               onDecrease={() => setQuantity((q) => Math.max(1, q - 1))}
               onIncrease={() => setQuantity((q) => q + 1)}
               onAddToCart={addToCart}
-              onBuyNow={() => { addToCart(); navigate("/checkout"); }}
+              onBuyNow={() => {
+                if (authUser && product.user_id === authUser.id) {
+                  alert("You cannot buy your own product.");
+                  return;
+                }
+                addToCart();
+                navigate("/checkout");
+              }}
             />
+            {authUser?.id === product.user_id && (
+              <p className="pd-own-note">
+                This listing belongs to you and cannot be purchased.
+              </p>
+            )}
             <ContactSeller phone={product.phone} />
           </div>
-
         </div>
       </div>
     </div>

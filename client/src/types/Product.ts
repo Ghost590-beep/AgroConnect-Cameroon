@@ -11,7 +11,8 @@ export interface Product {
   location: string;
   price: number;
   image: string;
+  user_id: number;
   description?: string;
   status?: string;
-  phone?:string;
+  phone?: string;
 }

@@ -10,6 +10,7 @@ import swaggerJsdoc from "swagger-jsdoc";
 
 import routes from "./routes/index.js";
 import ErrorMiddleware from "./middlewares/error.middleware.js";
+import fs from "fs";
 
 dotenv.config();
 
@@ -17,6 +18,17 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+
+// Ensure upload directories exist to avoid ENOENT when multer stores files
+const uploadsDir = path.join(__dirname, "../uploads");
+const productsDir = path.join(uploadsDir, "products");
+const avatarsDir = path.join(uploadsDir, "avatars");
+try {
+  fs.mkdirSync(productsDir, { recursive: true });
+  fs.mkdirSync(avatarsDir, { recursive: true });
+} catch (err) {
+  console.error("Failed to create upload directories:", err);
+}
 
 // Core middlewares
 app.use(express.json());

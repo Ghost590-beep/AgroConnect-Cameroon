@@ -17,6 +17,7 @@ export const uploadProduct = async (token: string, formData: FormData) => {
   const res = await axiosInstance.post(`${API}/products`, formData, {
     headers: {
       Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
     },
   });
   return res.data.data;

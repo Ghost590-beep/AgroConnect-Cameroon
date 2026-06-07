@@ -10,7 +10,7 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
     phone VARCHAR(20),
     location VARCHAR(255) DEFAULT 'Cameroon',
-    profile_image VARCHAR(500),
+    profile_image TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

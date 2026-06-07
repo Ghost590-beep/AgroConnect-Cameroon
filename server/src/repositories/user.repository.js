@@ -28,11 +28,22 @@ class UserRepository {
   }
 
   async updateProfile(id, updates) {
-    const { full_name, phone, location, profile_image } = updates;
+    // Preserve existing values when fields are not provided to avoid NOT NULL violations
+    const existing = await this.findById(id);
+    if (!existing) {
+      throw new Error("User not found");
+    }
+
+    const full_name = updates.full_name ?? existing.full_name;
+    const phone = updates.phone ?? existing.phone;
+    const location = updates.location ?? existing.location;
+    const profile_image = updates.profile_image ?? existing.profile_image;
+
     await db.query(
       "UPDATE users SET full_name=?, phone=?, location=?, profile_image=? WHERE id=?",
       [full_name, phone, location, profile_image, id],
     );
+
     return this.findById(id);
   }
 

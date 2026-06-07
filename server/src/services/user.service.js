@@ -1,6 +1,8 @@
 // src/services/user.service.js
 import UserRepository from "../repositories/user.repository.js";
 import UserActionsRepository from "../repositories/userActions.repository.js"; // optional if roles/actions are used
+import ProductService from "./product.service.js";
+import OrderService from "./order.service.js";
 
 class UserService {
   // =========================
@@ -81,18 +83,18 @@ class UserService {
   // =========================
   async getUserStats(userId) {
     try {
-      // Query database for user stats
-      // This should return: products_listed, orders_completed, rating, total_earnings
-      const stats = {
-        products_listed: 0,
-        orders_completed: 0,
+      const [products, orders] = await Promise.all([
+        ProductService.getProductsByUser(userId),
+        OrderService.getOrdersByUser(userId),
+      ]);
+
+      return {
+        products_listed: products.length,
+        orders_completed: orders.filter((order) => order.status === "completed")
+          .length,
         rating: 0,
-        total_earnings: 0
+        total_earnings: 0,
       };
-      
-      // TODO: Implement actual database queries for stats
-      // For now, returning placeholder values
-      return stats;
     } catch (error) {
       throw error;
     }
@@ -103,10 +105,7 @@ class UserService {
   // =========================
   async getUserProducts(userId) {
     try {
-      // Query database for user's products
-      // This should return array of products created by the user
-      // TODO: Implement actual database query
-      return [];
+      return await ProductService.getProductsByUser(userId);
     } catch (error) {
       throw error;
     }
@@ -117,10 +116,7 @@ class UserService {
   // =========================
   async getUserOrders(userId) {
     try {
-      // Query database for user's orders
-      // This should return array of orders made by the user
-      // TODO: Implement actual database query
-      return [];
+      return await OrderService.getOrdersByUser(userId);
     } catch (error) {
       throw error;
     }

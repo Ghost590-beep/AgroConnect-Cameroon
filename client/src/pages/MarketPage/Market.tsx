@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { DELIVERY_FEE, CATEGORY_EMOJI, CATEGORIES, FEATURES } from "../../utils/constants";
+import {
+  DELIVERY_FEE,
+  CATEGORY_EMOJI,
+  CATEGORIES,
+  FEATURES,
+} from "../../utils/constants";
 import type { Product } from "../../types/Product";
 import type { CartItem } from "../../types/Cart";
 import { useAuth } from "../../context/AuthContext";
@@ -13,7 +18,7 @@ import CartDrawer from "../../pages/MarketPage/Components/CartDrawer/CartDrawer"
 import MarketFeatures from "../../pages/MarketPage/Components/MarketFeatures/MarketFeatures";
 import MarketFooter from "../../pages/MarketPage/Components/MarketFooter/MarketFooter";
 import { FaShoppingCart } from "react-icons/fa";
-import "../../styles/Market.css"
+import "../../styles/Market.css";
 
 const Market: React.FC = () => {
   const navigate = useNavigate();
@@ -27,8 +32,15 @@ const Market: React.FC = () => {
   const [maxPrice, setMaxPrice] = useState("");
   const [sortBy, setSortBy] = useState("newest");
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [typeFilters, setTypeFilters] = useState({ forSale: true, forRent: true, services: false });
-  const [condFilters, setCondFilters] = useState({ newCond: true, usedCond: true });
+  const [typeFilters, setTypeFilters] = useState({
+    forSale: true,
+    forRent: true,
+    services: false,
+  });
+  const [condFilters, setCondFilters] = useState({
+    newCond: true,
+    usedCond: true,
+  });
   const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<CartItem[]>(() => {
     const saved = localStorage.getItem("agro_cart");
@@ -43,7 +55,11 @@ const Market: React.FC = () => {
         const data = await getAllProducts();
         setProducts(data);
       } catch (error: any) {
-        console.error("Failed to load products", error.response?.status, error.response?.data || error.message);
+        console.error(
+          "Failed to load products",
+          error.response?.status,
+          error.response?.data || error.message,
+        );
       }
     };
     fetchProducts();
@@ -54,24 +70,46 @@ const Market: React.FC = () => {
   }, [cart]);
 
   const addToCart = (product: Product) => {
+    if (authUser && product.user_id === authUser.id) {
+      alert("You cannot add your own product to the cart.");
+      return;
+    }
+
     setCart((prev) => {
       const existing = prev.find((i) => i.id === product.id);
-      if (existing) return prev.map((i) => i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i);
-      return [...prev, {
-        id: product.id, name: product.name, price: product.price,
-        image: product.image, unit: product.unit,
-        emoji: CATEGORY_EMOJI[product.category] || "🌿", quantity: 1,
-      }];
+      if (existing)
+        return prev.map((i) =>
+          i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i,
+        );
+      return [
+        ...prev,
+        {
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          image: product.image,
+          unit: product.unit,
+          emoji: CATEGORY_EMOJI[product.category] || "🌿",
+          quantity: 1,
+        },
+      ];
     });
   };
 
   const increaseQty = (id: number) =>
-    setCart((prev) => prev.map((i) => i.id === id ? { ...i, quantity: i.quantity + 1 } : i));
+    setCart((prev) =>
+      prev.map((i) => (i.id === id ? { ...i, quantity: i.quantity + 1 } : i)),
+    );
 
   const decreaseQty = (id: number) =>
-    setCart((prev) => prev.map((i) => i.id === id ? { ...i, quantity: i.quantity - 1 } : i).filter((i) => i.quantity > 0));
+    setCart((prev) =>
+      prev
+        .map((i) => (i.id === id ? { ...i, quantity: i.quantity - 1 } : i))
+        .filter((i) => i.quantity > 0),
+    );
 
-  const removeItem = (id: number) => setCart((prev) => prev.filter((i) => i.id !== id));
+  const removeItem = (id: number) =>
+    setCart((prev) => prev.filter((i) => i.id !== id));
   const clearCart = () => setCart([]);
 
   const cartCount = cart.reduce((a, b) => a + b.quantity, 0);
@@ -81,21 +119,29 @@ const Market: React.FC = () => {
   const placeOrder = () => {
     setOrderPlaced(true);
     clearCart();
-    setTimeout(() => { setOrderPlaced(false); setCartOpen(false); }, 3000);
+    setTimeout(() => {
+      setOrderPlaced(false);
+      setCartOpen(false);
+    }, 3000);
   };
 
   const filtered = products
     .filter((p) => {
-      const matchCat = activeCategory === "All Categories" || p.category === activeCategory;
-      const matchSub = activeSubcategory === "" || p.subcategory === activeSubcategory;
-      const matchLoc = activeLocation === "All Locations" || p.location === activeLocation;
+      const matchCat =
+        activeCategory === "All Categories" || p.category === activeCategory;
+      const matchSub =
+        activeSubcategory === "" || p.subcategory === activeSubcategory;
+      const matchLoc =
+        activeLocation === "All Locations" || p.location === activeLocation;
       const matchSearch =
         p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         p.farmer.toLowerCase().includes(searchTerm.toLowerCase()) ||
         p.location.toLowerCase().includes(searchTerm.toLowerCase());
       const matchMin = minPrice === "" || p.price >= Number(minPrice);
       const matchMax = maxPrice === "" || p.price <= Number(maxPrice);
-      return matchCat && matchSub && matchLoc && matchSearch && matchMin && matchMax;
+      return (
+        matchCat && matchSub && matchLoc && matchSearch && matchMin && matchMax
+      );
     })
     .sort((a, b) => {
       if (sortBy === "price-asc") return a.price - b.price;
@@ -111,7 +157,10 @@ const Market: React.FC = () => {
         cartCount={cartCount}
         onCartOpen={() => setCartOpen(true)}
         authUser={authUser}
-        onLogout={() => { logout(); navigate("/login"); }}
+        onLogout={() => {
+          logout();
+          navigate("/login");
+        }}
         onProfileClick={() => navigate("/profile")}
       />
       <MarketHero onNavigateHome={() => navigate("/landing")} />
@@ -120,7 +169,10 @@ const Market: React.FC = () => {
           <button
             key={cat.name}
             className={`hm-cat-pill ${activeCategory === cat.name ? "hm-cat-active" : ""}`}
-            onClick={() => { setActiveCategory(cat.name); setActiveSubcategory(""); }}
+            onClick={() => {
+              setActiveCategory(cat.name);
+              setActiveSubcategory("");
+            }}
           >
             <span className="hm-cat-icon">{cat.icon}</span>
             {cat.name}
@@ -131,9 +183,19 @@ const Market: React.FC = () => {
         <Sidebar
           sidebarOpen={sidebarOpen}
           typeFilters={typeFilters}
-          onTypeFilterChange={(key) => setTypeFilters((p) => ({ ...p, [key]: !p[key as keyof typeof typeFilters] }))}
+          onTypeFilterChange={(key) =>
+            setTypeFilters((p) => ({
+              ...p,
+              [key]: !p[key as keyof typeof typeFilters],
+            }))
+          }
           condFilters={condFilters}
-          onCondFilterChange={(key) => setCondFilters((p) => ({ ...p, [key]: !p[key as keyof typeof condFilters] }))}
+          onCondFilterChange={(key) =>
+            setCondFilters((p) => ({
+              ...p,
+              [key]: !p[key as keyof typeof condFilters],
+            }))
+          }
           minPrice={minPrice}
           maxPrice={maxPrice}
           onMinPriceChange={setMinPrice}
@@ -154,12 +216,11 @@ const Market: React.FC = () => {
           onViewDetails={(id) => navigate(`/product/${id}`)}
           onCheckout={() => navigate("/checkout")}
           cartCount={cartCount}
+          currentUserId={authUser?.id}
         />
       </div>
       <MarketFeatures features={FEATURES} />
-      <MarketFooter
-        onNavigate={navigate}
-      />
+      <MarketFooter onNavigate={navigate} />
       <button className="hm-fab-cart" onClick={() => navigate("/checkout")}>
         <FaShoppingCart size={18} />
         {cartCount > 0 && <span className="hm-fab-badge">{cartCount}</span>}

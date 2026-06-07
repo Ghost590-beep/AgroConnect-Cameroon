@@ -5,6 +5,8 @@ import response from "../utils/response.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { validationResult } from "express-validator";
+import fs from "fs/promises";
+import path from "path";
 
 class UserController {
   // =========================
@@ -32,7 +34,18 @@ class UserController {
         role,
       });
 
-      return response.success(res, user, "User registered successfully", 201);
+      const token = jwt.sign(
+        { id: user.id, roles: user.roles || [] },
+        process.env.JWT_SECRET,
+        { expiresIn: "1h" },
+      );
+
+      return response.success(
+        res,
+        { user, token },
+        "User registered successfully",
+        201,
+      );
     } catch (error) {
       next(error);
     }
@@ -99,13 +112,13 @@ class UserController {
     try {
       const userId = req.user.id;
       const { full_name, phone, location } = req.body;
-      
+
       const updated = await UserService.updateProfile(userId, {
         full_name,
         phone,
-        location
+        location,
       });
-      
+
       return response.success(res, updated, "Profile updated successfully");
     } catch (error) {
       next(error);
@@ -118,17 +131,43 @@ class UserController {
   async uploadAvatar(req, res, next) {
     try {
       const userId = req.user.id;
-      
+
       if (!req.file) {
         return response.error(res, null, "No file provided", 400);
       }
 
-      const avatarUrl = `/uploads/avatars/${req.file.filename}`;
-      const updated = await UserService.updateProfile(userId, {
-        profile_image: avatarUrl
-      });
+      // Read the saved file and store its base64 data in DB
+      const uploadPath = path.join(
+        process.cwd(),
+        "uploads",
+        "avatars",
+        req.file.filename,
+      );
+      try {
+        const fileBuffer = await fs.readFile(uploadPath);
+        const base64 = `data:${req.file.mimetype};base64,${fileBuffer.toString("base64")}`;
 
-      return response.success(res, updated, "Avatar uploaded successfully");
+        // Update user profile with base64 image
+        const updated = await UserService.updateProfile(userId, {
+          profile_image: base64,
+        });
+
+        // Optionally remove file from disk since we persisted image in DB
+        await fs.unlink(uploadPath).catch(() => {});
+
+        return response.success(res, updated, "Avatar uploaded successfully");
+      } catch (fsErr) {
+        // Fallback: store URL if reading failed
+        const avatarUrl = `/uploads/avatars/${req.file.filename}`;
+        const updated = await UserService.updateProfile(userId, {
+          profile_image: avatarUrl,
+        });
+        return response.success(
+          res,
+          updated,
+          "Avatar uploaded (file stored on disk)",
+        );
+      }
     } catch (error) {
       next(error);
     }
@@ -147,7 +186,10 @@ class UserController {
       if (!user) throw new Error("User not found");
 
       // Verify current password
-      const validPassword = await bcrypt.compare(current_password, user.password);
+      const validPassword = await bcrypt.compare(
+        current_password,
+        user.password,
+      );
       if (!validPassword) throw new Error("Current password is incorrect");
 
       // Hash new password and update
@@ -167,7 +209,11 @@ class UserController {
     try {
       const userId = req.user.id;
       const stats = await UserService.getUserStats(userId);
-      return response.success(res, stats, "User statistics retrieved successfully");
+      return response.success(
+        res,
+        stats,
+        "User statistics retrieved successfully",
+      );
     } catch (error) {
       next(error);
     }
@@ -180,7 +226,11 @@ class UserController {
     try {
       const userId = req.user.id;
       const products = await UserService.getUserProducts(userId);
-      return response.success(res, products, "User products retrieved successfully");
+      return response.success(
+        res,
+        products,
+        "User products retrieved successfully",
+      );
     } catch (error) {
       next(error);
     }
@@ -193,7 +243,11 @@ class UserController {
     try {
       const userId = req.user.id;
       const orders = await UserService.getUserOrders(userId);
-      return response.success(res, orders, "User orders retrieved successfully");
+      return response.success(
+        res,
+        orders,
+        "User orders retrieved successfully",
+      );
     } catch (error) {
       next(error);
     }
@@ -206,12 +260,16 @@ class UserController {
     try {
       const userId = req.user.id;
       const preferences = req.body;
-      
+
       const updated = await UserService.updateProfile(userId, {
-        notification_preferences: preferences
+        notification_preferences: preferences,
       });
 
-      return response.success(res, updated, "Notification preferences saved successfully");
+      return response.success(
+        res,
+        updated,
+        "Notification preferences saved successfully",
+      );
     } catch (error) {
       next(error);
     }
@@ -223,10 +281,10 @@ class UserController {
   async deleteAccount(req, res, next) {
     try {
       const userId = req.user.id;
-      
+
       await UserActionsService.removeAllActions(userId);
       await UserService.deleteUser(userId);
-      
+
       return response.success(res, null, "Account deleted successfully");
     } catch (error) {
       next(error);

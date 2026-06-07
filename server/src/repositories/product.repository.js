@@ -57,7 +57,10 @@ class ProductRepository {
   // Get all products
   // =========================
   async findAll() {
-    return await db.query("SELECT * FROM products ORDER BY created_at DESC");
+    // Return only public/active products (exclude drafts)
+    return await db.query(
+      "SELECT * FROM products WHERE status != 'draft' ORDER BY created_at DESC",
+    );
   }
 
   // =========================

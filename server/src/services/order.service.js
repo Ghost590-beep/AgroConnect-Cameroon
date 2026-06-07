@@ -3,12 +3,31 @@ import OrderRepository from "../repositories/order.repository.js";
 import OrderItemRepository from "../repositories/orderItem.repository.js";
 import EscrowRepository from "../repositories/escrow.repository.js";
 import DeliveryRepository from "../repositories/delivery.repository.js";
+import ProductRepository from "../repositories/product.repository.js";
 
 class OrderService {
   // =========================
   // Place a new order with items
   // =========================
   async placeOrder(orderData, items) {
+    const buyerId = orderData.user_id;
+    if (!buyerId) {
+      throw new Error("Order must include a valid buyer");
+    }
+
+    // Prevent buyers from ordering their own products
+    for (const item of items) {
+      const product = await ProductRepository.findById(item.product_id);
+      if (!product) {
+        throw new Error(`Product with ID ${item.product_id} not found`);
+      }
+      if (product.user_id === buyerId) {
+        const error = new Error("Cannot purchase your own product");
+        error.status = 403;
+        throw error;
+      }
+    }
+
     // Create order
     const orderId = await OrderRepository.create(orderData);
 

@@ -268,3 +268,74 @@ Use mocking when your backend depends on external integrations that are not yet 
 - Frontend developers should clone the repo, install dependencies, and run the frontend and backend separately.
 
 If you want, I can also add a short `git` checklist or a dedicated frontend setup section for your team.
+
+---
+
+## 10. Codebase annotated guide (comments and purpose)
+
+This section explains major folders and representative files, with short comments about purpose and responsibilities. Use this as a quick reference when navigating the code.
+
+- `server/`
+  - Purpose: backend API implementation (Express + MySQL).
+  - Key folders:
+    - `controllers/`: HTTP layer — accept `req`, call `services`, return `res`.
+      - Comment: controllers should contain minimal logic; they translate HTTP to application calls.
+    - `services/`: business logic — orchestrates repositories and external services.
+      - Comment: services enforce rules, transactions, and higher-level workflows.
+    - `repositories/`: data access — parameterized SQL queries and return raw rows/objects.
+      - Comment: repositories map domain objects to the DB and are the single place for SQL.
+    - `middlewares/`: reusable request processing (auth, validation, error handling).
+    - `config/`: environment, DB connection, multer configuration for uploads.
+
+- `client/`
+  - Purpose: frontend SPA (React + TypeScript) that consumes the API.
+  - Key folders:
+    - `pages/`: route-oriented pages (Landing, MarketPage, ProductDetail, Profile, etc.).
+    - `components/`: reusable UI bits (buttons, forms, route guards).
+    - `services/`: small http wrappers (e.g., `authService.ts`, `productService.ts`) that call the backend.
+    - `context/`: React contexts (e.g., auth) to share global state.
+
+### How to read code comments
+
+- Controllers: read `server/src/controllers/*` to see endpoints and expected payloads.
+- Services: inspect `server/src/services/*` to understand business rules and validations.
+- Repositories: inspect `server/src/repositories/*` for exact DB fields and schema mapping.
+
+---
+
+## 11. OOP concepts & SOLID principles in this codebase
+
+Below is a concise mapping of common OOP ideas and the SOLID principles to concrete files and patterns used here.
+
+- Abstraction
+  - Example: `controllers` expose handler methods without revealing how `services` implement business logic.
+
+- Encapsulation
+  - Example: `repositories` encapsulate database queries and return simple objects to `services`.
+
+- Inheritance
+  - Note: the codebase favors composition over deep inheritance. If base classes are used, they appear in utilities or shared helpers to avoid duplication.
+
+- Polymorphism
+  - Example: middleware functions (`auth.middleware`, `validation.middleware`) are used interchangeably across routes; they accept the same Express handler signature.
+
+SOLID mapping (practical examples):
+
+- Single Responsibility Principle (SRP)
+  - Observed: `routes` declare routes only; `controllers` handle request/response; `services` run business logic; `repositories` perform DB operations. See `server/src/controllers/user.controller.js` and `server/src/services/user.service.js`.
+
+- Open/Closed Principle (OCP)
+  - Observed: services and repositories are written so new features (new queries, new business rules) can be added without modifying existing method contracts. Example: adding new `ProductService` methods to extend behavior.
+
+- Liskov Substitution Principle (LSP)
+  - Observed indirectly: modules that follow shared interfaces (e.g., repositories with `findById`, `create`) can be substituted with mocks or test doubles in unit tests.
+
+- Interface Segregation Principle (ISP)
+  - Observed: small modules expose minimal APIs — controllers don't expose DB internals, repositories don't handle HTTP. Clients depend only on the specific methods they use.
+
+- Dependency Inversion Principle (DIP)
+  - Observed: higher-level modules (controllers) depend on abstractions (service methods) instead of concrete DB implementations. This makes unit testing easier by stubbing services/repositories.
+
+---
+
+If you'd like, I can generate a per-file annotated summary (top-line comment at the head of each JS/TS file) that documents purpose, input/output, and which SOLID principle it illustrates. That can be automated and committed across the codebase.
