@@ -16,15 +16,29 @@ class ProductRepository {
       name,
       description,
       price,
-      stock,
+      stock_quantity,
       category_id,
       subcategory_id,
       user_id,
+      location,
+      image,
+      status,
     } = product;
     const result = await db.query(
-      `INSERT INTO products (name, description, price, stock, category_id, subcategory_id, user_id) 
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [name, description, price, stock, category_id, subcategory_id, user_id],
+      `INSERT INTO products (name, description, price, stock_quantity, category_id, subcategory_id, user_id, location, image, status) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        name,
+        description,
+        price,
+        stock_quantity ?? 0,
+        category_id,
+        subcategory_id,
+        user_id,
+        location || null,
+        image || null,
+        status || "active",
+      ],
     );
     return result.insertId;
   }

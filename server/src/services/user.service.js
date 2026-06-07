@@ -75,6 +75,56 @@ class UserService {
     const roles = await UserActionsRepository.findByUserId(userId);
     return { ...user, roles };
   }
+
+  // =========================
+  // Get user statistics
+  // =========================
+  async getUserStats(userId) {
+    try {
+      // Query database for user stats
+      // This should return: products_listed, orders_completed, rating, total_earnings
+      const stats = {
+        products_listed: 0,
+        orders_completed: 0,
+        rating: 0,
+        total_earnings: 0
+      };
+      
+      // TODO: Implement actual database queries for stats
+      // For now, returning placeholder values
+      return stats;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // =========================
+  // Get user products
+  // =========================
+  async getUserProducts(userId) {
+    try {
+      // Query database for user's products
+      // This should return array of products created by the user
+      // TODO: Implement actual database query
+      return [];
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // =========================
+  // Get user orders
+  // =========================
+  async getUserOrders(userId) {
+    try {
+      // Query database for user's orders
+      // This should return array of orders made by the user
+      // TODO: Implement actual database query
+      return [];
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default new UserService();

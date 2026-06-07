@@ -34,6 +34,12 @@ class CategoryService {
     return category;
   }
 
+  async getCategoryByName(name) {
+    const category = await CategoryRepository.findCategoryByName(name);
+    if (!category) throw new Error("Category not found");
+    return category;
+  }
+
   // =========================
   // Update category
   // =========================
@@ -78,6 +84,15 @@ class CategoryService {
   // =========================
   async getSubcategoryById(subcategoryId) {
     return await CategoryRepository.findSubcategoryById(subcategoryId);
+  }
+
+  async getSubcategoryByCategoryAndName(categoryId, name) {
+    const subcategory = await CategoryRepository.findSubcategoryByCategoryIdAndName(
+      categoryId,
+      name,
+    );
+    if (!subcategory) throw new Error("Subcategory not found");
+    return subcategory;
   }
 
   // =========================

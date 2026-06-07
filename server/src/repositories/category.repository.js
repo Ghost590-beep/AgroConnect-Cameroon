@@ -34,6 +34,14 @@ class CategoryRepository {
     return rows[0];
   }
 
+  async findCategoryByName(name) {
+    const rows = await db.query(
+      "SELECT * FROM categories WHERE LOWER(name)=LOWER(?)",
+      [name],
+    );
+    return rows[0];
+  }
+
   // =========================
   // Update category
   // =========================
@@ -80,6 +88,14 @@ class CategoryRepository {
   // =========================
   async findSubcategoryById(id) {
     const rows = await db.query("SELECT * FROM subcategories WHERE id=?", [id]);
+    return rows[0];
+  }
+
+  async findSubcategoryByCategoryIdAndName(categoryId, name) {
+    const rows = await db.query(
+      "SELECT * FROM subcategories WHERE category_id=? AND LOWER(name)=LOWER(?)",
+      [categoryId, name],
+    );
     return rows[0];
   }
 

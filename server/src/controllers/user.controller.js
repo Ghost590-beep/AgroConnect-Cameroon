@@ -79,12 +79,155 @@ class UserController {
   }
 
   // =========================
-  // Update user profile
+  // Get user profile (from token)
+  // =========================
+  async getProfile(req, res, next) {
+    try {
+      const userId = req.user.id;
+      const user = await UserService.getUserWithRoles(userId);
+      if (!user) throw new Error("User not found");
+      return response.success(res, user, "Profile retrieved successfully");
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // =========================
+  // Update user profile (from token)
   // =========================
   async updateProfile(req, res, next) {
     try {
-      const updated = await UserService.updateProfile(req.params.id, req.body);
+      const userId = req.user.id;
+      const { full_name, phone, location } = req.body;
+      
+      const updated = await UserService.updateProfile(userId, {
+        full_name,
+        phone,
+        location
+      });
+      
       return response.success(res, updated, "Profile updated successfully");
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // =========================
+  // Upload user avatar
+  // =========================
+  async uploadAvatar(req, res, next) {
+    try {
+      const userId = req.user.id;
+      
+      if (!req.file) {
+        return response.error(res, null, "No file provided", 400);
+      }
+
+      const avatarUrl = `/uploads/avatars/${req.file.filename}`;
+      const updated = await UserService.updateProfile(userId, {
+        profile_image: avatarUrl
+      });
+
+      return response.success(res, updated, "Avatar uploaded successfully");
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // =========================
+  // Change user password
+  // =========================
+  async changePassword(req, res, next) {
+    try {
+      const userId = req.user.id;
+      const { current_password, new_password } = req.body;
+
+      // Get user with password hash
+      const user = await UserService.getUserById(userId);
+      if (!user) throw new Error("User not found");
+
+      // Verify current password
+      const validPassword = await bcrypt.compare(current_password, user.password);
+      if (!validPassword) throw new Error("Current password is incorrect");
+
+      // Hash new password and update
+      const hashedPassword = await bcrypt.hash(new_password, 10);
+      await UserService.updateProfile(userId, { password: hashedPassword });
+
+      return response.success(res, null, "Password changed successfully");
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // =========================
+  // Get user statistics
+  // =========================
+  async getUserStats(req, res, next) {
+    try {
+      const userId = req.user.id;
+      const stats = await UserService.getUserStats(userId);
+      return response.success(res, stats, "User statistics retrieved successfully");
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // =========================
+  // Get user products
+  // =========================
+  async getUserProducts(req, res, next) {
+    try {
+      const userId = req.user.id;
+      const products = await UserService.getUserProducts(userId);
+      return response.success(res, products, "User products retrieved successfully");
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // =========================
+  // Get user orders
+  // =========================
+  async getUserOrders(req, res, next) {
+    try {
+      const userId = req.user.id;
+      const orders = await UserService.getUserOrders(userId);
+      return response.success(res, orders, "User orders retrieved successfully");
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // =========================
+  // Save notification preferences
+  // =========================
+  async saveNotifications(req, res, next) {
+    try {
+      const userId = req.user.id;
+      const preferences = req.body;
+      
+      const updated = await UserService.updateProfile(userId, {
+        notification_preferences: preferences
+      });
+
+      return response.success(res, updated, "Notification preferences saved successfully");
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // =========================
+  // Delete user account
+  // =========================
+  async deleteAccount(req, res, next) {
+    try {
+      const userId = req.user.id;
+      
+      await UserActionsService.removeAllActions(userId);
+      await UserService.deleteUser(userId);
+      
+      return response.success(res, null, "Account deleted successfully");
     } catch (error) {
       next(error);
     }
