@@ -1,4 +1,4 @@
-import axios from "axios";
+import axiosInstance from "./axiosConfig";
 import { API } from "../utils/constants";
 
 const authHeader = (token: string) => ({
@@ -6,51 +6,46 @@ const authHeader = (token: string) => ({
 });
 
 export const getProfile = async (token: string) => {
-  const res = await axios.get(`${API}/user/profile`, authHeader(token));
-  return res.data;
+  const res = await axiosInstance.get(`${API}/user/profile`, authHeader(token));
+  return res.data.data;
 };
 
 export const getUserStats = async (token: string) => {
-  const res = await axios.get(`${API}/user/stats`, authHeader(token));
-  return res.data;
+  const res = await axiosInstance.get(`${API}/user/stats`, authHeader(token));
+  return res.data.data;
 };
 
 export const getUserProducts = async (token: string) => {
-  const res = await axios.get(`${API}/user/products`, authHeader(token));
-  return res.data;
+  const res = await axiosInstance.get(`${API}/user/products`, authHeader(token));
+  return res.data.data;
 };
 
 export const getUserOrders = async (token: string) => {
-  const res = await axios.get(`${API}/user/orders`, authHeader(token));
-  return res.data;
+  const res = await axiosInstance.get(`${API}/user/orders`, authHeader(token));
+  return res.data.data;
 };
 
 export const updateProfile = async (
   token: string,
   form: { full_name: string; phone: string; location: string }
 ) => {
-  const res = await axios.put(`${API}/user/profile`, form, authHeader(token));
-  return res.data;
+  const res = await axiosInstance.put(`${API}/user/profile`, form, authHeader(token));
+  return res.data.data;
 };
 
 export const uploadAvatar = async (token: string, file: File) => {
   const formData = new FormData();
   formData.append("profile_image", file);
-  const res = await axios.put(`${API}/user/profile/avatar`, formData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "multipart/form-data",
-    },
-  });
-  return res.data;
+  const res = await axiosInstance.put(`${API}/user/profile/avatar`, formData, authHeader(token));
+  return res.data.data;
 };
 
 export const changePassword = async (
   token: string,
   payload: { current_password: string; new_password: string }
 ) => {
-  const res = await axios.put(`${API}/user/change-password`, payload, authHeader(token));
-  return res.data;
+  const res = await axiosInstance.post(`${API}/user/change-password`, payload, authHeader(token));
+  return res.data.data;
 };
 
 export const saveNotifications = async (
@@ -62,11 +57,11 @@ export const saveNotifications = async (
     sms: boolean;
   }
 ) => {
-  const res = await axios.put(`${API}/user/notifications`, payload, authHeader(token));
-  return res.data;
+  const res = await axiosInstance.post(`${API}/user/notifications`, payload, authHeader(token));
+  return res.data.data;
 };
 
 export const deleteAccount = async (token: string) => {
-  const res = await axios.delete(`${API}/user/account`, authHeader(token));
-  return res.data;
+  const res = await axiosInstance.delete(`${API}/user/account`, authHeader(token));
+  return res.data.data;
 };

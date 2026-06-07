@@ -2,6 +2,7 @@
 import express from "express";
 
 import authRoutes from "./auth.routes.js";
+import userRoutes from "./user.routes.js";
 import farmerRoutes from "./farmer.routes.js";
 import productRoutes from "./product.routes.js";
 import orderRoutes from "./order.routes.js";
@@ -20,6 +21,7 @@ import auditLogRoutes from "./auditLog.routes.js";
 const router = express.Router();
 
 router.use("/auth", authRoutes);
+router.use("/user", userRoutes);
 router.use("/farmers", farmerRoutes);
 router.use("/products", productRoutes);
 router.use("/orders", orderRoutes);

@@ -2,14 +2,19 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 
-import Landing from "./pages/LandingPage/Landing";
+import Landing from "./pages/LandingPage/Landing (2)";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import Market from "./pages/MarketPage/Market";
 import Profile from "./pages/ProfilePage/Profile";
-import Checkout from "./Checkout";
-import UploadProduct from "./UploadProduct";
-import ProductDetail from "./pages/ProductDetail/Productdetail";
+import Checkout from "./pages/Checkout/checkout (2)";
+import UploadProduct from "./pages/UploadProduct/UploadProduct";
+import ProductDetail from "./pages/ProductDetail/ProductDetail (2)";
+import About from "./pages/About/About";
+import Dashboard from "./pages/Dashboard/Dashboard";
+
+
+// inside <Route element={<ProtectedRoute />}> or as public — your choice:
 
 function App() {
   return (
@@ -18,6 +23,7 @@ function App() {
         {/* Always public */}
         <Route path="/" element={<Navigate to="/landing" replace />} />
         <Route path="/landing" element={<Landing />} />
+        <Route path="/about" element={<About />} />
 
         {/* Public only — redirect to /market if already logged in */}
         <Route element={<PublicRoute />}>
@@ -32,6 +38,7 @@ function App() {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/upload-product" element={<UploadProduct />} />
+          <Route path="/dashboard" element={<Dashboard />} />
         </Route>
 
         {/* 404 fallback */}

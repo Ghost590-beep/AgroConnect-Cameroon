@@ -15,7 +15,12 @@ class ProductController {
         return response.error(res, errors.array(), "Validation failed", 400);
       }
 
-      const product = await ProductService.addProduct(req.body);
+      const productPayload = {
+        ...req.body,
+        user_id: req.user?.id,
+        image: req.file ? `/uploads/products/${req.file.filename}` : req.body.image,
+      };
+      const product = await ProductService.addProduct(productPayload);
       return response.success(
         res,
         product,

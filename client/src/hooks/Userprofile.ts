@@ -72,13 +72,13 @@ export const useProfile = () => {
         setTimeout(() => updateUser(u), 0);
 
         if (u.profile_image) {
-          setAvatar(`${API_BASE}${u.profile_image}?t=${Date.now()}`);
+           setAvatar(`${u.profile_image}?t=${Date.now()}`);
         }
       } else if (authUser) {
         // Fallback to auth context user if fetch fails
         setUser(authUser);
         if (authUser.profile_image) {
-          setAvatar(`${API_BASE}${authUser.profile_image}`);
+            setAvatar(authUser.profile_image);
         }
       }
 

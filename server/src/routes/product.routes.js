@@ -4,6 +4,7 @@ import ProductController from "../controllers/product.controller.js";
 import AuthMiddleware from "../middlewares/auth.middleware.js";
 import ValidationMiddleware from "../middlewares/validation.middleware.js";
 import ProductValidator from "../validators/product.validator.js";
+import upload from "../config/multer.js";
 
 const router = express.Router();
 
@@ -35,27 +36,41 @@ const router = express.Router();
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             required:
  *               - name
  *               - price
- *               - categoryId
+ *               - category
  *               - description
  *             properties:
  *               name:
  *                 type: string
  *               price:
  *                 type: number
- *               categoryId:
- *                 type: integer
+ *               category:
+ *                 type: string
+ *               subcategory:
+ *                 type: string
  *               description:
  *                 type: string
+ *               stock_quantity:
+ *                 type: integer
+ *               unit:
+ *                 type: string
+ *               min_order:
+ *                 type: integer
+ *               status:
+ *                 type: string
+ *               image:
+ *                 type: string
+ *                 format: binary
  *             example:
  *               name: Cocoa Beans
  *               price: 1500
- *               categoryId: 1
+ *               category: Crops & Seeds
+ *               subcategory: Grains
  *               description: Premium cocoa beans from the west region.
  *     responses:
  *       201:
@@ -67,6 +82,7 @@ const router = express.Router();
 router.post(
   "/",
   AuthMiddleware.verifyToken,
+  upload.single("image"),
   ProductValidator.addProduct,
   ValidationMiddleware.validate,
   ProductController.addProduct,

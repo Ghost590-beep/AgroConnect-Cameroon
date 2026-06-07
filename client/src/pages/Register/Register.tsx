@@ -123,6 +123,7 @@ export default function Register() {
         email: form.email,
         password: form.password,
         phone: form.phone,
+        location: form.region,
       });
 
       /* login() saves token + user into AuthContext AND localStorage */

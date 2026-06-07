@@ -1,0 +1,179 @@
+/* ═══════════ SETTINGS TAB ═══════════ */
+.pr-settings-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+}
+
+.pr-settings-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.4rem;
+}
+
+.pr-settings-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-head);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 1.2rem;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.pr-settings-desc { font-size: 12.5px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px; }
+
+.pr-settings-fields { display: flex; flex-direction: column; gap: 12px; }
+
+.pr-settings-field { display: flex; flex-direction: column; gap: 5px; }
+
+.pr-settings-field label {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.pr-settings-field input {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.pr-settings-field input:focus { border-color: var(--accent-dark); }
+.pr-settings-field input::placeholder { color: var(--text-muted); }
+
+/* PASSWORD TOGGLE */
+.pr-pw-wrap { position: relative; }
+.pr-pw-wrap input { padding-right: 38px; width: 100%; }
+
+.pr-pw-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 2px;
+  transition: color 0.2s;
+}
+
+.pr-pw-toggle:hover { color: var(--accent); }
+
+/* SAVE BUTTON */
+.pr-settings-save-btn {
+  width: 100%;
+  background: var(--accent-dark);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 10px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: background 0.2s;
+}
+
+.pr-settings-save-btn:hover { background: #22843d; }
+.pr-settings-save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* NOTIFICATIONS */
+.pr-notif-list { display: flex; flex-direction: column; gap: 0; margin-bottom: 12px; }
+
+.pr-notif-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.pr-notif-row:last-child { border-bottom: none; }
+
+.pr-notif-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+.pr-notif-desc { display: block; font-size: 11.5px; color: var(--text-muted); }
+
+.pr-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: var(--border);
+  transition: color 0.2s;
+  flex-shrink: 0;
+}
+
+.pr-toggle.pr-toggle-on { color: var(--accent); }
+
+/* VERIFY */
+.pr-verify-btn {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent-dark);
+  border-radius: var(--radius-sm);
+  padding: 10px 22px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.pr-verify-btn:hover { background: var(--accent-dim); }
+
+/* DANGER ZONE */
+.pr-danger-card {
+  border-color: var(--red-border) !important;
+  background: rgba(248,113,113,0.03) !important;
+  grid-column: 1 / -1;
+}
+
+.pr-danger-input { border-color: var(--red-border) !important; }
+
+.pr-danger-input:focus {
+  border-color: var(--red) !important;
+  box-shadow: 0 0 0 3px rgba(248,113,113,0.08) !important;
+}
+
+.pr-delete-btn {
+  width: 100%;
+  background: var(--red);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 10px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+  transition: background 0.2s;
+}
+
+.pr-delete-btn:hover:not(:disabled) { background: #dc2626; }
+.pr-delete-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* ═══════════ RESPONSIVE ═══════════ */
+@media (max-width: 900px) {
+  .pr-settings-layout { grid-template-columns: 1fr; }
+  .pr-danger-card { grid-column: 1; }
+}
