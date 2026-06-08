@@ -71,6 +71,19 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Routes
 app.use("/api", routes);
 
+// If the app is running in production, serve the React build folder.
+const clientBuildPath = path.join(__dirname, "../../client/dist");
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(clientBuildPath));
+
+  app.get("*", (req, res, next) => {
+    if (req.path.startsWith("/api") || req.path.startsWith("/api-docs")) {
+      return next();
+    }
+    return res.sendFile(path.join(clientBuildPath, "index.html"));
+  });
+}
+
 // Error handling middleware
 app.use(ErrorMiddleware.handleError);
 

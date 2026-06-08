@@ -23,6 +23,10 @@ class UserValidator {
     body("password").notEmpty().withMessage("Password is required"),
   ];
 
+  static googleAuth = [
+    body("id_token").notEmpty().withMessage("Google ID token is required"),
+  ];
+
   static updateProfile = [
     body("full_name")
       .optional()

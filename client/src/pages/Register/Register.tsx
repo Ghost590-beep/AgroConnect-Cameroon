@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../../styles/auth.css";
 import farmerImg from "../../assets/loginImage.jpeg";
 import { useAuth } from "../../context/AuthContext";
-import { registerUser } from "../../services/authService";
+import { googleAuth, registerUser } from "../../services/authService";
 
 /* ─── TYPES ─── */
 interface FormState {
@@ -73,6 +73,73 @@ const FIELDS: {
 export default function Register() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "";
+
+  useEffect(() => {
+    if (!GOOGLE_CLIENT_ID) {
+      return;
+    }
+
+    const existing = document.getElementById("google-client-script");
+    if (existing) {
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.id = "google-client-script";
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      const google = (window as any).google;
+      if (google?.accounts?.id) {
+        google.accounts.id.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+          callback: handleGoogleSuccess,
+        });
+      }
+    };
+    document.body.appendChild(script);
+
+    return () => {
+      script.onload = null;
+    };
+  }, [GOOGLE_CLIENT_ID]);
+
+  const handleGoogleSuccess = async (response: any) => {
+    if (!response?.credential) {
+      alert("Google authentication failed. Please try again.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const res = await googleAuth(response.credential);
+      login(res.token, res.user);
+      navigate("/landing");
+    } catch (error: any) {
+      alert(error.response?.data?.message || "Google registration failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const promptGoogleSignIn = () => {
+    if (!GOOGLE_CLIENT_ID) {
+      alert(
+        "Google sign-in is not configured. Please set VITE_GOOGLE_CLIENT_ID.",
+      );
+      return;
+    }
+
+    const google = (window as any).google;
+    if (!google?.accounts?.id) {
+      alert("Google sign-in is still loading. Please try again in a moment.");
+      return;
+    }
+
+    google.accounts.id.prompt();
+  };
 
   const [form, setForm] = useState<FormState>({
     fullName: "",
@@ -100,7 +167,8 @@ export default function Register() {
     if (!form.fullName.trim()) next.fullName = "Full name is required";
     if (!form.email.trim()) next.email = "Email is required";
     if (!form.password.trim()) next.password = "Password is required";
-    if (form.password.length < 6) next.password = "Password must be at least 6 characters";
+    if (form.password.length < 6)
+      next.password = "Password must be at least 6 characters";
     if (form.password !== form.confirmPassword)
       next.confirmPassword = "Passwords do not match";
     if (!form.phone.trim()) next.phone = "Phone number is required";
@@ -131,23 +199,15 @@ export default function Register() {
 
       navigate("/landing");
     } catch (error: any) {
-      alert(
-        error.response?.data?.message || "Registration failed"
-      );
+      alert(error.response?.data?.message || "Registration failed");
     } finally {
       setLoading(false);
     }
   };
 
-  /* ── Google auth placeholder ── */
-  const handleGoogle = () => {
-    console.log("Google sign-up clicked");
-  };
-
   return (
     <main className="auth-page">
       <div className="auth-card auth-card--tall">
-
         {/* ── Left image ── */}
         <div className="auth-photo">
           <img src={farmerImg} alt="Farmer" />
@@ -176,17 +236,11 @@ export default function Register() {
                   onChange={handleChange}
                   autoComplete={autoComplete}
                 />
-                {errors[id] && (
-                  <p className="form-error">{errors[id]}</p>
-                )}
+                {errors[id] && <p className="form-error">{errors[id]}</p>}
               </div>
             ))}
 
-            <button
-              type="submit"
-              className="btn-submit"
-              disabled={loading}
-            >
+            <button type="submit" className="btn-submit" disabled={loading}>
               {loading ? "Creating account..." : "Sign Up"}
             </button>
 
@@ -197,11 +251,11 @@ export default function Register() {
             <button
               type="button"
               className="btn-google"
-              onClick={handleGoogle}
+              onClick={promptGoogleSignIn}
             >
               <img
                 src="https://www.svgrepo.com/show/475656/google-color.svg"
-                alt=""
+                alt="Google logo"
                 width={18}
                 height={18}
               />

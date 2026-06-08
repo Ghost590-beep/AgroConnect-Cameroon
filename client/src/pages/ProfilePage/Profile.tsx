@@ -27,7 +27,7 @@ type Tab = (typeof TABS)[number];
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
-  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const avatarInputRef = useRef<HTMLInputElement | null>(null);
   const { token, updateUser, logout } = useAuth();
   const {
     user,
@@ -45,13 +45,17 @@ const Profile: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>("overview");
   const [form, setForm] = useState({ full_name: "", phone: "", location: "" });
   const [pwForm, setPwForm] = useState({ current: "", newPw: "", confirm: "" });
-  const [showPw, setShowPw] = useState({
+  const [showPw, setShowPw] = useState<
+    Record<"current" | "newPw" | "confirm", boolean>
+  >({
     current: false,
     newPw: false,
     confirm: false,
   });
   const [pwLoading, setPwLoading] = useState(false);
-  const [notifications, setNotifications] = useState({
+  const [notifications, setNotifications] = useState<
+    Record<"orders" | "promotions" | "newsletter" | "sms", boolean>
+  >({
     orders: true,
     promotions: false,
     newsletter: true,
@@ -276,15 +280,15 @@ const Profile: React.FC = () => {
               onPwChange={(field, val) =>
                 setPwForm({ ...pwForm, [field]: val })
               }
-              onToggleShowPw={(field) =>
-                setShowPw({ ...showPw, [field]: !showPw[field] })
+              onToggleShowPw={(field: keyof typeof showPw) =>
+                setShowPw((prev) => ({ ...prev, [field]: !prev[field] }))
               }
               onChangePassword={handleChangePassword}
-              onNotificationToggle={(key) =>
-                setNotifications({
-                  ...notifications,
-                  [key]: !notifications[key],
-                })
+              onNotificationToggle={(key: keyof typeof notifications) =>
+                setNotifications((prev) => ({
+                  ...prev,
+                  [key]: !prev[key],
+                }))
               }
               onSaveNotifications={handleSaveNotifications}
               onDeleteConfirmChange={setDeleteConfirm}
