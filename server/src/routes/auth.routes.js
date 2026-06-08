@@ -114,6 +114,39 @@ router.post(
 
 /**
  * @swagger
+ * /api/auth/google:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Sign in or register with Google
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id_token
+ *             properties:
+ *               id_token:
+ *                 type: string
+ *             example:
+ *               id_token: "YOUR_GOOGLE_ID_TOKEN"
+ *     responses:
+ *       200:
+ *         description: Google sign-in successful
+ *       400:
+ *         description: Validation failed or invalid token
+ */
+router.post(
+  "/google",
+  UserValidator.googleAuth,
+  ValidationMiddleware.validate,
+  UserController.googleAuth,
+);
+
+/**
+ * @swagger
  * /api/auth/{id}:
  *   get:
  *     tags:
