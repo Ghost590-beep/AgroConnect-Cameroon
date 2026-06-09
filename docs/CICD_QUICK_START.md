@@ -2,7 +2,7 @@
 
 ## 📌 What's New
 
-Your project now has a complete CI/CD pipeline set up! Here's what was added:
+Your project now has a complete CI/CD pipeline set up! The main pipeline file is located at `.github/workflows/simple-ci.yml`.
 
 ### ✅ New Files Created
 

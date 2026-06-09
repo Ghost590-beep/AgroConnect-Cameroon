@@ -32,3 +32,43 @@ jobs:
       - name: Build frontend
         working-directory: client
         run: npm run build
+
+  deploy-staging:
+    needs: test-and-build
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' && secrets.STAGING_SERVER_HOST != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Staging Server
+        uses: appleboy/ssh-action@v0.1.9
+        with:
+          host: ${{ secrets.STAGING_SERVER_HOST }}
+          username: ${{ secrets.STAGING_SERVER_USER }}
+          key: ${{ secrets.STAGING_SERVER_SSH_KEY }}
+          script: |
+            bash ~/AgroConnect-Cameroon/server/deploy/deploy-on-vps.sh develop
+
+      - name: Verify staging health
+        run: |
+          curl --fail http://${{ secrets.STAGING_SERVER_HOST }}/health
+
+  deploy-production:
+    needs: test-and-build
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && secrets.PROD_SERVER_HOST != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Production Server
+        uses: appleboy/ssh-action@v0.1.9
+        with:
+          host: ${{ secrets.PROD_SERVER_HOST }}
+          username: ${{ secrets.PROD_SERVER_USER }}
+          key: ${{ secrets.PROD_SERVER_SSH_KEY }}
+          script: |
+            bash ~/AgroConnect-Cameroon/server/deploy/deploy-on-vps.sh main
+
+      - name: Verify production health
+        run: |
+          curl --fail http://${{ secrets.PROD_SERVER_HOST }}/health

@@ -4,6 +4,9 @@
 
 This guide explains the CI/CD pipeline setup for AgroConnect, enabling safe deployment of your application without conflicts between branches and GitHub.
 
+> The main CI workflow is now located at `.github/workflows/simple-ci.yml`.
+> It runs backend and frontend tests on every push and pull request, and can deploy to staging or production when the required SSH secrets are configured.
+
 ---
 
 ## 📋 Branching Strategy
