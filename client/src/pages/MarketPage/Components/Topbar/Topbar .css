@@ -167,3 +167,33 @@
 @media (max-width: 560px) {
   .hm-topbar-search select { display: none; }
 }
+
+@media (max-width: 768px) {
+  .hm-topbar {
+    padding: 0 1rem;
+    gap: 0.6rem;
+    height: 54px;
+  }
+ 
+  .hm-topbar-brand { font-size: 15px; }
+ 
+  .hm-logout-btn { display: none; }  /* hide text logout; use avatar tap on mobile */
+ 
+  .hm-cart-pill {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}
+ 
+@media (max-width: 480px) {
+  .hm-topbar { padding: 0 0.75rem; gap: 0.5rem; height: 50px; }
+ 
+  .hm-topbar-brand { font-size: 13px; letter-spacing: 0; }
+ 
+  .hm-cart-pill-label { display: none; }  /* icon only */
+  .hm-cart-pill { padding: 7px 10px; border-radius: 50%; gap: 0; }
+ 
+  .hm-topbar-search { height: 34px; }
+  .hm-topbar-search input { font-size: 12px; }
+  .hm-topbar-search svg { margin: 0 7px; }
+}

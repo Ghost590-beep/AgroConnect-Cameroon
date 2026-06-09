@@ -17,6 +17,7 @@ interface OrderSummaryProps {
   total: number;
   subtotal: number;
   deliveryFee: number;
+  payMethod: string;
   onPlaceOrder: () => void;
 }
 
@@ -25,6 +26,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
   total,
   subtotal,
   deliveryFee,
+  payMethod,
   onPlaceOrder,
 }) => {
   return (
@@ -65,6 +67,15 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
           <span>Delivery fee</span>
           <span>FCFA {deliveryFee}</span>
         </div>
+        <div className="co-total-row">
+          <span>Payment method</span>
+          <span>
+            {payMethod === "momo" && "M-Pesa / Mobile Money"}
+            {payMethod === "orange-money" && "Orange Money"}
+            {payMethod === "bank" && "Bank transfer"}
+            {payMethod === "cash" && "Cash on delivery"}
+          </span>
+        </div>
         <div className="co-total-row co-grand">
           <span>Total</span>
           <span className="co-grand-val">FCFA {total}</span>
@@ -84,7 +95,16 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
       <button className="co-place-btn" onClick={onPlaceOrder}>
         <FaLock size={14} /> Place order
       </button>
-      <p className="co-pay-note">You will pay FCFA {total} on delivery</p>
+      <p className="co-pay-note">
+        {payMethod === "momo" &&
+          "Please complete payment through your mobile money app once your order is confirmed."}
+        {payMethod === "orange-money" &&
+          "Orange Money instructions will be provided on confirmation."}
+        {payMethod === "bank" &&
+          "Transfer the total amount to the bank account details provided after placing the order."}
+        {payMethod === "cash" &&
+          "You will pay FCFA " + total + " on delivery."}
+      </p>
     </div>
   );
 };

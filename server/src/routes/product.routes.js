@@ -107,6 +107,9 @@ router.post(
  *       404:
  *         description: Product not found
  */
+// Search products
+router.get("/search", ProductController.searchProducts);
+
 // Get product by ID (with images & reviews)
 router.get("/:id", ProductController.getProductById);
 
@@ -117,6 +120,31 @@ router.get("/:id", ProductController.getProductById);
  *     tags:
  *       - Products
  *     summary: List all products
+ *     parameters:
+ *       - in: query
+ *         name: keyword
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: category
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: subcategory
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: location
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: minPrice
+ *         schema:
+ *           type: number
+ *       - in: query
+ *         name: maxPrice
+ *         schema:
+ *           type: number
  *     responses:
  *       200:
  *         description: List of products

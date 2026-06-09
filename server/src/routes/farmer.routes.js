@@ -25,11 +25,17 @@ router.post(
   FarmerController.createFarmer,
 );
 
-// Get farmer by ID
-router.get("/:id", FarmerController.getFarmerById);
-
 // Get farmer by user ID
 router.get("/user/:userId", FarmerController.getFarmerByUserId);
+
+// Get farmers by location
+router.get("/location/:location", FarmerController.getFarmersByLocation);
+
+// Count farmers
+router.get("/count/all", FarmerController.countFarmers);
+
+// Get farmer by ID
+router.get("/:id", FarmerController.getFarmerById);
 
 // Update farmer profile (protected)
 router.put(

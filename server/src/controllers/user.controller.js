@@ -79,6 +79,51 @@ class UserController {
   }
 
   // =========================
+  // Login or register with Google
+  // =========================
+  async googleAuth(req, res, next) {
+    try {
+      const { email, full_name, phone, location } = req.body;
+      let user = await UserService.getUserByEmail(email);
+      const isExistingUser = Boolean(user);
+
+      if (!user) {
+        const password = Array.from({ length: 16 }, () =>
+          Math.random().toString(36).slice(2),
+        ).join("");
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        await UserService.register({
+          full_name,
+          email,
+          password: hashedPassword,
+          phone: phone || null,
+          location: location || "Cameroon",
+        });
+
+        user = await UserService.getUserByEmail(email);
+      }
+
+      const token = jwt.sign(
+        { id: user.id, roles: user.roles || [] },
+        process.env.JWT_SECRET,
+        { expiresIn: "1h" },
+      );
+
+      return response.success(
+        res,
+        { user, token },
+        isExistingUser
+          ? "Logged in successfully with Google"
+          : "Account created successfully with Google",
+        isExistingUser ? 200 : 201,
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // =========================
   // Get user by ID
   // =========================
   async getUserById(req, res, next) {

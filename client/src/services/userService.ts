@@ -46,7 +46,6 @@ export const uploadAvatar = async (token: string, file: File) => {
   const res = await axiosInstance.put(`${API}/user/profile/avatar`, formData, {
     headers: {
       Authorization: `Bearer ${token}`,
-      "Content-Type": "multipart/form-data",
     },
   });
   return res.data.data;

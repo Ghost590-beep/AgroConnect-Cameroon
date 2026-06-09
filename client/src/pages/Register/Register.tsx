@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import "../../styles/auth.css";
 import farmerImg from "../../assets/loginImage.jpeg";
 import { useAuth } from "../../context/AuthContext";
-import { registerUser } from "../../services/authService";
+import { googleSignIn, registerUser } from "../../services/authService";
 
 /* ─── TYPES ─── */
 interface FormState {
@@ -140,8 +140,30 @@ export default function Register() {
   };
 
   /* ── Google auth placeholder ── */
-  const handleGoogle = () => {
-    console.log("Google sign-up clicked");
+  const handleGoogle = async () => {
+    if (!form.fullName.trim() || !form.email.trim()) {
+      alert("Please enter your full name and email before continuing with Google.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const res = await googleSignIn({
+        full_name: form.fullName,
+        email: form.email,
+        phone: form.phone || undefined,
+        location: form.region || undefined,
+      });
+
+      login(res.token, res.user);
+      navigate("/landing");
+    } catch (error: any) {
+      alert(
+        error.response?.data?.message || "Google signup failed. Please try again.",
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

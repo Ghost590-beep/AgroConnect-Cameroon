@@ -18,6 +18,7 @@ import CartDrawer from "../../pages/MarketPage/Components/CartDrawer/CartDrawer"
 import MarketFeatures from "../../pages/MarketPage/Components/MarketFeatures/MarketFeatures";
 import MarketFooter from "../../pages/MarketPage/Components/MarketFooter/MarketFooter";
 import { FaShoppingCart } from "react-icons/fa";
+import { filterProducts } from "../../utils/filterProducts";
 import "../../styles/Market.css";
 
 const Market: React.FC = () => {
@@ -42,6 +43,15 @@ const Market: React.FC = () => {
     usedCond: true,
   });
   const [products, setProducts] = useState<Product[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [filters, setFilters] = useState({
+    keyword: "",
+    category: "All Categories",
+    subcategory: "",
+    location: "All Locations",
+    minPrice: "",
+    maxPrice: "",
+  });
   const [cart, setCart] = useState<CartItem[]>(() => {
     const saved = localStorage.getItem("agro_cart");
     return saved ? JSON.parse(saved) : [];
@@ -49,29 +59,53 @@ const Market: React.FC = () => {
   const [cartOpen, setCartOpen] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const data = await getAllProducts();
-        setProducts(data);
-      } catch (error: any) {
-        console.error(
-          "Failed to load products",
-          error.response?.status,
-          error.response?.data || error.message,
-        );
+  const loadProducts = async (queryFilters: Record<string, string>) => {
+    setLoadingProducts(true);
+    try {
+      const params: Record<string, string> = {};
+      if (queryFilters.keyword) params.keyword = queryFilters.keyword;
+      if (queryFilters.category && queryFilters.category !== "All Categories") {
+        params.category = queryFilters.category;
       }
-    };
-    fetchProducts();
-  }, []);
+      if (queryFilters.subcategory) params.subcategory = queryFilters.subcategory;
+      if (queryFilters.location && queryFilters.location !== "All Locations") {
+        params.location = queryFilters.location;
+      }
+      if (queryFilters.minPrice) params.minPrice = queryFilters.minPrice;
+      if (queryFilters.maxPrice) params.maxPrice = queryFilters.maxPrice;
+
+      const data = await getAllProducts(params);
+      setProducts(data);
+    } catch (error: any) {
+      console.error(
+        "Failed to load products",
+        error.response?.status,
+        error.response?.data || error.message,
+      );
+    } finally {
+      setLoadingProducts(false);
+    }
+  };
+
+  useEffect(() => {
+    loadProducts(filters);
+  }, [filters]);
 
   useEffect(() => {
     localStorage.setItem("agro_cart", JSON.stringify(cart));
   }, [cart]);
 
   const addToCart = (product: Product) => {
-    if (authUser && product.user_id === authUser.id) {
-      alert("You cannot add your own product to the cart.");
+    if (!authUser) {
+      alert("Please log in to add items to cart");
+      navigate("/login");
+      return;
+    }
+
+    if (product.user_id === authUser.id) {
+      alert(
+        `You cannot add your own product (${product.name}) to the cart. Sellers cannot purchase their own listings.`,
+      );
       return;
     }
 
@@ -125,29 +159,34 @@ const Market: React.FC = () => {
     }, 3000);
   };
 
-  const filtered = products
-    .filter((p) => {
-      const matchCat =
-        activeCategory === "All Categories" || p.category === activeCategory;
-      const matchSub =
-        activeSubcategory === "" || p.subcategory === activeSubcategory;
-      const matchLoc =
-        activeLocation === "All Locations" || p.location === activeLocation;
-      const matchSearch =
-        p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.farmer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.location.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchMin = minPrice === "" || p.price >= Number(minPrice);
-      const matchMax = maxPrice === "" || p.price <= Number(maxPrice);
-      return (
-        matchCat && matchSub && matchLoc && matchSearch && matchMin && matchMax
-      );
-    })
-    .sort((a, b) => {
-      if (sortBy === "price-asc") return a.price - b.price;
-      if (sortBy === "price-desc") return b.price - a.price;
-      return b.id - a.id;
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    setFilters((prev) => ({ ...prev, keyword: value }));
+  };
+
+  const applyFilters = () => {
+    setFilters({
+      keyword: searchTerm,
+      category: activeCategory,
+      subcategory: activeSubcategory,
+      location: activeLocation,
+      minPrice,
+      maxPrice,
     });
+  };
+
+  const filteredProducts = filterProducts(products, {
+    keyword: filters.keyword,
+    category: filters.category,
+    subcategory: filters.subcategory,
+    location: filters.location,
+    minPrice: filters.minPrice,
+    maxPrice: filters.maxPrice,
+  }).sort((a, b) => {
+    if (sortBy === "price-asc") return a.price - b.price;
+    if (sortBy === "price-desc") return b.price - a.price;
+    return b.id - a.id;
+  });
 
   return (
     <div className="hm-page">
@@ -182,6 +221,7 @@ const Market: React.FC = () => {
       <div className="hm-body">
         <Sidebar
           sidebarOpen={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
           typeFilters={typeFilters}
           onTypeFilterChange={(key) =>
             setTypeFilters((p) => ({
@@ -205,9 +245,10 @@ const Market: React.FC = () => {
           activeSubcategory={activeSubcategory}
           onSubcategoryChange={setActiveSubcategory}
           activeCategoryObj={CATEGORIES.find((c) => c.name === activeCategory)}
+          onApplyFilters={applyFilters}
         />
         <ProductGrid
-          filtered={filtered}
+          filtered={filteredProducts}
           sortBy={sortBy}
           onSortChange={setSortBy}
           sidebarOpen={sidebarOpen}

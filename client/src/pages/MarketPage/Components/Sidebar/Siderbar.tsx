@@ -9,6 +9,7 @@ interface CategoryObj {
 
 interface Props {
   sidebarOpen: boolean;
+  onClose: () => void;
   typeFilters: { forSale: boolean; forRent: boolean; services: boolean };
   onTypeFilterChange: (key: string) => void;
   condFilters: { newCond: boolean; usedCond: boolean };
@@ -22,16 +23,22 @@ interface Props {
   activeSubcategory: string;
   onSubcategoryChange: (val: string) => void;
   activeCategoryObj?: Category;
+  onApplyFilters?: () => void;
 }
 
 const Sidebar: React.FC<Props> = ({
-  sidebarOpen, typeFilters, onTypeFilterChange,
+  sidebarOpen, onClose, typeFilters, onTypeFilterChange,
   condFilters, onCondFilterChange, minPrice, maxPrice,
   onMinPriceChange, onMaxPriceChange, activeLocation,
   onLocationChange, activeSubcategory, onSubcategoryChange,
-  activeCategoryObj,
+  activeCategoryObj, onApplyFilters,
 }) => (
   <aside className={`hm-sidebar ${sidebarOpen ? "hm-sidebar-open" : ""}`}>
+    <div className="hm-sidebar-close-wrap">
+      <button className="hm-sidebar-close-btn" onClick={onClose}>
+        Close
+      </button>
+    </div>
     <div className="hm-sidebar-section">
       <h4>Type</h4>
       <ul className="hm-filter-check-list">
@@ -117,7 +124,12 @@ const Sidebar: React.FC<Props> = ({
         </ul>
       </div>
     )}
-    <button className="hm-apply-btn">Apply Filters</button>
+    <button className="hm-apply-btn" onClick={() => {
+      onApplyFilters?.();
+      onClose();
+    }}>
+      Apply Filters
+    </button>
   </aside>
 );
 

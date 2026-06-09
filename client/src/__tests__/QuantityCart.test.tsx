@@ -1,7 +1,8 @@
 import React from "react";
+import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import QuantityCart from "../pages/ProductDetail/Components/QuantityCart/QuantityCart";
-import "@testing-library/jest-dom";
+import "@testing-library/jest-dom/vitest";
 
 describe("QuantityCart", () => {
   it("disables add and buy buttons when disabled prop is true", () => {

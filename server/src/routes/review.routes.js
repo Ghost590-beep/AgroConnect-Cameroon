@@ -30,6 +30,15 @@ router.get("/product/:productId", ReviewController.getProductReviews);
 // Get all reviews by a user
 router.get("/user/:userId", ReviewController.getUserReviews);
 
+// Get average rating for a product
+router.get("/product/:productId/average", ReviewController.getAverageRating);
+
+// Count reviews for a product
+router.get("/product/:productId/count", ReviewController.countReviews);
+
+// Get latest reviews
+router.get("/latest", ReviewController.getLatestReviews);
+
 // Get a single review by ID
 router.get("/:id", ReviewController.getReviewById);
 
@@ -48,9 +57,6 @@ router.delete(
   AuthMiddleware.verifyToken,
   ReviewController.deleteReview,
 );
-
-// Get average rating for a product
-router.get("/product/:productId/average", ReviewController.getAverageRating);
 
 // Count reviews for a product
 router.get("/product/:productId/count", ReviewController.countReviews);

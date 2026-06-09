@@ -26,7 +26,11 @@ class FarmerService {
   // =========================
   async getFarmerById(farmerId) {
     const farmer = await FarmerRepository.findById(farmerId);
-    if (!farmer) throw new Error("Farmer not found");
+    if (!farmer) {
+      const error = new Error("Farmer not found");
+      error.status = 404;
+      throw error;
+    }
     return farmer;
   }
 

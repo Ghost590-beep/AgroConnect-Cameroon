@@ -94,9 +94,10 @@ class ProductService {
 
   // =========================
   // Get all products
+  // Supports filtering by category, subcategory, location, keyword, and price range.
   // =========================
-  async getAllProducts() {
-    return await ProductRepository.findAll();
+  async getAllProducts(filters = {}) {
+    return await ProductRepository.findAll(filters);
   }
 
   // =========================

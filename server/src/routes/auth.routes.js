@@ -1,4 +1,4 @@
-// src/routes/user.routes.js
+// src/routes/auth.routes.js
 import express from "express";
 import UserController from "../controllers/user.controller.js";
 import AuthMiddleware from "../middlewares/auth.middleware.js";
@@ -110,6 +110,52 @@ router.post(
   UserValidator.login,
   ValidationMiddleware.validate,
   UserController.login,
+);
+
+/**
+ * @swagger
+ * /api/auth/google:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Register or login using Google credentials
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - full_name
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               full_name:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *               location:
+ *                 type: string
+ *             example:
+ *               email: jane@example.com
+ *               full_name: Jane Doe
+ *               phone: "+237123456789"
+ *               location: Yaounde
+ *     responses:
+ *       200:
+ *         description: Logged in with Google successfully
+ *       201:
+ *         description: Registered with Google successfully
+ *       400:
+ *         description: Validation failed
+ */
+router.post(
+  "/google",
+  UserValidator.googleAuth,
+  ValidationMiddleware.validate,
+  UserController.googleAuth,
 );
 
 /**

@@ -40,6 +40,13 @@ export const registerUser = async (
   return res.data.data;
 };
 
+export const googleSignIn = async (
+  payload: Partial<RegisterPayload>,
+): Promise<AuthResponse> => {
+  const res = await axiosInstance.post(`${API}/auth/google`, payload);
+  return res.data.data;
+};
+
 export const logoutUser = (): void => {
   localStorage.removeItem("token");
   localStorage.removeItem("user");

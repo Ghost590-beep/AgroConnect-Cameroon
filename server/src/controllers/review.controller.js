@@ -69,7 +69,11 @@ class ReviewController {
   async getReviewById(req, res, next) {
     try {
       const review = await ReviewService.getReviewById(req.params.id);
-      if (!review) throw new Error("Review not found");
+      if (!review) {
+        const error = new Error("Review not found");
+        error.status = 404;
+        throw error;
+      }
       return response.success(res, review, "Review retrieved successfully");
     } catch (error) {
       next(error);

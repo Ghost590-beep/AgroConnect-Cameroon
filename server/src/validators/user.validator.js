@@ -23,6 +23,13 @@ class UserValidator {
     body("password").notEmpty().withMessage("Password is required"),
   ];
 
+  static googleAuth = [
+    body("email").isEmail().withMessage("Valid email is required"),
+    body("full_name").notEmpty().withMessage("Full name is required"),
+    body("phone").optional().notEmpty().withMessage("Phone number cannot be empty"),
+    body("location").optional().notEmpty().withMessage("Location cannot be empty"),
+  ];
+
   static updateProfile = [
     body("full_name")
       .optional()
