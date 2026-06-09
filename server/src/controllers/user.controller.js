@@ -4,9 +4,15 @@ import UserActionsService from "../services/userActions.service.js";
 import response from "../utils/response.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 import { validationResult } from "express-validator";
-import fs from "fs/promises";
 import path from "path";
+
+const sanitizeUser = (user) => {
+  if (!user) return null;
+  const { password, ...rest } = user;
+  return rest;
+};
 
 class UserController {
   // =========================
@@ -42,7 +48,7 @@ class UserController {
 
       return response.success(
         res,
-        { user, token },
+        { user: sanitizeUser(user), token },
         "User registered successfully",
         201,
       );
@@ -72,7 +78,74 @@ class UserController {
         { expiresIn: "1h" },
       );
 
-      return response.success(res, { user, token }, "Login successful");
+      return response.success(
+        res,
+        { user: sanitizeUser(user), token },
+        "Login successful",
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // =========================
+  // Google authentication
+  // =========================
+  async googleAuth(req, res, next) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return response.error(res, errors.array(), "Validation failed", 400);
+      }
+
+      const { id_token } = req.body;
+      const googleClientId = process.env.GOOGLE_CLIENT_ID;
+      if (!googleClientId) {
+        throw new Error("Google auth is not configured on the server");
+      }
+
+      const tokenInfoResponse = await fetch(
+        `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(
+          id_token,
+        )}`,
+      );
+
+      if (!tokenInfoResponse.ok) {
+        throw new Error("Invalid Google token");
+      }
+
+      const payload = await tokenInfoResponse.json();
+      const { email, name, picture, locale, email_verified } = payload;
+      if (email_verified !== "true" && email_verified !== true) {
+        throw new Error("Google account email is not verified");
+      }
+
+      let user = await UserService.getUserByEmail(email);
+      if (!user) {
+        const randomPassword = crypto.randomBytes(32).toString("hex");
+        const hashedPassword = await bcrypt.hash(randomPassword, 10);
+        user = await UserService.register({
+          full_name: name || email.split("@")[0],
+          email,
+          password: hashedPassword,
+          phone: null,
+          location: locale || "Cameroon",
+          profile_image: picture || null,
+          role: "buyer",
+        });
+      }
+
+      const token = jwt.sign(
+        { id: user.id, roles: user.roles || [] },
+        process.env.JWT_SECRET,
+        { expiresIn: "1h" },
+      );
+
+      return response.success(
+        res,
+        { user: sanitizeUser(user), token },
+        "Google sign-in successful",
+      );
     } catch (error) {
       next(error);
     }
@@ -130,7 +203,11 @@ class UserController {
     try {
       const user = await UserService.getUserWithRoles(req.params.id);
       if (!user) throw new Error("User not found");
-      return response.success(res, user, "User retrieved successfully");
+      return response.success(
+        res,
+        sanitizeUser(user),
+        "User retrieved successfully",
+      );
     } catch (error) {
       next(error);
     }
@@ -144,7 +221,11 @@ class UserController {
       const userId = req.user.id;
       const user = await UserService.getUserWithRoles(userId);
       if (!user) throw new Error("User not found");
-      return response.success(res, user, "Profile retrieved successfully");
+      return response.success(
+        res,
+        sanitizeUser(user),
+        "Profile retrieved successfully",
+      );
     } catch (error) {
       next(error);
     }
@@ -164,7 +245,11 @@ class UserController {
         location,
       });
 
-      return response.success(res, updated, "Profile updated successfully");
+      return response.success(
+        res,
+        sanitizeUser(updated),
+        "Profile updated successfully",
+      );
     } catch (error) {
       next(error);
     }
@@ -200,7 +285,11 @@ class UserController {
         // Optionally remove file from disk since we persisted image in DB
         await fs.unlink(uploadPath).catch(() => {});
 
-        return response.success(res, updated, "Avatar uploaded successfully");
+        return response.success(
+          res,
+          sanitizeUser(updated),
+          "Avatar uploaded successfully",
+        );
       } catch (fsErr) {
         // Fallback: store URL if reading failed
         const avatarUrl = `/uploads/avatars/${req.file.filename}`;
@@ -209,7 +298,7 @@ class UserController {
         });
         return response.success(
           res,
-          updated,
+          sanitizeUser(updated),
           "Avatar uploaded (file stored on disk)",
         );
       }
@@ -312,7 +401,7 @@ class UserController {
 
       return response.success(
         res,
-        updated,
+        sanitizeUser(updated),
         "Notification preferences saved successfully",
       );
     } catch (error) {

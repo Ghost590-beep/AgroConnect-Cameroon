@@ -1,5 +1,14 @@
 import React from "react";
-import { FaUser, FaCamera, FaMapMarkerAlt, FaPhone, FaEnvelope, FaEdit, FaSave, FaTimes } from "react-icons/fa";
+import {
+  FaUser,
+  FaCamera,
+  FaMapMarkerAlt,
+  FaPhone,
+  FaEnvelope,
+  FaEdit,
+  FaSave,
+  FaTimes,
+} from "react-icons/fa";
 import type { User } from "../../../../types/User";
 import "./ProfileCard.css";
 
@@ -9,7 +18,7 @@ interface Props {
   avatarLoading: boolean;
   editMode: boolean;
   form: { full_name: string; phone: string; location: string };
-  avatarInputRef: React.RefObject<HTMLInputElement>;
+  avatarInputRef: React.RefObject<HTMLInputElement | null>;
   onAvatarChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onEditClick: () => void;
   onFormChange: (field: string, val: string) => void;
@@ -18,24 +27,51 @@ interface Props {
 }
 
 const ProfileCard: React.FC<Props> = ({
-  user, avatar, avatarLoading, editMode, form,
-  avatarInputRef, onAvatarChange, onEditClick,
-  onFormChange, onSave, onCancelEdit,
+  user,
+  avatar,
+  avatarLoading,
+  editMode,
+  form,
+  avatarInputRef,
+  onAvatarChange,
+  onEditClick,
+  onFormChange,
+  onSave,
+  onCancelEdit,
 }) => (
   <div className="pr-main-card">
     <div className="pr-profile-top">
-      <div className="pr-avatar-wrap" onClick={() => avatarInputRef.current?.click()} title="Click to change photo">
+      <div
+        className="pr-avatar-wrap"
+        onClick={() => avatarInputRef.current?.click()}
+        title="Click to change photo"
+      >
         {avatar ? (
           <img src={avatar} alt="Profile" className="pr-avatar" />
         ) : (
-          <div className="pr-avatar-placeholder"><FaUser size={32} color="#aaa" /></div>
+          <div className="pr-avatar-placeholder">
+            <FaUser size={32} color="#aaa" />
+          </div>
         )}
-        <div className={`pr-avatar-overlay ${avatarLoading ? "pr-avatar-loading" : ""}`}>
-          {avatarLoading
-            ? <div className="pr-avatar-spinner" />
-            : <><FaCamera size={14} /><span>Change photo</span></>}
+        <div
+          className={`pr-avatar-overlay ${avatarLoading ? "pr-avatar-loading" : ""}`}
+        >
+          {avatarLoading ? (
+            <div className="pr-avatar-spinner" />
+          ) : (
+            <>
+              <FaCamera size={14} />
+              <span>Change photo</span>
+            </>
+          )}
         </div>
-        <input ref={avatarInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={onAvatarChange} />
+        <input
+          ref={avatarInputRef}
+          type="file"
+          accept="image/*"
+          style={{ display: "none" }}
+          onChange={onAvatarChange}
+        />
       </div>
 
       <div className="pr-identity">
@@ -51,18 +87,39 @@ const ProfileCard: React.FC<Props> = ({
               </span>
             </div>
             <div className="pr-meta">
-              <span><FaMapMarkerAlt size={11} /> {user?.location || "—"}</span>
-              <span><FaPhone size={11} /> {user?.phone || "—"}</span>
-              <span><FaEnvelope size={11} /> {user?.email || "—"}</span>
+              <span>
+                <FaMapMarkerAlt size={11} /> {user?.location || "—"}
+              </span>
+              <span>
+                <FaPhone size={11} /> {user?.phone || "—"}
+              </span>
+              <span>
+                <FaEnvelope size={11} /> {user?.email || "—"}
+              </span>
             </div>
-            <p className="pr-bio">Passionate farmer dedicated to sustainable agriculture and providing fresh quality produce.</p>
+            <p className="pr-bio">
+              Passionate farmer dedicated to sustainable agriculture and
+              providing fresh quality produce.
+            </p>
           </>
         ) : (
           <div className="pr-edit-form">
             {[
-              { field: "full_name", label: "Full name *", placeholder: "Full name" },
-              { field: "location", label: "Location", placeholder: "City, Country" },
-              { field: "phone", label: "Phone *", placeholder: "+237 600 000 000" },
+              {
+                field: "full_name",
+                label: "Full name *",
+                placeholder: "Full name",
+              },
+              {
+                field: "location",
+                label: "Location",
+                placeholder: "City, Country",
+              },
+              {
+                field: "phone",
+                label: "Phone *",
+                placeholder: "+237 600 000 000",
+              },
             ].map(({ field, label, placeholder }) => (
               <div className="pr-edit-field" key={field}>
                 <label>{label}</label>
@@ -74,15 +131,21 @@ const ProfileCard: React.FC<Props> = ({
               </div>
             ))}
             <div className="pr-edit-btns">
-              <button className="pr-save-btn" onClick={onSave}><FaSave size={12} /> Save changes</button>
-              <button className="pr-discard-btn" onClick={onCancelEdit}><FaTimes size={12} /> Cancel</button>
+              <button className="pr-save-btn" onClick={onSave}>
+                <FaSave size={12} /> Save changes
+              </button>
+              <button className="pr-discard-btn" onClick={onCancelEdit}>
+                <FaTimes size={12} /> Cancel
+              </button>
             </div>
           </div>
         )}
       </div>
 
       {!editMode && (
-        <button className="pr-edit-btn" onClick={onEditClick}><FaEdit size={12} /> Edit profile</button>
+        <button className="pr-edit-btn" onClick={onEditClick}>
+          <FaEdit size={12} /> Edit profile
+        </button>
       )}
     </div>
   </div>

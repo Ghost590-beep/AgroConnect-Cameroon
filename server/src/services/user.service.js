@@ -4,6 +4,12 @@ import UserActionsRepository from "../repositories/userActions.repository.js"; /
 import ProductService from "./product.service.js";
 import OrderService from "./order.service.js";
 
+const sanitizeUser = (user) => {
+  if (!user) return null;
+  const { password, ...rest } = user;
+  return rest;
+};
+
 class UserService {
   // =========================
   // Register new user
@@ -74,8 +80,9 @@ class UserService {
   // =========================
   async getUserWithRoles(userId) {
     const user = await UserRepository.findById(userId);
+    if (!user) return null;
     const roles = await UserActionsRepository.findByUserId(userId);
-    return { ...user, roles };
+    return { ...sanitizeUser(user), roles };
   }
 
   // =========================

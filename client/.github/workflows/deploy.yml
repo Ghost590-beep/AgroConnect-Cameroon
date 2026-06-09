@@ -1,0 +1,29 @@
+name: Deploy AgroConnect to VPS
+
+on:
+  push:
+    branches:
+      - main  # triggers on every push to main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to VPS via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          script: |
+            cd ~/project/AgroConnect-Cameroon
+            git pull origin main
+            cd server && npm install --production
+            pm2 restart agroconnect-backend
+            cd ../client && npm install && npm run build
+            sudo chmod -R 755 ~/project/AgroConnect-Cameroon/client/dist
+            echo "✅ Deployed successfully!"

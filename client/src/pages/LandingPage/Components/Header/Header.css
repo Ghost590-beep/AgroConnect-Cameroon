@@ -84,17 +84,17 @@
 }
 
 .sign-in {
-  background-color: orange;
+  background-color: rgb(0, 255, 170);
   color: white;
 }
 
 .sign-in:hover {
-  background-color: #e68900;
+  background-color: #00e686;
   transform: translateY(-2px);
 }
 
 .login {
-  background-color: white;
+  background-color: rgb(255, 255, 255);
   color: black;
 }
 

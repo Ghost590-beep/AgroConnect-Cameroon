@@ -24,10 +24,7 @@ class UserValidator {
   ];
 
   static googleAuth = [
-    body("email").isEmail().withMessage("Valid email is required"),
-    body("full_name").notEmpty().withMessage("Full name is required"),
-    body("phone").optional().notEmpty().withMessage("Phone number cannot be empty"),
-    body("location").optional().notEmpty().withMessage("Location cannot be empty"),
+    body("id_token").notEmpty().withMessage("Google ID token is required"),
   ];
 
   static updateProfile = [

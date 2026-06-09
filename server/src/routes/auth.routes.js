@@ -118,7 +118,7 @@ router.post(
  *   post:
  *     tags:
  *       - Auth
- *     summary: Register or login using Google credentials
+ *     summary: Sign in or register with Google
  *     requestBody:
  *       required: true
  *       content:
@@ -126,30 +126,17 @@ router.post(
  *           schema:
  *             type: object
  *             required:
- *               - email
- *               - full_name
+ *               - id_token
  *             properties:
- *               email:
- *                 type: string
- *                 format: email
- *               full_name:
- *                 type: string
- *               phone:
- *                 type: string
- *               location:
+ *               id_token:
  *                 type: string
  *             example:
- *               email: jane@example.com
- *               full_name: Jane Doe
- *               phone: "+237123456789"
- *               location: Yaounde
+ *               id_token: "YOUR_GOOGLE_ID_TOKEN"
  *     responses:
  *       200:
- *         description: Logged in with Google successfully
- *       201:
- *         description: Registered with Google successfully
+ *         description: Google sign-in successful
  *       400:
- *         description: Validation failed
+ *         description: Validation failed or invalid token
  */
 router.post(
   "/google",

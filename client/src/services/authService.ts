@@ -33,6 +33,13 @@ export const loginUser = async (
   return res.data.data;
 };
 
+export const googleAuth = async (idToken: string): Promise<AuthResponse> => {
+  const res = await axiosInstance.post(`${API}/auth/google`, {
+    id_token: idToken,
+  });
+  return res.data.data;
+};
+
 export const registerUser = async (
   payload: RegisterPayload,
 ): Promise<AuthResponse> => {

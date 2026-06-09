@@ -12,7 +12,7 @@ import "../../styles/UploadProduct.css";
 const UploadProduct: React.FC = () => {
   const { token } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation<{ category?: string }>();
+  const location = useLocation() as { state?: { category?: string } };
 
   const [loading, setLoading] = useState(false);
   const [visibility, setVisibility] = useState<"public" | "private">("public");
@@ -31,7 +31,9 @@ const UploadProduct: React.FC = () => {
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
@@ -39,7 +41,9 @@ const UploadProduct: React.FC = () => {
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setDragOver(false);
-    const files = Array.from(e.dataTransfer.files).filter((f) => f.type.startsWith("image/"));
+    const files = Array.from(e.dataTransfer.files).filter((f) =>
+      f.type.startsWith("image/"),
+    );
     setImageFiles((prev) => [...prev, ...files].slice(0, 5));
   };
 
@@ -55,14 +59,21 @@ const UploadProduct: React.FC = () => {
   };
 
   useEffect(() => {
-    if (location.state?.category) {
-      setForm((prev) => ({ ...prev, category: location.state.category }));
+    const category = location.state?.category;
+    if (category) {
+      setForm((prev) => ({ ...prev, category }));
     }
-  }, [location.state]);
+  }, [location.state?.category]);
 
   const handleSubmit = async (draft = false) => {
     if (!draft) {
-      if (!form.name || !form.category || !form.price || !form.unit || !form.stock) {
+      if (
+        !form.name ||
+        !form.category ||
+        !form.price ||
+        !form.unit ||
+        !form.stock
+      ) {
         alert("Please fill all required fields.");
         return;
       }
@@ -87,7 +98,10 @@ const UploadProduct: React.FC = () => {
       formData.append("unit", form.unit);
       formData.append("min_order", form.minOrder);
       formData.append("location", "");
-      formData.append("status", draft ? "draft" : visibility === "public" ? "active" : "draft");
+      formData.append(
+        "status",
+        draft ? "draft" : visibility === "public" ? "active" : "draft",
+      );
       if (imageFiles.length > 0) {
         formData.append("image", imageFiles[0]);
       }
@@ -114,7 +128,6 @@ const UploadProduct: React.FC = () => {
         </div>
 
         <div className="up-layout">
-
           {/* ── LEFT ── */}
           <div className="up-left">
             <ProductInfoForm form={form} onChange={handleChange} />
@@ -144,12 +157,8 @@ const UploadProduct: React.FC = () => {
               stock={form.stock}
               unit={form.unit}
             />
-            <PublishOptions
-              visibility={visibility}
-              onSelect={setVisibility}
-            />
+            <PublishOptions visibility={visibility} onSelect={setVisibility} />
           </div>
-
         </div>
       </div>
     </div>
