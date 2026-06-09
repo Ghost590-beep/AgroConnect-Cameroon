@@ -1,4 +1,13 @@
 // server/src/routes/index.js
+/**
+ * Central route registry for AgroConnect API
+ * 
+ * ACTIVE ROUTES (used by frontend):
+ * - /auth      (login, register, google sign-in)
+ * - /user      (profile, stats, products, orders, settings)
+ * - /products  (CRUD operations for products)
+ */
+
 import express from "express";
 
 import authRoutes from "./auth.routes.js";
@@ -20,10 +29,15 @@ import auditLogRoutes from "./auditLog.routes.js";
 
 const router = express.Router();
 
+// Authentication routes
 router.use("/auth", authRoutes);
+
+// User profile & account routes
 router.use("/user", userRoutes);
-router.use("/farmers", farmerRoutes);
+
+// Product management routes
 router.use("/products", productRoutes);
+router.use("/farmers", farmerRoutes);
 router.use("/orders", orderRoutes);
 router.use("/cart", cartRoutes);
 router.use("/categories", categoryRoutes);

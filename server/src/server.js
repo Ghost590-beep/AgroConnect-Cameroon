@@ -10,6 +10,7 @@ import swaggerJsdoc from "swagger-jsdoc";
 
 import routes from "./routes/index.js";
 import ErrorMiddleware from "./middlewares/error.middleware.js";
+import ensureSchema from "./config/ensureSchema.js";
 import fs from "fs";
 
 dotenv.config();
@@ -28,6 +29,13 @@ try {
   fs.mkdirSync(avatarsDir, { recursive: true });
 } catch (err) {
   console.error("Failed to create upload directories:", err);
+}
+
+try {
+  await ensureSchema();
+} catch (error) {
+  console.error("Failed to initialize database schema:", error);
+  throw error;
 }
 
 // Core middlewares

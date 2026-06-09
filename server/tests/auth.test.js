@@ -19,6 +19,14 @@ describe("Auth API", () => {
     expect(res.body.success).toBe(false);
   });
 
+  test("POST /api/auth/google rejects invalid payload", async () => {
+    const res = await request(app).post("/api/auth/google").send({});
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toMatch(/validation failed/i);
+  });
+
   test("GET /api/auth/1 rejects missing token", async () => {
     const res = await request(app).get("/api/auth/1");
 

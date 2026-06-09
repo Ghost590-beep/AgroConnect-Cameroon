@@ -13,9 +13,10 @@ interface PaymentMethodProps {
 }
 
 const payOptions: PayOption[] = [
-  { id: "cash",   label: "Cash on delivery",  desc: "Pay when you receive your order" },
-  { id: "mobile", label: "Mobile money",       desc: "Pay using M-Pesa or other mobile money services" },
-  { id: "bank",   label: "Bank transfer",      desc: "Make a payment directly to our bank account" },
+  { id: "cash",          label: "Cash on delivery", desc: "Pay when you receive your order" },
+  { id: "momo",          label: "M-Pesa / Mobile Money", desc: "Use M-Pesa, MTN Momo, or other mobile money services" },
+  { id: "orange-money",  label: "Orange Money",        desc: "Pay with Orange Money securely" },
+  { id: "bank",          label: "Bank transfer",       desc: "Make a payment directly to our bank account" },
 ];
 
 const PaymentMethod: React.FC<PaymentMethodProps> = ({ payMethod, onSelect }) => {

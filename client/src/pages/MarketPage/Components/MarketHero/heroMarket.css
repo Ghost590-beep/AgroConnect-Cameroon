@@ -40,8 +40,9 @@
 
 .hm-hero {
   position: relative;
-  height: 220px;
-  background-image: url("../../assets/agro.jpg");
+  min-height: 220px;
+  width: 100%;
+  background-image: url("../../../../assets/agro.jpg");
   background-size: cover;
   background-position: center;
   display: flex;
@@ -144,4 +145,35 @@
 
 @media (max-width: 560px) {
   .hm-cat-strip { padding: 0.7rem 1rem; }
+}
+
+@media (max-width: 960px) {
+  .hm-hero { height: 180px; }
+  .hm-hero-content h1 { font-size: 26px; }
+  .hm-hero-content > p { font-size: 12.5px; }
+}
+ 
+@media (max-width: 560px) {
+  .hm-hero { height: 160px; }
+  .hm-hero-content h1 { font-size: 22px; letter-spacing: -0.3px; }
+  .hm-hero-content > p { font-size: 12px; margin-bottom: 6px; }
+  .hm-hero-breadcrumb { font-size: 11px; gap: 4px; }
+ 
+  .hm-cat-strip { padding: 0.65rem 0.75rem; gap: 5px; }
+  .hm-cat-pill { padding: 5px 12px; font-size: 12px; }
+}
+ 
+@media (max-width: 360px) {
+  .hm-hero { height: 145px; }
+  .hm-hero-content h1 { font-size: 19px; }
+  .hm-cat-pill { padding: 5px 10px; font-size: 11.5px; }
+}
+
+@media (max-width: 320px) {
+  .hm-hero-content {
+    padding: 0 1rem;
+  }
+
+  .hm-hero-content h1 { font-size: 18px; }
+  .hm-hero-breadcrumb { font-size: 10px; gap: 3px; }
 }

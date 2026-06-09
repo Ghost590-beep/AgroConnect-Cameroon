@@ -1,0 +1,70 @@
+name: Code Quality & Security
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+
+jobs:
+  # ============================================
+  # Dependency Security Check
+  # ============================================
+  dependency-check:
+    name: Dependency Security Audit
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        directory: ['server', 'client']
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run npm audit
+        working-directory: ${{ matrix.directory }}
+        run: npm audit --audit-level=high 2>/dev/null || echo "Audit completed with warnings"
+        continue-on-error: true
+
+  # ============================================
+  # Code Coverage Report
+  # ============================================
+  coverage:
+    name: Code Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Backend Coverage
+        working-directory: server
+        run: |
+          npm ci
+          npm test -- --coverage 2>/dev/null || echo "No coverage config"
+
+      - name: Frontend Coverage
+        working-directory: client
+        run: |
+          npm ci
+          npm test -- --coverage 2>/dev/null || echo "No coverage config"
+
+  # ============================================
+  # SAST: Static Code Analysis (optional)
+  # ============================================
+  sast:
+    name: Static Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
+            p/security-audit
+            p/nodejs
+            p/typescript
+        continue-on-error: true

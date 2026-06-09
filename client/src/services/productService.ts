@@ -1,10 +1,8 @@
 import axiosInstance from "./axiosConfig";
 import { API } from "../utils/constants";
 
-export const getAllProducts = async () => {
-  const res = await axiosInstance.get(`${API}/products`);
-  // API responses are wrapped as { success, message, data }
-  // return the inner payload so callers receive the actual products array
+export const getAllProducts = async (params?: Record<string, string | number | boolean>) => {
+  const res = await axiosInstance.get(`${API}/products`, { params });
   return res.data.data;
 };
 
@@ -17,7 +15,6 @@ export const uploadProduct = async (token: string, formData: FormData) => {
   const res = await axiosInstance.post(`${API}/products`, formData, {
     headers: {
       Authorization: `Bearer ${token}`,
-      "Content-Type": "multipart/form-data",
     },
   });
   return res.data.data;

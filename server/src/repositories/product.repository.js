@@ -47,20 +47,67 @@ class ProductRepository {
   // Get product by ID
   // =========================
   async findById(productId) {
-    const rows = await db.query("SELECT * FROM products WHERE id=?", [
-      productId,
-    ]);
+    const rows = await db.query(
+      `SELECT p.*, c.name AS category, s.name AS subcategory, u.full_name AS farmer
+       FROM products p
+       JOIN categories c ON p.category_id = c.id
+       JOIN subcategories s ON p.subcategory_id = s.id
+       JOIN users u ON p.user_id = u.id
+       WHERE p.id = ?`,
+      [productId],
+    );
     return rows[0];
   }
 
   // =========================
-  // Get all products
+  // Get all products with optional filters
   // =========================
-  async findAll() {
-    // Return only public/active products (exclude drafts)
-    return await db.query(
-      "SELECT * FROM products WHERE status != 'draft' ORDER BY created_at DESC",
-    );
+  async findAll(filters = {}) {
+    const conditions = ["p.status != 'draft'"];
+    const params = [];
+
+    if (filters.category) {
+      conditions.push("LOWER(c.name) = LOWER(?)");
+      params.push(filters.category);
+    }
+
+    if (filters.subcategory) {
+      conditions.push("LOWER(s.name) = LOWER(?)");
+      params.push(filters.subcategory);
+    }
+
+    if (filters.keyword) {
+      conditions.push(
+        `(LOWER(p.name) LIKE LOWER(?) OR LOWER(p.description) LIKE LOWER(?) OR LOWER(u.full_name) LIKE LOWER(?) OR LOWER(p.location) LIKE LOWER(?))`,
+      );
+      const keyword = `%${filters.keyword}%`;
+      params.push(keyword, keyword, keyword, keyword);
+    }
+
+    if (filters.location && filters.location !== "All Locations") {
+      conditions.push("LOWER(p.location) LIKE LOWER(?)");
+      params.push(`%${filters.location}%`);
+    }
+
+    if (filters.minPrice !== undefined && filters.minPrice !== "") {
+      conditions.push("p.price >= ?");
+      params.push(Number(filters.minPrice));
+    }
+
+    if (filters.maxPrice !== undefined && filters.maxPrice !== "") {
+      conditions.push("p.price <= ?");
+      params.push(Number(filters.maxPrice));
+    }
+
+    const sql = `SELECT p.*, c.name AS category, s.name AS subcategory, u.full_name AS farmer
+      FROM products p
+      JOIN categories c ON p.category_id = c.id
+      JOIN subcategories s ON p.subcategory_id = s.id
+      JOIN users u ON p.user_id = u.id
+      WHERE ${conditions.join(" AND ")}
+      ORDER BY p.created_at DESC`;
+
+    return await db.query(sql, params);
   }
 
   // =========================
@@ -115,10 +162,7 @@ class ProductRepository {
   // Search products by keyword
   // =========================
   async search(keyword) {
-    return await db.query(
-      "SELECT * FROM products WHERE name LIKE ? OR description LIKE ?",
-      [`%${keyword}%`, `%${keyword}%`],
-    );
+    return await this.findAll({ keyword });
   }
 
   // =========================

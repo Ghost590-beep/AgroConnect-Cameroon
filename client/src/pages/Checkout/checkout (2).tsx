@@ -57,7 +57,17 @@ const Checkout: React.FC = () => {
       alert("Please fill all required fields.");
       return;
     }
-    alert("Order placed successfully!");
+
+    const paymentLabel =
+      payMethod === "momo"
+        ? "Mobile money"
+        : payMethod === "orange-money"
+        ? "Orange Money"
+        : payMethod === "bank"
+        ? "Bank transfer"
+        : "Cash on delivery";
+
+    alert(`Order placed successfully! Payment method selected: ${paymentLabel}`);
     localStorage.removeItem("agro_cart");
     navigate("/market");
   };
@@ -104,6 +114,7 @@ const Checkout: React.FC = () => {
               subtotal={subtotal}
               deliveryFee={DELIVERY_FEE}
               total={total}
+              payMethod={payMethod}
               onPlaceOrder={handlePlaceOrder}
             />
           </div>

@@ -48,10 +48,19 @@ class ProductController {
 
   // =========================
   // Get all products
+  // Supports filtering via query parameters.
   // =========================
   async getAllProducts(req, res, next) {
     try {
-      const products = await ProductService.getAllProducts();
+      const filters = {
+        keyword: req.query.keyword,
+        category: req.query.category,
+        subcategory: req.query.subcategory,
+        location: req.query.location,
+        minPrice: req.query.minPrice,
+        maxPrice: req.query.maxPrice,
+      };
+      const products = await ProductService.getAllProducts(filters);
       return response.success(res, products, "Products retrieved successfully");
     } catch (error) {
       next(error);

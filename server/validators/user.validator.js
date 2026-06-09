@@ -39,6 +39,19 @@ class UserValidator {
       .withMessage("Location cannot be empty"),
   ];
 
+  static googleAuth = [
+    body("email").isEmail().withMessage("Valid email is required"),
+    body("full_name").notEmpty().withMessage("Full name is required"),
+    body("phone")
+      .optional()
+      .isString()
+      .withMessage("Phone number must be text"),
+    body("location")
+      .optional()
+      .isString()
+      .withMessage("Location must be text"),
+  ];
+
   static assignRole = [
     body("role").notEmpty().withMessage("Role is required"),
     body("permissions").isArray().withMessage("Permissions must be an array"),
