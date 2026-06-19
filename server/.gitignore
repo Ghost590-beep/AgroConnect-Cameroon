@@ -45,3 +45,173 @@ coverage/
 # OS files
 Thumbs.db
 .DS_Store
+
+
+
+
+# Environment variables
+.env
+.env.local
+.env.production
+.env.development
+.env.*.local
+.env.*.local.example
+
+# Dependencies
+node_modules
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+pm2-*.log
+pm2-logs
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+
+# Uploads and temp files
+uploads/
+temp/
+tmp/
+public/uploads
+temp_uploads
+
+# Build outputs
+dist
+build
+out
+*.tsbuildinfo
+
+# Coverage directory (testing)
+coverage
+.nyc_output
+*.lcov
+
+# Misc
+.DS_Store
+*.pem
+
+# Debug files
+debug.log
+
+# Optional: Environment configuration
+.env.secrets
+.env.backup
+.env.encrypted
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# OS metadata
+Thumbs.db
+Desktop.ini
+
+# Docker
+docker-compose.override.yml
+.dockerignore
+Dockerfile.dev
+
+# PM2
+pm2.json
+.pm2
+
+# Nginx config (if using reverse proxy)
+nginx.conf.bak
+
+# SSL certificates
+*.crt
+*.key
+*.pem
+!.gitkeep
+
+# Secrets
+secrets.json
+*.p12
+*.pfx
+
+# Data directories
+data/
+backups/
+
+# MySQL dumps
+*.sql
+*.dump
+
+# Redis
+dump.rdb
+
+# Session store
+sessions
+
+# Temporary database files
+db.sqlite
+db.sqlite-journal
+
+# Application specific
+storage/
+logs/
+tmp/
+*.lock
+
+# Windows
+Icon?
+ehthumbs.db
+ehthumbs_vista.db
+
+# Mac
+*.DS_Store
+*.AppleDouble
+*.LSOverride
+
+# Linux
+.directory
+.directory-*
+
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+.yarn/cache
+.yarn/unplugged
+
+# Pnpm
+.pnpm-store
+
+# TypeScript
+*.tsbuildinfo
+*.tsbuildinfo.*
+
+# Jest
+jest.config.js.backup
+
+# Custom backup files
+*.bak
+*.backup
+*.old
+
