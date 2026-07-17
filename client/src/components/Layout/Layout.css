@@ -1,0 +1,14 @@
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-shell-main {
+  flex: 1;
+  padding-top: 72px; /* offsets the fixed full-variant navbar */
+}
+
+.app-shell-main-minimal {
+  padding-top: 0; /* minimal navbar sits in normal flow, not fixed */
+}

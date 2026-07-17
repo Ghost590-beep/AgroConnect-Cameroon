@@ -1,5 +1,4 @@
 import React from "react";
-import Navbar from "../LandingPage/Component/Navbar/Navbar";
 import HeroSection from "../LandingPage/Component/Hero/Hero";
 import StatsFeatures from "../LandingPage/Component/StatsFeatures/Stats";
 import CategoriesHow from "../LandingPage/Component/Catergory/Cat";
@@ -9,7 +8,6 @@ import FeaturedProducts from "../LandingPage/Component/Feature/Feature";
 
 const Landing: React.FC = () => (
   <div className="ln-page">
-    <Navbar />
     <HeroSection />
     <StatsFeatures />
     <CategoriesHow />

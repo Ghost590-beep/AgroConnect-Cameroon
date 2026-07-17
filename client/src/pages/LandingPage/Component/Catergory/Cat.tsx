@@ -8,7 +8,7 @@ import {
 import "./Cat.css";
 
 const CATEGORIES = [
-  { title: "Crops & Seeds",    desc: "Maize, tomatoes, cassava and more", icon: <FaSeedling />,        bg: "#e8f5e9" },
+  { title: "Crops & Seeds",    desc: "Maize, tomatoes, cassava and more", icon: <FaSeedling />,        bg: "#F3DDC9" },
   { title: "Animals",          desc: "Livestock & poultry",               icon: <FaCrow />,            bg: "#fff8e1" },
   { title: "Machines & Tools", desc: "Tractors, tools & rentals",         icon: <FaTractor />,         bg: "#e3f2fd" },
   { title: "Services",         desc: "Farm services & support",           icon: <FaHandshake />,       bg: "#fce4ec" },

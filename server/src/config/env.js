@@ -45,6 +45,16 @@ class EnvConfig {
   static getJwtSecret() {
     return this.get("JWT_SECRET");
   }
+
+  // Optional: Google sign-in is a feature, not a hard startup requirement,
+  // so this intentionally does not throw when unset.
+  static getGoogleClientId() {
+    return process.env.GOOGLE_CLIENT_ID || null;
+  }
+
+  static getPort() {
+    return parseInt(process.env.PORT || process.env.SERVER_PORT || "5000", 10);
+  }
 }
 
 export default EnvConfig;

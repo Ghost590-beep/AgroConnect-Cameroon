@@ -1,9 +1,8 @@
-// src/routes/user.routes.js
+// src/routes/auth.routes.js
 import express from "express";
-import UserController from "../controllers/user.controller.js";
-import AuthMiddleware from "../middlewares/auth.middleware.js";
+import AuthController from "../controllers/auth.controller.js";
 import ValidationMiddleware from "../middlewares/validation.middleware.js";
-import UserValidator from "../validators/user.validator.js";
+import AuthValidator from "../validators/auth.validator.js";
 
 const router = express.Router();
 
@@ -11,23 +10,14 @@ const router = express.Router();
  * @swagger
  * tags:
  *   - name: Auth
- *     description: Authentication and user account management
- */
-
-/**
- * User Routes
- * - OOP: Controller methods are encapsulated and exposed here.
- * - SOLID:
- *   - SRP: Routes only map endpoints to controller methods.
- *   - DIP: Routes depend on controller abstraction, not repositories.
+ *     description: Registration and sign-in
  */
 
 /**
  * @swagger
  * /api/auth/register:
  *   post:
- *     tags:
- *       - Auth
+ *     tags: [Auth]
  *     summary: Register a new user
  *     requestBody:
  *       required: true
@@ -35,50 +25,30 @@ const router = express.Router();
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - full_name
- *               - email
- *               - password
- *               - phone
- *               - location
+ *             required: [full_name, email, password, phone]
  *             properties:
- *               full_name:
- *                 type: string
- *               email:
- *                 type: string
- *                 format: email
- *               password:
- *                 type: string
- *               phone:
- *                 type: string
- *               location:
- *                 type: string
- *             example:
- *               full_name: Jane Doe
- *               email: jane@example.com
- *               password: strongpass123
- *               phone: "+237123456789"
- *               location: Yaounde
+ *               full_name: { type: string }
+ *               email: { type: string, format: email }
+ *               password: { type: string }
+ *               phone: { type: string }
+ *               location: { type: string }
  *     responses:
- *       201:
- *         description: User registered successfully
- *       400:
- *         description: Validation failed
+ *       201: { description: User registered successfully }
+ *       400: { description: Validation failed }
+ *       409: { description: Email already registered }
  */
-// Register new user
 router.post(
   "/register",
-  UserValidator.register,
+  AuthValidator.register,
   ValidationMiddleware.validate,
-  UserController.register,
+  AuthController.register,
 );
 
 /**
  * @swagger
  * /api/auth/login:
  *   post:
- *     tags:
- *       - Auth
+ *     tags: [Auth]
  *     summary: Login with email and password
  *     requestBody:
  *       required: true
@@ -86,150 +56,45 @@ router.post(
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - email
- *               - password
+ *             required: [email, password]
  *             properties:
- *               email:
- *                 type: string
- *                 format: email
- *               password:
- *                 type: string
- *             example:
- *               email: jane@example.com
- *               password: strongpass123
+ *               email: { type: string, format: email }
+ *               password: { type: string }
  *     responses:
- *       200:
- *         description: Login successful
- *       400:
- *         description: Validation failed or invalid credentials
+ *       200: { description: Login successful }
+ *       401: { description: Invalid credentials }
  */
-// Login user
 router.post(
   "/login",
-  UserValidator.login,
+  AuthValidator.login,
   ValidationMiddleware.validate,
-  UserController.login,
+  AuthController.login,
 );
 
 /**
  * @swagger
  * /api/auth/google:
  *   post:
- *     tags:
- *       - Auth
- *     summary: Sign in or register with Google
+ *     tags: [Auth]
+ *     summary: Sign in or register with a Google ID token
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - id_token
+ *             required: [id_token]
  *             properties:
- *               id_token:
- *                 type: string
- *             example:
- *               id_token: "YOUR_GOOGLE_ID_TOKEN"
+ *               id_token: { type: string }
  *     responses:
- *       200:
- *         description: Google sign-in successful
- *       400:
- *         description: Validation failed or invalid token
+ *       200: { description: Google sign-in successful }
+ *       401: { description: Invalid Google token }
  */
 router.post(
   "/google",
-  UserValidator.googleAuth,
+  AuthValidator.googleAuth,
   ValidationMiddleware.validate,
-  UserController.googleAuth,
-);
-
-/**
- * @swagger
- * /api/auth/{id}:
- *   get:
- *     tags:
- *       - Auth
- *     summary: Get a user by ID
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - name: id
- *         in: path
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: User retrieved successfully
- *       401:
- *         description: Unauthorized
- *       404:
- *         description: User not found
- */
-// Get user by ID (protected)
-router.get("/:id", AuthMiddleware.verifyToken, UserController.getUserById);
-
-// Update user profile (protected)
-/**
- * @swagger
- * /api/auth/{id}/profile:
- *   put:
- *     tags:
- *       - Auth
- *     summary: Update user profile
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - name: id
- *         in: path
- *         required: true
- *         schema:
- *           type: integer
- *     requestBody:
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               full_name:
- *                 type: string
- *               phone:
- *                 type: string
- *               location:
- *                 type: string
- *     responses:
- *       200:
- *         description: Profile updated successfully
- *       400:
- *         description: Validation failed
- */
-router.put(
-  "/:id/profile",
-  AuthMiddleware.verifyToken,
-  UserValidator.updateProfile,
-  ValidationMiddleware.validate,
-  UserController.updateProfile,
-);
-
-// Delete user (protected)
-router.delete("/:id", AuthMiddleware.verifyToken, UserController.deleteUser);
-
-// Assign role/action to user (protected)
-router.post(
-  "/:id/actions",
-  AuthMiddleware.verifyToken,
-  UserValidator.assignRole,
-  ValidationMiddleware.validate,
-  UserController.assignRole,
-);
-
-// Get all actions for a user (protected)
-router.get(
-  "/:id/actions",
-  AuthMiddleware.verifyToken,
-  UserController.getUserActions,
+  AuthController.googleAuth,
 );
 
 export default router;

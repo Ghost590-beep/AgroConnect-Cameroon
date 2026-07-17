@@ -1,49 +1,32 @@
-//  ----- src/repositories/user.repository.js --
-import db from "../config/db.js";
+// src/repositories/user.repository.js
 import BaseRepository from "./base.repository.js";
 
 /**
  * UserRepository
- * - SRP: Handles only user-related queries.
- * - OCP: Can be extended with new methods without modifying existing ones.
- * - DIP: Services depend on this abstraction, not directly on db.
- * - Uses BaseRepository as an abstract contract.
+ * - SRP: user table access only.
+ * - Extends BaseRepository for real (findById/delete come for free).
  */
 class UserRepository extends BaseRepository {
   constructor() {
     super("users");
   }
 
-  async findById(id) {
-    const rows = await db.query("SELECT * FROM users WHERE id = ?", [id]);
-    return rows[0];
-  }
-
   async findByEmail(email) {
-    const rows = await db.query("SELECT * FROM users WHERE email = ?", [email]);
-    return rows[0];
+    const rows = await this.db.query("SELECT * FROM users WHERE email = ?", [
+      email,
+    ]);
+    return rows[0] ?? null;
   }
 
-  async create(user) {
-    const {
-      full_name,
-      email,
-      password,
-      phone = null,
-      location = "Cameroon",
-      profile_image = null,
-      role = "buyer",
-    } = user;
-
-    const result = await db.query(
-      "INSERT INTO users (full_name, email, password, phone, location, profile_image, role) VALUES (?, ?, ?, ?, ?, ?, ?)",
-      [full_name, email, password, phone, location, profile_image, role],
+  async create({ full_name, email, password, phone = null, location = "Cameroon", profile_image = null }) {
+    const result = await this.db.query(
+      "INSERT INTO users (full_name, email, password, phone, location, profile_image) VALUES (?, ?, ?, ?, ?, ?)",
+      [full_name, email, password, phone, location, profile_image],
     );
-    return result.insertId;
+    return this.findById(result.insertId);
   }
 
   async updateProfile(id, updates) {
-    // Preserve existing values when fields are not provided to avoid NOT NULL violations
     const existing = await this.findById(id);
     if (!existing) {
       throw new Error("User not found");
@@ -53,33 +36,27 @@ class UserRepository extends BaseRepository {
     const phone = updates.phone ?? existing.phone;
     const location = updates.location ?? existing.location;
     const profile_image = updates.profile_image ?? existing.profile_image;
-    const notification_prefs =
-      updates.notification_preferences ?? existing.notification_prefs;
     const password = updates.password ?? existing.password;
-    const role = updates.role ?? existing.role;
+    // mysql2 auto-parses JSON columns back into JS objects on read, so
+    // the "keep existing value" fallback must be re-serialized too —
+    // only a raw string (or null) may be sent back to a JSON column as-is.
+    const rawPrefs =
+      updates.notification_prefs !== undefined
+        ? updates.notification_prefs
+        : existing.notification_prefs;
+    const notification_prefs =
+      rawPrefs === null || rawPrefs === undefined
+        ? null
+        : typeof rawPrefs === "string"
+          ? rawPrefs
+          : JSON.stringify(rawPrefs);
 
-    await db.query(
-      "UPDATE users SET full_name=?, phone=?, location=?, profile_image=?, notification_prefs=?, password=?, role=? WHERE id=?",
-      [
-        full_name,
-        phone,
-        location,
-        profile_image,
-        typeof notification_prefs === "object"
-          ? JSON.stringify(notification_prefs)
-          : notification_prefs,
-        password,
-        role,
-        id,
-      ],
+    await this.db.query(
+      "UPDATE users SET full_name=?, phone=?, location=?, profile_image=?, password=?, notification_prefs=? WHERE id=?",
+      [full_name, phone, location, profile_image, password, notification_prefs, id],
     );
 
     return this.findById(id);
-  }
-
-  async delete(id) {
-    await db.query("DELETE FROM users WHERE id = ?", [id]);
-    return true;
   }
 }
 
