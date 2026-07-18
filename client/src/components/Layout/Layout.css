@@ -2,13 +2,33 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(49, 122, 55, 0.12),
+      transparent 24%
+    ),
+    radial-gradient(
+      circle at bottom right,
+      rgba(210, 164, 62, 0.16),
+      transparent 20%
+    ),
+    var(--color-bg);
 }
 
 .app-shell-main {
   flex: 1;
-  padding-top: 72px; /* offsets the fixed full-variant navbar */
+  padding-top: 96px;
+  padding-bottom: 60px;
 }
 
 .app-shell-main-minimal {
-  padding-top: 0; /* minimal navbar sits in normal flow, not fixed */
+  padding-top: 0;
+}
+
+@media (max-width: 768px) {
+  .app-shell-main {
+    padding-top: 78px;
+    padding-bottom: 40px;
+  }
 }

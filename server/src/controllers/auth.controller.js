@@ -2,6 +2,11 @@
 import AuthService from "../services/auth.service.js";
 import response from "../utils/response.js";
 
+/**
+ * AuthController
+ * - SRP: exposes auth endpoints only.
+ * - OOP: organizes each route handler as a class method.
+ */
 class AuthController {
   async register(req, res, next) {
     try {

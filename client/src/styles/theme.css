@@ -1,54 +1,57 @@
-/* client/src/styles/theme.css
-   Single source of truth for design tokens — "Warm Earth & Harvest".
-   Every page/component consumes var(--color-*) etc. from here.
-   Do not declare another :root block anywhere else in the app.
-*/
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
 
 :root {
-  /* Brand core */
-  --color-primary: #C1502E;
-  --color-primary-dark: #9C3F23;
-  --color-primary-light: #E8A184;
+  --color-primary: #1f7a39;
+  --color-primary-dark: #14552a;
+  --color-primary-light: #7bcc8c;
 
-  --color-secondary: #D9A441;
-  --color-secondary-dark: #B8842A;
-  --color-secondary-light: #F0D9A0;
+  --color-secondary: #d2a43e;
+  --color-secondary-dark: #af862e;
+  --color-secondary-light: #f8dea1;
 
-  --color-accent-brown: #6B4A32;
-  --color-accent-brown-dark: #4A3220;
+  --color-accent-brown: #503a24;
+  --color-accent-brown-dark: #362715;
 
-  /* Sparse semantic colors — used only for tiny states, never as a page-wide theme */
-  --color-success: #4C7A3D;
-  --color-success-bg: #E7EFE0;
-  --color-info: #4A7A96;
-  --color-info-bg: #E3EEF3;
-  --color-danger: #B3402E;
-  --color-danger-bg: #F6E4DF;
+  --color-success: #3f7a46;
+  --color-success-bg: #e7f2e7;
+  --color-info: #3b7fa2;
+  --color-info-bg: #e7f2f8;
+  --color-danger: #a34f35;
+  --color-danger-bg: #f9e8e2;
 
-  /* Backgrounds */
-  --color-bg: #FBF3E7;
-  --color-bg-alt: #F3E4CE;
-  --color-surface: #FFFFFF;
-  --color-surface-sunken: #F0E6D6;
+  --color-bg: #f3f1eb;
+  --color-bg-alt: #edf1e8;
+  --color-surface: rgba(255, 255, 255, 0.94);
+  --color-surface-sunken: #eef0e7;
 
-  /* Text */
-  --color-text: #3A2A1E;
-  --color-text-muted: #7A6A5C;
-  --color-text-on-primary: #FFFFFF;
-  --color-text-on-dark: #F5EAD9;
+  --color-text: #172915;
+  --color-text-muted: #5b6b56;
+  --color-text-on-primary: #ffffff;
+  --color-text-on-dark: #f4efe0;
 
-  /* Borders / shadows */
-  --color-border: #E3D2B8;
-  --color-border-strong: #C9AE86;
-  --shadow-sm: 0 1px 4px rgba(58, 42, 30, 0.08);
-  --shadow-md: 0 4px 16px rgba(58, 42, 30, 0.12);
-  --shadow-lg: 0 12px 32px rgba(58, 42, 30, 0.18);
+  --color-border: rgba(44, 68, 46, 0.16);
+  --color-border-strong: rgba(33, 58, 40, 0.24);
+  --color-border-glow: rgba(49, 122, 55, 0.14);
 
-  /* Radius */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
+  --gradient-primary: linear-gradient(135deg, #1f7a39 0%, #74bf7b 100%);
+  --gradient-secondary: linear-gradient(135deg, #d2a43e 0%, #f5d37a 100%);
+  --gradient-surface: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.96),
+    rgba(249, 247, 239, 0.88)
+  );
 
-  /* Font — one family sitewide */
+  --shadow-sm: 0 10px 30px rgba(32, 56, 30, 0.08);
+  --shadow-md: 0 18px 40px rgba(32, 56, 30, 0.12);
+  --shadow-lg: 0 28px 45px rgba(17, 42, 22, 0.16);
+  --shadow-xl: 0 40px 80px rgba(20, 55, 28, 0.18);
+
+  --radius-sm: 10px;
+  --radius-md: 18px;
+  --radius-lg: 28px;
+
   --font-body: "Inter", "Segoe UI", sans-serif;
+  --font-heading: "Inter", "Segoe UI", sans-serif;
+  --transition-fast: 180ms ease;
+  --transition-medium: 250ms ease;
 }

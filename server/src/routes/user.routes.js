@@ -5,6 +5,7 @@ import AuthMiddleware from "../middlewares/auth.middleware.js";
 import ValidationMiddleware from "../middlewares/validation.middleware.js";
 import UserValidator from "../validators/user.validator.js";
 import upload from "../config/multer.js";
+import asyncHandler from "../utils/asyncHandler.js";
 
 const router = express.Router();
 
@@ -33,12 +34,12 @@ router.use(AuthMiddleware.verifyToken);
  *     responses:
  *       200: { description: Profile updated successfully }
  */
-router.get("/profile", UserController.getProfile);
+router.get("/profile", asyncHandler(UserController.getProfile));
 router.put(
   "/profile",
   UserValidator.updateProfile,
   ValidationMiddleware.validate,
-  UserController.updateProfile,
+  asyncHandler(UserController.updateProfile),
 );
 
 /**
@@ -58,7 +59,11 @@ router.put(
  *     responses:
  *       200: { description: Avatar uploaded successfully }
  */
-router.put("/profile/avatar", upload.single("profile_image"), UserController.uploadAvatar);
+router.put(
+  "/profile/avatar",
+  upload.single("profile_image"),
+  asyncHandler(UserController.uploadAvatar),
+);
 
 /**
  * @swagger
@@ -75,7 +80,7 @@ router.post(
   "/change-password",
   UserValidator.changePassword,
   ValidationMiddleware.validate,
-  UserController.changePassword,
+  asyncHandler(UserController.changePassword),
 );
 
 /**
@@ -88,7 +93,7 @@ router.post(
  *     responses:
  *       200: { description: Stats retrieved successfully }
  */
-router.get("/stats", UserController.getUserStats);
+router.get("/stats", asyncHandler(UserController.getUserStats));
 
 /**
  * @swagger
@@ -100,7 +105,7 @@ router.get("/stats", UserController.getUserStats);
  *     responses:
  *       200: { description: Products retrieved successfully }
  */
-router.get("/products", UserController.getUserProducts);
+router.get("/products", asyncHandler(UserController.getUserProducts));
 
 /**
  * @swagger
@@ -112,7 +117,7 @@ router.get("/products", UserController.getUserProducts);
  *     responses:
  *       200: { description: Orders retrieved successfully }
  */
-router.get("/orders", UserController.getUserOrders);
+router.get("/orders", asyncHandler(UserController.getUserOrders));
 
 /**
  * @swagger
@@ -138,7 +143,7 @@ router.post(
   "/notifications",
   UserValidator.notifications,
   ValidationMiddleware.validate,
-  UserController.saveNotifications,
+  asyncHandler(UserController.saveNotifications),
 );
 
 /**
@@ -151,6 +156,6 @@ router.post(
  *     responses:
  *       200: { description: Account deleted successfully }
  */
-router.delete("/account", UserController.deleteAccount);
+router.delete("/account", asyncHandler(UserController.deleteAccount));
 
 export default router;

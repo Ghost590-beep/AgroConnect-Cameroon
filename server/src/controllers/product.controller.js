@@ -2,16 +2,28 @@
 import ProductService from "../services/product.service.js";
 import response from "../utils/response.js";
 
+/**
+ * ProductController
+ * - SRP: handles product HTTP requests only.
+ * - Uses ProductService for business logic.
+ */
 class ProductController {
   async addProduct(req, res, next) {
     try {
       const productPayload = {
         ...req.body,
         user_id: req.user.id,
-        image: req.file ? `/uploads/products/${req.file.filename}` : req.body.image,
+        image: req.file
+          ? `/uploads/products/${req.file.filename}`
+          : req.body.image,
       };
       const product = await ProductService.addProduct(productPayload);
-      return response.success(res, product, "Product created successfully", 201);
+      return response.success(
+        res,
+        product,
+        "Product created successfully",
+        201,
+      );
     } catch (error) {
       next(error);
     }
