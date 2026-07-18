@@ -1,19 +1,23 @@
 import { body } from "express-validator";
 
-/**
- * Product Validator
- * - OOP: Encapsulated in a class with static rules.
- * - SOLID:
- *   - SRP: Handles only validation rules for product inputs.
- *   - OCP: Easily extendable with new rules (e.g., discount codes).
- */
+// Draft listings are allowed to be incomplete (a farmer saving
+// progress before publishing), so most fields are only required
+// when the product isn't a draft.
+function requiredUnlessDraft(value, { req }) {
+  return req.body.status === "draft" || Boolean(value);
+}
+
 class ProductValidator {
   static addProduct = [
-    body("name").custom((value, { req }) => {
-      if (req.body.status === "draft") return true;
-      if (!value) throw new Error("Product name is required");
-      return true;
-    }),
+    body("name")
+      .custom(requiredUnlessDraft)
+      .withMessage("Product name is required"),
+    body("category")
+      .custom(requiredUnlessDraft)
+      .withMessage("Category is required"),
+    body("description")
+      .custom((value, meta) => requiredUnlessDraft(value, meta) && (meta.req.body.status === "draft" || value.length >= 5))
+      .withMessage("Description must be at least 5 characters"),
     body("price").custom((value, { req }) => {
       if (req.body.status === "draft") return true;
       if (!value || Number.isNaN(Number(value)) || Number(value) <= 0) {
@@ -21,51 +25,14 @@ class ProductValidator {
       }
       return true;
     }),
-    body("category").custom((value, { req }) => {
-      if (req.body.status === "draft") return true;
-      if (!value && !req.body.categoryId) {
-        throw new Error("Category or categoryId is required");
-      }
-      return true;
-    }),
-    body("categoryId")
-      .optional()
-      .isInt()
-      .withMessage("Category ID must be an integer"),
-    body("description").custom((value, { req }) => {
-      if (req.body.status === "draft") return true;
-      if (!value || value.length < 5) {
-        throw new Error("Description must be at least 5 characters");
-      }
-      return true;
-    }),
     body("stock_quantity")
       .optional()
       .isInt({ min: 0 })
       .withMessage("Stock quantity must be a non-negative integer"),
-    body("status")
+    body("min_order")
       .optional()
-      .isIn(["active", "draft", "sold_out"])
-      .withMessage("Status must be active, draft, or sold_out"),
-  ];
-
-  static updateProduct = [
-    body("name")
-      .optional()
-      .notEmpty()
-      .withMessage("Product name cannot be empty"),
-    body("price")
-      .optional()
-      .isFloat({ gt: 0 })
-      .withMessage("Price must be greater than 0"),
-    body("description")
-      .optional()
-      .isLength({ min: 5 })
-      .withMessage("Description must be at least 5 characters"),
-  ];
-
-  static addProductImage = [
-    body("imageUrl").isURL().withMessage("Valid image URL is required"),
+      .isInt({ min: 1 })
+      .withMessage("Minimum order must be a positive integer"),
   ];
 }
 

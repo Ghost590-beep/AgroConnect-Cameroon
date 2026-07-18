@@ -1,0 +1,54 @@
+/* client/src/styles/theme.css
+   Single source of truth for design tokens — "Warm Earth & Harvest".
+   Every page/component consumes var(--color-*) etc. from here.
+   Do not declare another :root block anywhere else in the app.
+*/
+
+:root {
+  /* Brand core */
+  --color-primary: #C1502E;
+  --color-primary-dark: #9C3F23;
+  --color-primary-light: #E8A184;
+
+  --color-secondary: #D9A441;
+  --color-secondary-dark: #B8842A;
+  --color-secondary-light: #F0D9A0;
+
+  --color-accent-brown: #6B4A32;
+  --color-accent-brown-dark: #4A3220;
+
+  /* Sparse semantic colors — used only for tiny states, never as a page-wide theme */
+  --color-success: #4C7A3D;
+  --color-success-bg: #E7EFE0;
+  --color-info: #4A7A96;
+  --color-info-bg: #E3EEF3;
+  --color-danger: #B3402E;
+  --color-danger-bg: #F6E4DF;
+
+  /* Backgrounds */
+  --color-bg: #FBF3E7;
+  --color-bg-alt: #F3E4CE;
+  --color-surface: #FFFFFF;
+  --color-surface-sunken: #F0E6D6;
+
+  /* Text */
+  --color-text: #3A2A1E;
+  --color-text-muted: #7A6A5C;
+  --color-text-on-primary: #FFFFFF;
+  --color-text-on-dark: #F5EAD9;
+
+  /* Borders / shadows */
+  --color-border: #E3D2B8;
+  --color-border-strong: #C9AE86;
+  --shadow-sm: 0 1px 4px rgba(58, 42, 30, 0.08);
+  --shadow-md: 0 4px 16px rgba(58, 42, 30, 0.12);
+  --shadow-lg: 0 12px 32px rgba(58, 42, 30, 0.18);
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  /* Font — one family sitewide */
+  --font-body: "Inter", "Segoe UI", sans-serif;
+}

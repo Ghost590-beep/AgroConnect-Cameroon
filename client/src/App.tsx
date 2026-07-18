@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
+import Layout from "./components/Layout/Layout";
 
 import Landing from "./pages/LandingPage/Landing (2)";
 import Login from "./pages/Login/Login";
@@ -20,25 +21,30 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Always public */}
         <Route path="/" element={<Navigate to="/landing" replace />} />
-        <Route path="/landing" element={<Landing />} />
-        <Route path="/about" element={<About />} />
 
-        {/* Public only — redirect to /market if already logged in */}
-        <Route element={<PublicRoute />}>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+        {/* Public + protected pages sharing the full navbar/footer chrome */}
+        <Route element={<Layout variant="full" />}>
+          <Route path="/landing" element={<Landing />} />
+          <Route path="/about" element={<About />} />
+
+          {/* Protected — redirect to /login if not logged in */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/market" element={<Market />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/product/:id" element={<ProductDetail />} />
+            <Route path="/upload-product" element={<UploadProduct />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+          </Route>
         </Route>
 
-        {/* Protected — redirect to /login if not logged in */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/market" element={<Market />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/product/:id" element={<ProductDetail />} />
-          <Route path="/upload-product" element={<UploadProduct />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+        {/* Public only, minimal chrome — redirect to /market if already logged in */}
+        <Route element={<Layout variant="minimal" />}>
+          <Route element={<PublicRoute />}>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+          </Route>
         </Route>
 
         {/* 404 fallback */}

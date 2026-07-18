@@ -6,11 +6,11 @@
 
 :root {
   color-scheme: light;
-  font-family: "Inter", "Segoe UI", sans-serif;
+  font-family: var(--font-body);
   line-height: 1.5;
   font-size: 16px;
-  background-color: #f6faf7;
-  color: #0f172a;
+  background-color: var(--color-bg);
+  color: var(--color-text);
 }
 
 html {
@@ -21,8 +21,8 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  background-color: #f6faf7;
-  color: #0f172a;
+  background-color: var(--color-bg);
+  color: var(--color-text);
   text-rendering: optimizeLegibility;
 }
 
@@ -76,12 +76,12 @@ ol {
 input,
 textarea,
 select {
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
 }
 
 ::placeholder {
-  color: #94a3b8;
+  color: var(--color-text-muted);
   opacity: 1;
 }
 

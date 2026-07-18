@@ -2,77 +2,155 @@
 import express from "express";
 import UserController from "../controllers/user.controller.js";
 import AuthMiddleware from "../middlewares/auth.middleware.js";
+import ValidationMiddleware from "../middlewares/validation.middleware.js";
+import UserValidator from "../validators/user.validator.js";
 import upload from "../config/multer.js";
 
 const router = express.Router();
 
 /**
- * User Profile Routes
- * Protected routes - require valid JWT token
+ * @swagger
+ * tags:
+ *   - name: User
+ *     description: Self-service profile management (all routes require a bearer token)
  */
 
-// Get user profile
-router.get(
-  "/profile",
-  AuthMiddleware.verifyToken,
-  UserController.getProfile
-);
+router.use(AuthMiddleware.verifyToken);
 
-// Update user profile
+/**
+ * @swagger
+ * /api/user/profile:
+ *   get:
+ *     tags: [User]
+ *     summary: Get the current user's profile
+ *     security: [{ bearerAuth: [] }]
+ *     responses:
+ *       200: { description: Profile retrieved successfully }
+ *   put:
+ *     tags: [User]
+ *     summary: Update the current user's profile
+ *     security: [{ bearerAuth: [] }]
+ *     responses:
+ *       200: { description: Profile updated successfully }
+ */
+router.get("/profile", UserController.getProfile);
 router.put(
   "/profile",
-  AuthMiddleware.verifyToken,
-  UserController.updateProfile
+  UserValidator.updateProfile,
+  ValidationMiddleware.validate,
+  UserController.updateProfile,
 );
 
-// Upload user avatar
-router.put(
-  "/profile/avatar",
-  AuthMiddleware.verifyToken,
-  upload.single('profile_image'),
-  UserController.uploadAvatar
-);
+/**
+ * @swagger
+ * /api/user/profile/avatar:
+ *   put:
+ *     tags: [User]
+ *     summary: Upload a profile avatar
+ *     security: [{ bearerAuth: [] }]
+ *     requestBody:
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               profile_image: { type: string, format: binary }
+ *     responses:
+ *       200: { description: Avatar uploaded successfully }
+ */
+router.put("/profile/avatar", upload.single("profile_image"), UserController.uploadAvatar);
 
-// Change user password
+/**
+ * @swagger
+ * /api/user/change-password:
+ *   post:
+ *     tags: [User]
+ *     summary: Change the current user's password
+ *     security: [{ bearerAuth: [] }]
+ *     responses:
+ *       200: { description: Password changed successfully }
+ *       401: { description: Current password is incorrect }
+ */
 router.post(
   "/change-password",
-  AuthMiddleware.verifyToken,
-  UserController.changePassword
+  UserValidator.changePassword,
+  ValidationMiddleware.validate,
+  UserController.changePassword,
 );
 
-// Get user statistics
-router.get(
-  "/stats",
-  AuthMiddleware.verifyToken,
-  UserController.getUserStats
-);
+/**
+ * @swagger
+ * /api/user/stats:
+ *   get:
+ *     tags: [User]
+ *     summary: Get the current user's stats (products listed, orders completed, rating, earnings)
+ *     security: [{ bearerAuth: [] }]
+ *     responses:
+ *       200: { description: Stats retrieved successfully }
+ */
+router.get("/stats", UserController.getUserStats);
 
-// Get user products
-router.get(
-  "/products",
-  AuthMiddleware.verifyToken,
-  UserController.getUserProducts
-);
+/**
+ * @swagger
+ * /api/user/products:
+ *   get:
+ *     tags: [User]
+ *     summary: Get the current user's own products (includes drafts)
+ *     security: [{ bearerAuth: [] }]
+ *     responses:
+ *       200: { description: Products retrieved successfully }
+ */
+router.get("/products", UserController.getUserProducts);
 
-// Get user orders
-router.get(
-  "/orders",
-  AuthMiddleware.verifyToken,
-  UserController.getUserOrders
-);
+/**
+ * @swagger
+ * /api/user/orders:
+ *   get:
+ *     tags: [User]
+ *     summary: Get the current user's order history
+ *     security: [{ bearerAuth: [] }]
+ *     responses:
+ *       200: { description: Orders retrieved successfully }
+ */
+router.get("/orders", UserController.getUserOrders);
 
-// Save notification preferences
+/**
+ * @swagger
+ * /api/user/notifications:
+ *   post:
+ *     tags: [User]
+ *     summary: Save notification preferences
+ *     security: [{ bearerAuth: [] }]
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               orders: { type: boolean }
+ *               promotions: { type: boolean }
+ *               newsletter: { type: boolean }
+ *               sms: { type: boolean }
+ *     responses:
+ *       200: { description: Preferences saved successfully }
+ */
 router.post(
   "/notifications",
-  AuthMiddleware.verifyToken,
-  UserController.saveNotifications
+  UserValidator.notifications,
+  ValidationMiddleware.validate,
+  UserController.saveNotifications,
 );
 
-// Delete user account (protected)
-router.delete(
-  "/account",
-  AuthMiddleware.verifyToken,
-  UserController.deleteAccount
-);
+/**
+ * @swagger
+ * /api/user/account:
+ *   delete:
+ *     tags: [User]
+ *     summary: Delete the current user's account
+ *     security: [{ bearerAuth: [] }]
+ *     responses:
+ *       200: { description: Account deleted successfully }
+ */
+router.delete("/account", UserController.deleteAccount);
 
 export default router;

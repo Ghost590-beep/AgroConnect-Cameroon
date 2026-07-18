@@ -1,163 +1,92 @@
 // src/services/product.service.js
 import ProductRepository from "../repositories/product.repository.js";
-import ProductImageRepository from "../repositories/productImage.repository.js";
-import ReviewRepository from "../repositories/review.repository.js";
-import CategoryService from "./category.service.js";
+import ProductDTO from "../dto/ProductDTO.js";
+import AppError from "../utils/AppError.js";
 
+// Different pages of the frontend normalize the "publicly visible"
+// radio option to different literal strings ("active" on Dashboard,
+// "public" on the standalone UploadProduct page) — the backend
+// normalizes both rather than requiring the frontend to agree.
+const PUBLIC_STATUS_ALIASES = new Set(["active", "public", "published"]);
+
+function normalizeStatus(raw) {
+  if (!raw) return "draft";
+  return PUBLIC_STATUS_ALIASES.has(String(raw).toLowerCase()) ? "active" : "draft";
+}
+
+// Draft listings may arrive with blank numeric fields (the frontend always
+// sends the keys, just possibly empty, when saving a draft) — treat blank/
+// missing/invalid as "not provided" rather than passing NaN to the database.
+function toNumber(value, fallback) {
+  if (value === undefined || value === null || value === "") return fallback;
+  const num = Number(value);
+  return Number.isNaN(num) ? fallback : num;
+}
+
+/**
+ * ProductService (Facade)
+ */
 class ProductService {
-  // =========================
-  // Add new product
-  // =========================
-  async addProduct(productData) {
-    const normalized = await this.normalizeProductData(productData);
-    const productId = await ProductRepository.create(normalized);
-    return await ProductRepository.findById(productId);
-  }
-
-  async normalizeProductData(raw) {
-    const categoryId = await this.resolveCategoryId(raw);
-    const subcategoryId = await this.resolveSubcategoryId(categoryId, raw);
-
-    return {
-      name: raw.name,
-      description: raw.description || "",
-      price: parseFloat(raw.price),
-      stock_quantity: raw.stock_quantity ? parseInt(raw.stock_quantity, 10) : 0,
-      category_id: categoryId,
-      subcategory_id: subcategoryId,
-      user_id: raw.user_id || raw.userId,
-      location: raw.location || "",
-      image: raw.image || null,
-      status: raw.status || "active",
-    };
-  }
-
-  async resolveCategoryId(raw) {
-    if (raw.categoryId) return parseInt(raw.categoryId, 10);
-    if (raw.category) {
-      try {
-        const category = await CategoryService.getCategoryByName(raw.category);
-        return category.id;
-      } catch (error) {
-        // If category name provided but doesn't exist, create it automatically
-        const created = await CategoryService.createCategory(raw.category, "");
-        return created.id;
+  async addProduct(raw) {
+    let product;
+    try {
+      product = await ProductRepository.create({
+        name: raw.name || "Untitled product",
+        category: raw.category || "Uncategorized",
+        subcategory: raw.subcategory || null,
+        description: raw.description || null,
+        price: toNumber(raw.price, 0),
+        stock_quantity: toNumber(raw.stock_quantity, 0),
+        unit: raw.unit || null,
+        min_order: toNumber(raw.min_order, 1),
+        location: raw.location || null,
+        image: raw.image || null,
+        status: normalizeStatus(raw.status),
+        user_id: raw.user_id,
+      });
+    } catch (error) {
+      if (error.code === "ER_NO_REFERENCED_ROW_2") {
+        // The bearer token was valid but the account behind it no longer
+        // exists (deleted account, or a DB reset) — surface this as an
+        // auth problem, not a raw 500 SQL error.
+        throw new AppError("Your session is no longer valid. Please log in again.", 401);
       }
-    }
-    throw new Error("Category is required");
-  }
-
-  async resolveSubcategoryId(categoryId, raw) {
-    if (raw.subcategoryId) return parseInt(raw.subcategoryId, 10);
-    if (raw.subcategory) {
-      try {
-        const subcategory =
-          await CategoryService.getSubcategoryByCategoryAndName(
-            categoryId,
-            raw.subcategory,
-          );
-        return subcategory.id;
-      } catch (error) {
-        // If a valid subcategory name is provided but it doesn't exist yet,
-        // create it automatically so uploads don't fail for new or seed-missing values.
-        const created = await CategoryService.createSubcategory(
-          categoryId,
-          raw.subcategory,
-          "",
-        );
-        return created.id;
-      }
-    }
-
-    const subcategories =
-      await CategoryService.getSubcategoriesByCategory(categoryId);
-    if (subcategories.length > 0) {
-      return subcategories[0].id;
-    }
-
-    throw new Error("Subcategory is required");
-  }
-
-  // =========================
-  // Get product by ID (with images & reviews)
-  // =========================
-  async getProductById(productId) {
-    const product = await ProductRepository.findById(productId);
-    if (!product) throw new Error("Product not found");
-
-    const images = await ProductImageRepository.findByProductId(productId);
-    const reviews = await ReviewRepository.findByProductId(productId);
-    const avgRating = await ReviewRepository.getAverageRating(productId);
-
-    return { ...product, images, reviews, avgRating };
-  }
-
-  // =========================
-  // Get all products
-  // =========================
-  async getAllProducts() {
-    return await ProductRepository.findAll();
-  }
-
-  // =========================
-  // Get products by category
-  // =========================
-  async getProductsByCategory(categoryId) {
-    return await ProductRepository.findByCategory(categoryId);
-  }
-
-  // =========================
-  // Get products by subcategory
-  // =========================
-  async getProductsBySubcategory(subcategoryId) {
-    return await ProductRepository.findBySubcategory(subcategoryId);
-  }
-
-  // =========================
-  // Get products by user (farmer)
-  // =========================
-  async getProductsByUser(userId) {
-    return await ProductRepository.findByUser(userId);
-  }
-
-  // =========================
-  // Update product
-  // =========================
-  async updateProduct(productId, updates) {
-    return await ProductRepository.update(productId, updates);
-  }
-
-  // =========================
-  // Delete product (with cleanup)
-  // =========================
-  async deleteProduct(productId, userId) {
-    const product = await ProductRepository.findById(productId);
-    if (!product) {
-      throw new Error("Product not found");
-    }
-    if (product.user_id !== userId) {
-      const error = new Error("Unauthorized to delete this product");
-      error.status = 403;
       throw error;
     }
-
-    await ProductImageRepository.deleteByProductId(productId);
-    await ReviewRepository.delete(productId); // optional cleanup if cascade not enabled
-    return await ProductRepository.delete(productId);
+    return ProductDTO.fromRow(product);
   }
 
-  // =========================
-  // Search products
-  // =========================
-  async searchProducts(keyword) {
-    return await ProductRepository.search(keyword);
+  async getAllActive() {
+    const rows = await ProductRepository.findAllActive();
+    return ProductDTO.fromRows(rows);
   }
 
-  // =========================
-  // Count products by category
-  // =========================
-  async countProductsByCategory(categoryId) {
-    return await ProductRepository.countByCategory(categoryId);
+  async getById(id) {
+    const product = await ProductRepository.findById(id);
+    if (!product) {
+      throw new AppError("Product not found", 404);
+    }
+    return ProductDTO.fromRow(product);
+  }
+
+  async getByUser(userId) {
+    const rows = await ProductRepository.findByUser(userId);
+    return ProductDTO.fromRows(rows);
+  }
+
+  async countByUser(userId) {
+    return ProductRepository.countByUser(userId);
+  }
+
+  async deleteProduct(id, userId) {
+    const product = await ProductRepository.findById(id);
+    if (!product) {
+      throw new AppError("Product not found", 404);
+    }
+    if (product.user_id !== userId) {
+      throw new AppError("You do not have permission to delete this product", 403);
+    }
+    return ProductRepository.delete(id);
   }
 }
 

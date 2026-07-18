@@ -19,13 +19,43 @@ describe("Auth API", () => {
     expect(res.body.success).toBe(false);
   });
 
-  test("GET /api/auth/1 rejects missing token", async () => {
-    const res = await request(app).get("/api/auth/1");
+  test("POST /api/auth/google rejects an invalid ID token", async () => {
+    const res = await request(app)
+      .post("/api/auth/google")
+      .send({ id_token: "not-a-real-google-token" });
 
     expect(res.statusCode).toBe(401);
     expect(res.body.success).toBe(false);
-    expect(res.body.message).toMatch(
-      /no token provided|invalid or expired token/i,
-    );
+  });
+
+  test("register -> login -> GET /api/user/profile happy path", async () => {
+    const email = `test.user.${Date.now()}@example.com`;
+
+    const registerRes = await request(app).post("/api/auth/register").send({
+      full_name: "Test User",
+      email,
+      password: "Password123!",
+      phone: "+237600000000",
+      location: "Douala",
+    });
+
+    expect(registerRes.statusCode).toBe(201);
+    expect(registerRes.body.data.token).toEqual(expect.any(String));
+    expect(registerRes.body.data.user.email).toBe(email);
+    expect(registerRes.body.data.user.password).toBeUndefined();
+
+    const loginRes = await request(app)
+      .post("/api/auth/login")
+      .send({ email, password: "Password123!" });
+
+    expect(loginRes.statusCode).toBe(200);
+    const { token } = loginRes.body.data;
+
+    const profileRes = await request(app)
+      .get("/api/user/profile")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(profileRes.statusCode).toBe(200);
+    expect(profileRes.body.data.email).toBe(email);
   });
 });
