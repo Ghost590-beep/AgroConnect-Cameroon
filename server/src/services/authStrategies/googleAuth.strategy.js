@@ -11,7 +11,9 @@ class GoogleAuthStrategy extends AuthStrategy {
   async authenticate({ id_token }) {
     const clientId = EnvConfig.getGoogleClientId();
     if (!clientId) {
-      throw new AppError("Google sign-in is not configured on the server", 503);
+      // If Google sign-in is not configured, do not expose configuration state.
+      // Treat requests as invalid authentication instead of a service error.
+      throw new AppError("Invalid Google token", 401);
     }
 
     const client = new OAuth2Client(clientId);

@@ -5,6 +5,7 @@ import AuthMiddleware from "../middlewares/auth.middleware.js";
 import ValidationMiddleware from "../middlewares/validation.middleware.js";
 import ProductValidator from "../validators/product.validator.js";
 import upload from "../config/multer.js";
+import asyncHandler from "../utils/asyncHandler.js";
 
 const router = express.Router();
 
@@ -49,14 +50,14 @@ const router = express.Router();
  *       201: { description: Product created successfully }
  *       400: { description: Validation failed }
  */
-router.get("/", ProductController.getAllProducts);
+router.get("/", asyncHandler(ProductController.getAllProducts));
 router.post(
   "/",
   AuthMiddleware.verifyToken,
   upload.single("image"),
   ProductValidator.addProduct,
   ValidationMiddleware.validate,
-  ProductController.addProduct,
+  asyncHandler(ProductController.addProduct),
 );
 
 /**
@@ -87,7 +88,11 @@ router.post(
  *       403: { description: Not the owner of this product }
  *       404: { description: Product not found }
  */
-router.get("/:id", ProductController.getProductById);
-router.delete("/:id", AuthMiddleware.verifyToken, ProductController.deleteProduct);
+router.get("/:id", asyncHandler(ProductController.getProductById));
+router.delete(
+  "/:id",
+  AuthMiddleware.verifyToken,
+  asyncHandler(ProductController.deleteProduct),
+);
 
 export default router;

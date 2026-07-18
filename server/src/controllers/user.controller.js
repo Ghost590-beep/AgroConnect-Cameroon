@@ -2,6 +2,11 @@
 import UserService from "../services/user.service.js";
 import response from "../utils/response.js";
 
+/**
+ * UserController
+ * - SRP: exposes user self-service endpoints.
+ * - Cleanly delegates business rules to UserService.
+ */
 class UserController {
   async getProfile(req, res, next) {
     try {
@@ -51,7 +56,11 @@ class UserController {
   async getUserStats(req, res, next) {
     try {
       const stats = await UserService.getStats(req.user.id);
-      return response.success(res, stats, "User statistics retrieved successfully");
+      return response.success(
+        res,
+        stats,
+        "User statistics retrieved successfully",
+      );
     } catch (error) {
       next(error);
     }
@@ -60,7 +69,11 @@ class UserController {
   async getUserProducts(req, res, next) {
     try {
       const products = await UserService.getProducts(req.user.id);
-      return response.success(res, products, "User products retrieved successfully");
+      return response.success(
+        res,
+        products,
+        "User products retrieved successfully",
+      );
     } catch (error) {
       next(error);
     }
@@ -69,7 +82,11 @@ class UserController {
   async getUserOrders(req, res, next) {
     try {
       const orders = await UserService.getOrders(req.user.id);
-      return response.success(res, orders, "User orders retrieved successfully");
+      return response.success(
+        res,
+        orders,
+        "User orders retrieved successfully",
+      );
     } catch (error) {
       next(error);
     }
@@ -77,8 +94,15 @@ class UserController {
 
   async saveNotifications(req, res, next) {
     try {
-      const updated = await UserService.saveNotifications(req.user.id, req.body);
-      return response.success(res, updated, "Notification preferences saved successfully");
+      const updated = await UserService.saveNotifications(
+        req.user.id,
+        req.body,
+      );
+      return response.success(
+        res,
+        updated,
+        "Notification preferences saved successfully",
+      );
     } catch (error) {
       next(error);
     }

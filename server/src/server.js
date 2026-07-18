@@ -17,40 +17,59 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const app = express();
+class ServerApp {
+  constructor() {
+    this.app = express();
+    this.uploadsDir = path.join(__dirname, "../uploads");
+    this.setup();
+  }
 
-// Ensure upload directories exist to avoid ENOENT when multer stores files
-const uploadsDir = path.join(__dirname, "../uploads");
-try {
-  fs.mkdirSync(path.join(uploadsDir, "products"), { recursive: true });
-  fs.mkdirSync(path.join(uploadsDir, "avatars"), { recursive: true });
-} catch (err) {
-  console.error("Failed to create upload directories:", err);
-}
+  setup() {
+    this.ensureUploadDirectories();
+    this.configureMiddleware();
+    this.configureRoutes();
+    this.configureDocs();
+    this.configureErrorHandling();
+  }
 
-app.use(express.json());
-app.use(cors());
-app.use(morgan("dev"));
-
-app.use("/uploads", express.static(uploadsDir));
-
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
-app.use("/api", routes);
-
-// If running in production, serve the React build.
-const clientBuildPath = path.join(__dirname, "../../client/dist");
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(clientBuildPath));
-
-  app.get("*", (req, res, next) => {
-    if (req.path.startsWith("/api") || req.path.startsWith("/api-docs")) {
-      return next();
+  ensureUploadDirectories() {
+    try {
+      fs.mkdirSync(path.join(this.uploadsDir, "products"), { recursive: true });
+      fs.mkdirSync(path.join(this.uploadsDir, "avatars"), { recursive: true });
+    } catch (error) {
+      console.error("Failed to create upload directories:", error);
     }
-    return res.sendFile(path.join(clientBuildPath, "index.html"));
-  });
+  }
+
+  configureMiddleware() {
+    this.app.use(express.json());
+    this.app.use(cors());
+    this.app.use(morgan("dev"));
+    this.app.use("/uploads", express.static(this.uploadsDir));
+  }
+
+  configureRoutes() {
+    this.app.use("/api", routes);
+  }
+
+  configureDocs() {
+    this.app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+    if (process.env.NODE_ENV === "production") {
+      const clientBuildPath = path.join(__dirname, "../../client/dist");
+      this.app.use(express.static(clientBuildPath));
+      this.app.get("*", (req, res, next) => {
+        if (req.path.startsWith("/api") || req.path.startsWith("/api-docs")) {
+          return next();
+        }
+        return res.sendFile(path.join(clientBuildPath, "index.html"));
+      });
+    }
+  }
+
+  configureErrorHandling() {
+    this.app.use(ErrorMiddleware.handleError);
+  }
 }
 
-app.use(ErrorMiddleware.handleError);
-
-export default app;
+export default new ServerApp().app;

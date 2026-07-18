@@ -3,6 +3,7 @@ import express from "express";
 import AuthController from "../controllers/auth.controller.js";
 import ValidationMiddleware from "../middlewares/validation.middleware.js";
 import AuthValidator from "../validators/auth.validator.js";
+import asyncHandler from "../utils/asyncHandler.js";
 
 const router = express.Router();
 
@@ -41,7 +42,7 @@ router.post(
   "/register",
   AuthValidator.register,
   ValidationMiddleware.validate,
-  AuthController.register,
+  asyncHandler(AuthController.register),
 );
 
 /**
@@ -68,7 +69,7 @@ router.post(
   "/login",
   AuthValidator.login,
   ValidationMiddleware.validate,
-  AuthController.login,
+  asyncHandler(AuthController.login),
 );
 
 /**
@@ -94,7 +95,7 @@ router.post(
   "/google",
   AuthValidator.googleAuth,
   ValidationMiddleware.validate,
-  AuthController.googleAuth,
+  asyncHandler(AuthController.googleAuth),
 );
 
 export default router;
