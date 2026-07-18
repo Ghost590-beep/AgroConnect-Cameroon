@@ -1,5 +1,24 @@
 .ln-page {
   font-family: var(--font-body);
   color: var(--color-text);
-  background: var(--color-bg);
+  background: transparent;
+  overflow-x: hidden;
+}
+
+.ln-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(49, 122, 55, 0.08),
+      transparent 20%
+    ),
+    radial-gradient(
+      circle at bottom right,
+      rgba(210, 164, 62, 0.1),
+      transparent 15%
+    );
 }
