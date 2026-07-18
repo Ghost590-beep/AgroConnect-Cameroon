@@ -1,7 +1,7 @@
 .ln-stats {
   display: flex;
   justify-content: center;
-  background: #2E7D32;
+  background: var(--color-primary);
   flex-wrap: wrap;
 }
 
@@ -18,7 +18,7 @@
 .ln-features {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  background: #2E7D32;
+  background: var(--color-primary);
 }
 
 .ln-feature-card {

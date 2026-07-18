@@ -8,16 +8,18 @@
 }
 
 body {
-  font-family: "Inter", "Segoe UI", sans-serif;
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
 }
 
 /* ================================================================
    PAGE WRAPPER
-   Full-screen background with the farm image blurred behind the card
+   Fills the Layout's <main> flex area (not a bare 100vh — this page
+   now sits inside a shared Navbar(minimal)+Footer shell, so a full
+   100vh here would push the footer far below the fold).
 ================================================================ */
 .auth-page {
-  min-height: 100vh;
+  min-height: calc(100vh - 220px);
   width: 100%;
 
   display: flex;
@@ -136,13 +138,13 @@ body {
 .auth-badge__text {
   font-size: 12px;
   font-weight: 500;
-  color: #0f172a;
+  color: var(--color-text);
   white-space: nowrap;
 }
 
 .auth-badge__text strong {
   font-weight: 700;
-  color: #1d9e75;
+  color: var(--color-primary);
 }
 
 /* ================================================================
@@ -162,7 +164,7 @@ body {
 .auth-heading {
   font-size: 20px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--color-text);
   margin-bottom: 22px;
   line-height: 1.2;
 }
@@ -184,16 +186,16 @@ form {
 .form-field label {
   font-size: 12px;
   font-weight: 500;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .form-field input {
   padding: 10px 13px;
   border-radius: 9px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--color-border);
   background: rgba(255, 255, 255, 0.85);
   font-size: 13px;
-  color: #111827;
+  color: var(--color-text);
   outline: none;
   transition:
     border-color 0.2s,
@@ -201,20 +203,20 @@ form {
 }
 
 .form-field input::placeholder {
-  color: #9ca3af;
+  color: var(--color-text-muted);
 }
 
 .form-field input:focus {
-  border-color: #1d9e75;
+  border-color: var(--color-primary);
   background: #fff;
-  box-shadow: 0 0 0 3px rgba(29, 158, 117, 0.13);
+  box-shadow: 0 0 0 3px rgba(193, 80, 46, 0.13);
 }
 
 /* ── Forgot password link ────────────────────────────────────── */
 .form-link--right {
   align-self: flex-end;
   font-size: 11px;
-  color: #1d9e75;
+  color: var(--color-primary);
   cursor: pointer;
   user-select: none;
 }
@@ -226,7 +228,7 @@ form {
 /* ── Validation error ────────────────────────────────────────── */
 .form-error {
   font-size: 11px;
-  color: #dc2626;
+  color: var(--color-danger);
   margin: 0;
 }
 
@@ -238,7 +240,7 @@ form {
   border: none;
   border-radius: 9px;
 
-  background: linear-gradient(135deg, #2db37e 0%, #1a7a52 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
   color: #fff;
   font-size: 14px;
   font-weight: 600;
@@ -262,7 +264,7 @@ form {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-size: 12px;
 }
 
@@ -271,7 +273,7 @@ form {
   content: "";
   flex: 1;
   height: 1px;
-  background: #e5e7eb;
+  background: var(--color-border);
 }
 
 /* ── Google button ───────────────────────────────────────────── */
@@ -283,13 +285,13 @@ form {
   gap: 10px;
 
   padding: 10px 13px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--color-border);
   border-radius: 9px;
   background: #fff;
 
   font-size: 13px;
   font-weight: 500;
-  color: #374151;
+  color: var(--color-text);
   cursor: pointer;
 
   transition:
@@ -298,8 +300,8 @@ form {
 }
 
 .btn-google:hover {
-  background: #f9fafb;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+  background: var(--color-bg-alt);
+  box-shadow: var(--shadow-sm);
 }
 
 /* ── Switch page link ────────────────────────────────────────── */
@@ -307,11 +309,11 @@ form {
   margin-top: 18px;
   text-align: center;
   font-size: 12px;
-  color: #6b7280;
+  color: var(--color-text-muted);
 }
 
 .auth-switch__link {
-  color: #1d9e75;
+  color: var(--color-primary);
   font-weight: 600;
   font-size: 12px;
   text-decoration: none;
@@ -331,21 +333,21 @@ form {
   pointer-events: none;
   z-index: 0;
 
-  /* Three overlapping soft green ellipses simulate leaves */
+  /* Three overlapping soft terracotta ellipses, subtle corner accent */
   background:
     radial-gradient(
       ellipse 34px 58px at 88% 114%,
-      rgba(29, 158, 117, 0.15) 100%,
+      rgba(193, 80, 46, 0.15) 100%,
       transparent 100%
     ),
     radial-gradient(
       ellipse 24px 42px at 66% 118%,
-      rgba(29, 158, 117, 0.1) 100%,
+      rgba(193, 80, 46, 0.1) 100%,
       transparent 100%
     ),
     radial-gradient(
       ellipse 18px 32px at 46% 112%,
-      rgba(29, 158, 117, 0.07) 100%,
+      rgba(193, 80, 46, 0.07) 100%,
       transparent 100%
     );
 }

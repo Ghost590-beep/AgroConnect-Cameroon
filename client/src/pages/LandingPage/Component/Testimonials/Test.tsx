@@ -1,10 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  FaStar, FaLeaf, FaFacebook, FaTwitter,
-  FaInstagram, FaWhatsapp, FaMapMarkerAlt,
-  FaPhone, FaEnvelope,
-} from "react-icons/fa";
+import { FaStar } from "react-icons/fa";
 import "./Test.css";
 
 const TESTIMONIALS = [
@@ -77,51 +73,6 @@ const TestimonialsJoinFooter: React.FC = () => {
           </div>
         </div>
       </section>
-
-      {/* FOOTER */}
-      <footer className="ln-footer" id="contact">
-        <div className="ln-footer-inner">
-          <div className="ln-footer-brand">
-            <div className="ln-brand-row">
-              <FaLeaf color="#4caf50" size={18} />
-              <span>AgroConnect</span>
-            </div>
-            <p>Connecting farmers with the community for a stronger agricultural future.</p>
-            <div className="ln-socials">
-              <FaFacebook /><FaTwitter /><FaInstagram /><FaWhatsapp />
-            </div>
-          </div>
-          <div className="ln-footer-col">
-            <h4>Quick links</h4>
-            <ul>
-              <li onClick={() => navigate("/landing")}>Home</li>
-              <li onClick={() => navigate("/market")}>Marketplace</li>
-              <li onClick={() => navigate("/upload-product")}>Sell a product</li>
-              <li onClick={() => navigate("/register")}>Register</li>
-            </ul>
-          </div>
-          <div className="ln-footer-col">
-            <h4>Categories</h4>
-            <ul>
-              <li>Crops & Seeds</li>
-              <li>Animals</li>
-              <li>Machines & Tools</li>
-              <li>Services</li>
-              <li>Medications</li>
-            </ul>
-          </div>
-          <div className="ln-footer-col">
-            <h4>Contact info</h4>
-            <div className="ln-contact-row"><FaMapMarkerAlt size={11} /> Yaoundé, Cameroon</div>
-            <div className="ln-contact-row"><FaPhone size={11} /> +237 600 000 000</div>
-            <div className="ln-contact-row"><FaEnvelope size={11} /> info@agroconnect.cm</div>
-          </div>
-        </div>
-        <div className="ln-footer-bottom">
-          <span>© 2025 AgroConnect. All rights reserved.</span>
-          <FaLeaf color="#4caf50" size={14} />
-        </div>
-      </footer>
     </>
   );
 };
